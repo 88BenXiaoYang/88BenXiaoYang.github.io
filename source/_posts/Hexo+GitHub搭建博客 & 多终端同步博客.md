@@ -128,5 +128,5 @@ hexo d
 npm insatll hexo-deployer-git --save
 ```
 
-安装完成之后，再次执行`hexo g`和`hexo d`命令上传资源到GitHub。上传完成后可在浏览器输入`xxx.github.io`浏览已
+安装完成之后，再次执行`hexo g`和`hexo d`命令上传资源到GitHub。上传完成后可在浏览器输入`xxx.github.io`浏览已搭建好的博客。
 
