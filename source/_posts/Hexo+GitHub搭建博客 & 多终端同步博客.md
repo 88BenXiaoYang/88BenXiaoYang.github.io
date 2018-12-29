@@ -61,7 +61,7 @@ sudo npm install -g hexo-cli
 
 ###### 创建仓库
 
-* 登录 [GitHub](https://github.com) 账号，创建名称格式为`xxx.github.io`的仓库，`xxx`为GitHub账号用户名。
+* 登录 [GitHub](https://github.com) 账号，创建名称格式为`xxx.github.io`的仓库，`xxx`为GitHub账号用户名。创建步骤可参考[Create a repo](https://help.github.com/articles/create-a-repo/)
 
 ###### 开启 GitHub Pages
 
