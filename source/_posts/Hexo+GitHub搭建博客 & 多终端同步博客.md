@@ -1,5 +1,6 @@
 ---
 title: Hexo+GitHub搭建博客 & 多终端同步博客
+date: 2018-12-29
 ---
 Hexo+GitHub搭建博客 & 多终端同步博客 for Mac
 
