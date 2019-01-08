@@ -10,7 +10,7 @@ date: 2019-01-02
 
 #### 生成`ssh-key`
 
-`ssh-keygen -t rsa -C ""`（""中的内容可随意取，任意字符串都行，没有特殊限制如必须为邮箱等这样的）。通常将生成的`ssh-key`放在`~/.ssh`文件夹下，遵循系统规则方便管理。
+`ssh-keygen -t rsa -C ""`（""中的内容可随意取，任意字符串都行，没有特殊限制如必须为邮箱等这样的），第一个回车后可以指定新生成的`ssh-key`存储的路径和文件名称。通常将生成的`ssh-key`放在`~/.ssh`文件夹下，遵循系统规则方便管理。
 
 生成`ssh-key`可参考[Generating a new SSH key](https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/)
 
@@ -24,7 +24,7 @@ date: 2019-01-02
 
 ## 电脑上配置`host`
 
-* `cd ~/.ssh`，cd 到 `~/.ssh`，在`config`中配置`host`信息。如没有`config`文件，用`vim config`创建并打开`config`文件
+* `cd ~/.ssh`，cd 到 `~/.ssh`，在`config`中配置`host`信息。如没有`config`文件，用`vim config`创建并打开`config`文件（`vim`有目标文件则直接打开目标文件，没有目标文件，会创建并打开目标文件）
 * 编辑`config`添加如下信息
 
 ```
@@ -49,7 +49,7 @@ Host test3.github.com
 Host xxx.yyy.zzz
     HostName github.com
     PreferredAuthentications publickey
-    IdentityFile ~/.ssh/id_rsa_xxx
+    IdentityFile ~/.ssh/id_rsa_xxx（~/.ssh/id_rsa_xxx 是新生成的ssh-key的私钥的完整路径）
     User git
 ```
 
