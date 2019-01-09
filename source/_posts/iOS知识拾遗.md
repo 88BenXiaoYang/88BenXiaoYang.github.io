@@ -34,3 +34,7 @@ dSYM是在打包过程中生成的保存app函数地址映射信息的中转文�
 在Xcode模拟器中，可能注意不到Watchdog Timer。
 因此最好在真实的设备中进行测试，检验代码长期运行时可能出现的问题。
 ```
+
+* `fontSize`
+
+![fontSize](./imgre/fontSize.png)
