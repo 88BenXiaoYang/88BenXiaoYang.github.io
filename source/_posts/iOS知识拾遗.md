@@ -35,6 +35,6 @@ dSYM是在打包过程中生成的保存app函数地址映射信息的中转文�
 因此最好在真实的设备中进行测试，检验代码长期运行时可能出现的问题。
 ```
 
-* `fontSize`
+* `fontSize`（字体大小）
 
 ![fontSize](iOS知识拾遗/fontSize.png)
