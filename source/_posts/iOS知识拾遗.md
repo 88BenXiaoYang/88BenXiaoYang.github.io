@@ -2,6 +2,7 @@
 title: iOS知识拾遗
 date: 2019-01-09 09:24:17
 tags: iOS
+categories: 移动端
 ---
 
 iOS开发过程中零散知识点整理

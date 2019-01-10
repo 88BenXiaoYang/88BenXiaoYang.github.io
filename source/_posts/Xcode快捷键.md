@@ -1,7 +1,8 @@
 ---
 title: Xcode快捷键
 date: 2019-01-10 09:37:00
-tags:
+tags: iOS
+categories: 移动端
 ---
 
 ```
