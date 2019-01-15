@@ -2,7 +2,7 @@
 title: 同一台电脑配置多个ssh-key
 date: 2019-01-02
 ---
-当在同一台电脑上，对公司和自己的git项目进行操作时，会涉及到同一台电脑配置多个ssh-key。
+当在同一台电脑上，对公司和自己的git项目进行操作时，会涉及到同一台电脑配置多个ssh-key。关于`SSH`可参考[About SSH](https://help.github.com/articles/about-ssh/)
 
 ## 生成和添加ssh-key
 

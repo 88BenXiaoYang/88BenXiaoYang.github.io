@@ -7,7 +7,7 @@ categories: 移动端
 
 iOS开发过程中零散知识点整理
 
-* `Xcode`中证书所在位置：`~/Library/MobileDevice`
+* `Xcode`中描述文件所在位置：`~/Library/MobileDevice/Provisioning Profiles`
 
 * IMEI号查询：`拨号：*#06#`
 
