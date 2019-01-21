@@ -25,3 +25,15 @@ iOS开发过程中的知识点整理
 87*87，114*114，
 120*120，180*180
 ```
+
+* 获取UITableView中指定Cell的位置
+
+```
+//获取指定indexPath的cell的rect
+//是UITableViewCell相对于tableView的rect
+CGRect cellRect = [tableView rectForRowAtIndexPath:indexPath];
+
+//将cell的frame转换为tableView所在父视图上的frame
+//是UITableViewCell相对于tableView父视图的rect
+CGRect rectInSuperview = [tableView convertRect:cellRect toView:[tableView superview]];
+```
