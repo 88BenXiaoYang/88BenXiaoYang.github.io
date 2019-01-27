@@ -28,3 +28,5 @@ cmd + sft + F: 项目中查找
 sft + 左右箭头: 向左或向右选择一个字符
 ctr + sft + 左右箭头: 向左或向右选择一个词汇
 ```
+
+![Xcode快捷键](Xcode快捷键/Xcode快捷键.jpeg)
