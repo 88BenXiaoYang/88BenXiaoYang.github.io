@@ -31,6 +31,6 @@ markdown引入图片的格式：
 
 * 构建博客的时候出现`Template render error: (unknown path)`
 
-原因：这个错误场景是`Hexo`转义的时候发生的错误，文章中可以出现了xxxx，xxxx。
+原因：这个错误场景是`Hexo`转义的时候发生的错误，文章中可能出现了\{{}}，\{%%}。
 
 解决方法：
