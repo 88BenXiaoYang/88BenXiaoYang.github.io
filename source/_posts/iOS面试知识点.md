@@ -7,7 +7,7 @@ categories: iOS
 
 * `Apple`源码 [Apple Github](https://github.com/opensource-apple?tab=overview&from=2018-12-01&to=2018-12-31)、[Apple OpenSource](https://opensource.apple.com/source/)
 
-* `weak`关键字
+* `weak`
 
 `weak`关键字的作用弱引用，所引用对象的计数器不会加一，并在引用对象被释放的时候，`weak`修饰的对象会自动被设置为`nil`。
 
@@ -49,4 +49,47 @@ hash表是链表数组的数据结构，操作存储的数据时会用到对应�
 两个对象的哈希值一定相同吗？
 答案：一定
 ```
+
 ---
+
+* `KVO`
+
+`KVO`即是`NSKeyValueObserving`，是对象(如：a)用来通知其他对象(如：b)指定的属性(如：name)发生了改变的一种非正式协议。其中：a是被监听的对象，b是监听的对象。
+
+Tips:
+
+```
+非正式协议，是`NSObject`的一个分类`Category`，非正式协议的方法
+是可选的。分类是OC的语言特性，能够给类对象添加方法而不需要创建子类。
+
+正式协议，正式协议有自己的声明、类型检查语法。一个正式协议声明了类
+需要实现的方法列表，可以使用required或者optional关键字指定方法
+是否必须实现。正式协议也可以遵守其他协议。子类继承父类遵守的协议。
+```
+
+实现`KVO`的过程：
+
+1.添加监听，监听指定的属性：
+
+```
+- (void)addObserver:(NSObject *)observer forKeyPath:(NSString *)keyPath options:(NSKeyValueObservingOptions)options context:(nullable void *)context;
+```
+
+2.实现监听，收到监听反馈后，实现具体的逻辑处理。在监听的对象里，要实现非正式协议的方法，以对收到的监听反馈进行处理：
+
+```
+- (void)observeValueForKeyPath:(nullable NSString *)keyPath ofObject:(nullable id)object change:(nullable NSDictionary<NSKeyValueChangeKey, id> *)change context:(nullable void *)context;
+```
+
+3.移除监听：
+
+```
+- (void)removeObserver:(NSObject *)observer forKeyPath:(NSString *)keyPath;
+```
+
+`KVO`的底层实现：
+
+在添加监听(`addObserver`)之后，实例对象的类对象发生了变化，系统动态添加了一个`NSKVONotifying_被监听的类名`的类(中间类)，如`NSKVONotifying_Animal`，`Animal`是被监听的类。因为改变对象属性的值是通过`setter`方法实现的，所以很明显是系统动态生成的中间类重写了`setter`方法。系统重写`setter`方法的过程中调用了`willChangeValueForKey`和`didChangeValueForKey`方法，`didChangeValueForKey`方法中调用了`observeValueForKeyPath`。
+
+---
+
