@@ -93,3 +93,28 @@ Tips:
 
 ---
 
+* `Runtime`
+
+`Runtime`运行时，是`OC`动态性的基础。`OC`的动态性体现在动态类型、动态绑定、动态加载。基于`Runtime`，`OC`语言将数据类型的确定由编译时推迟到了运行时。基于`Runtime`，在编译时确定的方法推迟到了运行时，所以能动态产生、修改、删除类、成员变量、方法。`Runtime`是一个`C`语言`API`的库。
+
+常用的`Runtime`接口：
+
+```
+对应文件：#import <objc/runtime.h> 
+
+操作成员变量、类、方法：
+Ivar * class_copyIvarList : 获得某个类内部的所有成员变量
+Method * class_copyMethodList : 获得某个类内部的所有方法
+Method class_getInstanceMethod : 获得某个实例方法（对象方法，减号-开头）
+Method class_getClassMethod : 获得某个类方法（加号+开头）
+method_exchangeImplementations : 交换2个方法的具体实现
+```
+
+Tips:
+
+```
+消息传递，属于动态调用过程，即在编译阶段不能确定真正所要调用的函
+数，只有在真正运行的时候才会根据函数的名称找到对应的函数来调用。
+```
+
+---
