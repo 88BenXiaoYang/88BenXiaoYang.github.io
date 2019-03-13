@@ -345,6 +345,8 @@ Tips:
 可以使用NSMutableArray来编写自己的自动释放池，以容纳对象并在dealloc方法中向池中的所有对象发送release消息。
 ```
 
+当对象接收到一条`autorelease`消息时，其引用计数器的值并不会发生改变。
+
 * 自动释放池的销毁时间
 
 有两种方法可以创建一个自动释放池：
@@ -443,11 +445,11 @@ ARC只对可保留的对象指针(ROPs)有效。可保留的对象指针主要�
 
 `ARC`是基于文件进行工作的。
 
-* 内存泄漏
+* `ARC`-内存泄漏
 
 程序无法访问到对象，但它们仍占用着内存容量。循环引用场景下会出现内存泄漏的情况。
 
-* 归零弱引用
+* `ARC`-归零弱引用
 
 归零弱引用`(zeroing weak reference)`，不会使所引用的对象的引用计数器的值增加，同时在所引用的对象被释放时，归零弱引用就会被设置为`nil`。
 
@@ -460,7 +462,71 @@ ARC只对可保留的对象指针(ROPs)有效。可保留的对象指针主要�
 
 **注意：内存管理的关键字和特性是不能一起使用的，两者相互排斥。**
 
-* 拥有者权限
+* `ARC`-拥有者权限
 
-需理解！！！（Objective-C P153）
+指针支持`ARC`的一个条件是必须是可保留对象指针`(ROP)`。即不能简单地将一个`ROP`表示成不可保留对象指针`(non-ROP)`，因为指针的所有权会移交。在可保留对象指针`(ROP)`和不可保留对象指针`(non-ROP)`共同存在且相互有“交流”的情况下，为了让`ARC`便于工作，需要告诉编译器哪个对象是指针的拥有者。为此使用桥接转换`(bridged cast)`的`C`语言技术，这是一个标准的`C`语言类型转换，使用关键字：`__bridge`、`__bridge_retained`和`__bridge_transfer`。`bridge`指的是使用**不同的数据类型**达到**同一目的**的能力。
 
+桥接转换类型：`__bridge`、`__bridge_retained`和`__bridge_transfer`的功能如下：
+
+> `(__bridge类型)`操作符：这种类型的转换会传递指针但不会传递指针的所有权。
+> 
+> `(__bridge_retained类型)`操作符：使用这种类型，所有权会转移到`non-ROP`上。这个转换类型会给对象的引用计数器的值加`1`，所以在代码中要让它减`1`。因为`ARC`只会注意到`ROP`，所以要在不用的时候释放它。
+> 
+> `(__bridge_transfer类型)`操作符：这种转换类型与上一个相反，它把所有权转交给`ROP`。
+
+桥接技术的使用场景：
+
+结构体`(struct)`和集合体`(union)`不能使用ROP作为成员，因此下面的代码是不被允许的：
+
+```
+//Bad code.
+struct {
+	int32_t foo;
+	char *bar;
+	NSString *baz; //ROP成员
+} MyStruct;
+```
+
+可以通过使用void *和桥接转换来解决这个问题。如想要分配并获取字符串，可使用如下代码：
+
+```
+struct {
+	int32_t foo;
+	char *bar;
+	void *baz;
+} MyStruct;
+MyStruct.baz = (__bridge_retained void *)ropString;
+NSString *myString = (__bridge_transfer NSString *)MyStruct.baz;
+```
+
+不能对`ARC`管理的对象**调用**的管理方法：
+
+```
+retain
+retainCount
+release
+autorelease
+dealloc
+```
+
+可以重写`dealloc`方法，因为有时需要释放不支持`ARC`的对象或执行其他清理操作，但是不能直接调用`[super dealloc]`。
+
+不能对`ARC`对象进行**重写**的方法：
+
+```
+retain
+retainCount
+release
+autorelease
+```
+
+* 与异常有关的关键字
+
+```
+@try：定义用来测试的代码块以决定是否要抛出异常。
+@catch：定义用来处理已抛出异常的代码块。接收一个参数，通常是NSException类型。
+@finally：定义无论是否有抛出异常都会执行的代码块，这段代码总是会执行的。
+@throw：抛出异常。
+```
+
+注：与当前`@catch`异常处理代码相关的`@finally`代码块会在`@throw`引发下一个异常处理调用之前执行代码，因为`@finally`是在`@throw`发生之前调用的。
