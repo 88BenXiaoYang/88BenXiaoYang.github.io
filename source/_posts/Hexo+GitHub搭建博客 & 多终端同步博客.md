@@ -213,3 +213,11 @@ Tips：
 * `git push origin hexo`
 * `hexo clean`
 * `hexo d -g`
+
+## 常用操作
+
+新建文章：`hexo n "文章名称"`
+
+清理项目：`hexo clean`
+
+构建项目：`hexo d -g`
