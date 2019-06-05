@@ -7,7 +7,7 @@ categories: iOS
 
 * `Apple`源码 [Apple Github](https://github.com/opensource-apple?tab=overview&from=2018-12-01&to=2018-12-31)、[Apple OpenSource](https://opensource.apple.com/source/)
 
-* `weak`
+##### `weak`
 
 `weak`关键字的作用弱引用，所引用对象的计数器不会加一，并在引用对象被释放的时候，`weak`修饰的对象会自动被设置为`nil`。
 
@@ -52,7 +52,7 @@ hash表是链表数组的数据结构，操作存储的数据时会用到对应�
 
 ---
 
-* `KVO`
+##### `KVO`
 
 `KVO`即是`NSKeyValueObserving`，是对象(如：a)用来通知其他对象(如：b)指定的属性(如：name)发生了改变的一种非正式协议。其中：a是被监听的对象，b是监听的对象。
 
@@ -93,7 +93,7 @@ Tips:
 
 ---
 
-* `Runtime`
+##### `Runtime`
 
 `Runtime`运行时，是`OC`动态性的基础。`OC`的动态性体现在动态类型、动态绑定、动态加载。基于`Runtime`，`OC`语言将数据类型的确定由编译时推迟到了运行时。基于`Runtime`，在编译时确定的方法推迟到了运行时，所以能动态产生、修改、删除类、成员变量、方法。`Runtime`是一个`C`语言`API`的库。
 
