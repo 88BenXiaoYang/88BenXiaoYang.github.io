@@ -118,3 +118,37 @@ Tips:
 ```
 
 ---
+
+##### 从源代码到运行的`APP`
+
+当点击了`build`之后，发生的事：**预处理(生成.i文件) - 编译(生成.s文件) - 汇编(生成.o文件) - 链接**
+
+* 预处理`(Pre-process)`：把宏替换，删除注释，展开头文件，产生`.i`文件
+* 编译`(Compliling)`：把之前的`.i`文件转换成汇编语言，产生`.s`文件
+* 汇编`(Asembly)`：把汇编语言文件转换为机器码文件，产生`.o`文件
+* 链接`(Link)`：对`.o`文件中的对于其他的库的引用的地方进行引用，生成最后的可执行文件(同时也包括多个`.o`文件进行`link`)
+
+---
+
+##### `self.navigationItem.title`与`self.title`有什么区别
+
+* 联系
+  * `self.title`是控制器默认`view`的`title`
+  * `self.navigationItem.title`是显示在`navigationBar`中间的`title`
+  * 修改`self.title`或者`self.navigationItem.title`都可以修改标题
+* 区别
+  * 标题始终显示`self.navigationItem.title`的值
+  * 当`self.navigationItem.title`为空`(null)`时，则显示空白
+  * 当`self.title`的值被修改时，`self.navigationItem.title`的值也会跟着修改为`self.title`的值
+  * 当`self.navigationItem.title`的值被修改时，`self.title`的值不变，标题也会跟着修改为`self.navigationItem.title`的值
+  * `self.title`作用于`tabbar`标题上和`self.navigationItem.title上`；`self.navigationItem.title`作用于`navigationBar`的标题上
+
+---
+
+##### `UINavigationController`的`title`不显示问题
+
+`title`这个属性实际上是属于`UIViewController`而不属于`UINavigationController`。所以，这个属性是从`UIViewController`上面继承过来的。而不是`UINavigationController`上面的名字。由于`UINavigationController`属于容器，所以最少需要一个`RootController`。然后在`RootController`的`viewDidLoad`设置`title`而不是在`UINavigationController`的`subclass`中设置。而且`viewDidLoad`设置的`title`是统一显示的，导航视图控制的`UIViewController`的`title`都是一样的。
+
+---
+
+##### 
