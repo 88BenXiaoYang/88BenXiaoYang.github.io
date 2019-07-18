@@ -92,3 +92,35 @@ pod 'SDWebImage'
 ```
 
 * 打开`.xcworkspace`文件，在需要使用第三方库的类中导入第三方库文件，如`#import <Masonry.h>`即可。
+
+##### 使用过程中遇到的问题及解决方法
+
+---
+
+* `Ruby`镜像源问题
+
+在`Ruby`镜像源是`https://ruby.taobao.org/`的情况下，安装`cocoapods`(`sudo gem install cocoapods`)，出现如下错误提示：
+
+```
+ERROR:  Could not find a valid gem 'cocoapods' (>= 0), here is why:
+          Unable to download data from https://ruby.taobao.org/ - SSL_connect returned=1 errno=0 state=SSLv3 read server certificate B: certificate verify failed (https://ruby.taobao.org/specs.4.8.gz)
+```
+
+解决方法：
+
+切换源，不用淘宝的了，用基于腾讯云的`https://gems.ruby-china.com/`(注意服务域名的更换，已经将`.org`换成`.com`)
+
+Tips:
+
+```
+查看当前Ruby镜像源：gem sources -l
+查看当前pod版本：pod --version
+移除镜像源：gem sources --remove 镜像源地址(可用gem sources -l来查询)
+添加镜像源：gem sources -a 镜像源地址
+
+安装指定版本的cocoapods，有两个方法：
+方法一：gem install cocoapods -v 1.7.3(指定版本号，这种方法不一定能成功)
+方法二：sudo gem install -n /usr/local/bin cocoapods -v 1.7.3(指定版本号，这种方法成功概率大)
+```
+
+---
