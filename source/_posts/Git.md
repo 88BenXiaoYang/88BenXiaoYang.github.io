@@ -10,7 +10,7 @@ tags: 工具
 
 `git`本地工作区域分为：**工作区、暂存区、本地仓库区**，具体区域及相互交互见下图
 
-![git本地工作区域](./Git/git本地工作区域.png)
+![git本地工作区域](Git/git本地工作区域.png)
 
 * 工作区
   * 即我们创建的**工程文件**，在编辑器可直观显示
@@ -22,7 +22,7 @@ tags: 工具
 
 ###### 远程仓库与本地仓库的交互
 
-![远程仓库与本地仓库的交互](./Git/远程仓库与本地仓库的交互.png)
+![远程仓库与本地仓库的交互](Git/远程仓库与本地仓库的交互.png)
 
 远程仓库，即保存代码的服务器
 
@@ -48,7 +48,7 @@ tags: 工具
 
 #### 本地仓库与远程仓库的关联
 
-![gitCreateRepository](./Git/gitCreateRepository.png)
+![gitCreateRepository](Git/gitCreateRepository.png)
 
 * 操作步骤
   * 本地如已存在`git`仓库，使用以下指令将本地仓库与远程仓库关联
@@ -117,7 +117,7 @@ Tips:
 
 * `fetch、merge、pull`指令区别的原理图，如下
 
-![pull_fetch_merge区别原理图](./Git/pull_fetch_merge区别原理图.png)
+![pull_fetch_merge区别原理图](Git/pull_fetch_merge区别原理图.png)
 
 * 执行`git pull`之后出现冲突的解决方案
   * 放弃本地修改
@@ -132,8 +132,8 @@ Tips:
       * 思路：将本地修改的代码放在工作现场，然后从远程仓库拉取最新代码，拉取成功后再从工作现场将修改的代码取出，这样最新代码跟本地修改的代码就会混杂在一起，手工解决冲突后，提交解决冲突后的代码
       * 原理图如下
 
-      ![stash解决冲突01](./Git/stash解决冲突01.png)
-      ![stash解决冲突02](./Git/stash解决冲突02.png)
+      ![stash解决冲突01](Git/stash解决冲突01.png)
+      ![stash解决冲突02](Git/stash解决冲突02.png)
 
 Tips
 
@@ -214,4 +214,4 @@ git show 356f6def9d3fb7f3b9032ff5aa4b9110d4cca87e（文件提交时生成的哈�
 
 ##### `git`常用命令图谱
 
-![git常用命令图谱](./Git/git常用命令图谱.png)
+![git常用命令图谱](Git/git常用命令图谱.png)
