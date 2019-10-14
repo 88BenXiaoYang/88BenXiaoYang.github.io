@@ -143,4 +143,54 @@ int main(int argc, char * argv[]) {
 
 用户操作设备，相关的操作事件被系统生成并通过`UIKit`的指定端口进行分发。事件在内部排成队列，一个个的分发到`Main run loop`去做处理。`UIApplication`对象是第一个接收到事件的对象，它决定事件如何被处理。触摸事件分发到主窗口，窗口再分发到对应触发触摸事件的`View`。
 
-### VC生命周期
+### `VC`生命周期
+
+* `VC`生命周期中涉及的函数有
+  * `alloc` - 创建对象，分配空间
+  * `init` - 初始化对象，初始化数据
+  * `loadView` - 此时`VC`还未初始化，可以重写该方法自定义控制器的`View`，若重写逻辑，就不能调用`[super loadView]`
+  * `viewDidLoad` - 在`VC`的生命周期中，该函数只会被调用一次。此时`view`已经初始化好，可以做一些页面初始化任务，由于此时`view`的`bounds`尚未确定，所以不适合写`frame`类型的布局代码，但是给视图添加约束没有影响
+  * `viewWillAppear` - `VC`的视图将要出现时调用，这个一般在`view`被添加到`superview`之前，切换动画之前调用，在这里可以进行一些显示前的处理，这个函数可能会调用多次，适合做一些与视图及视图出现相关联的任务，例如改变状态栏的方向、风格，键盘弹出
+  * `viewWillLayoutSubviews` - `view`的子视图即将布局，触发条件是
+     * `view`被添加到视图层次中
+     * `view`的`bounds`发生了改变
+     * 调用了`- setNeedsLayout`方法
+     * 调用了`- layoutIfNeeded`方法
+  * `viewDidLayoutSubviews` - 当`view`的子视图已经布局时，此方法会被调用，触发条件同`viewWillLayoutSubviews`的触发条件
+  * `viewDidAppear` - 视图完全出现在屏幕中后触发
+  * `viewWillDisappear` - 视图即将从屏幕中消失时触发
+  * `viewDidDisappear` - 视图从屏幕中消失后触发
+  * `dealloc` - 视图被销毁，此处需要对你在`init`和`viewDidLoad`中创建的对象进行释放。如果应用程序异常中止，`dealloc`没有机会被调用
+
+* `VC`各生命周期函数的调用时机
+  * 项目创建有`A`、`B`两个`VC`，`tag`分别为`1`、`2`
+  * 加载`A`的时候，生命周期函数的调用顺序如下：
+     * `1 initWithCoder`
+     * `1 loadView`
+     * `1 viewDidLoad`
+     * `1 viewWillAppear`
+     * `1 viewWillLayoutSubviews`
+     * `1 viewDidLayoutSubviews`
+     * `1 viewDidAppear`
+  * 切换至`B`的时候，调用顺序依次如下：
+     * `2 initWithCoder`     //先将2初始化
+     * `1 prepareForSegue`   //调用1的准备过度的函数，所以在该函数中可以对界面B的一些相关属性进行赋值
+     * `2 loadView`          //如果这里进行了重写
+     * `2 viewDidLoad`       //2界面加载
+     * `1 viewWillDisappear`
+     * `2 viewWillAppear`
+     * `2 viewWillLayoutSubviews`
+     * `2 viewDidLayoutSubviews`
+     * `2 viewDidAppear`
+     * `1 viewDidDisappear`
+  * 从B切换回A的时候依次调用
+     * `2 viewWillDisappear`
+     * `1 viewWillAppear`
+     * `1 viewDidAppear`
+     * `2 viewDidDisappear`
+     * `2 dealloc`
+  * 总结
+     * 加载依次为：加载 - 显示 - 布局
+     * 完成顺序依次为：完成布局 - 完成显示  - 完成加载
+
+ 
