@@ -134,6 +134,32 @@ Tips:
 
       ![stash解决冲突01](Git/stash解决冲突01.png)
       ![stash解决冲突02](Git/stash解决冲突02.png)
+      
+##### `stash`
+
+因为`git stash pop`是弹出栈顶的一个`stash`，也就是最后一次存储的`stash`，此时`git stash pop`恢复的同时把`stash`内容也删了。在存储多个`stash`，想取出非栈顶的一个的情况下，是不适用的。这个时候要使用下面指令：
+
+* `git stash list` //查看暂存区的所有暂存修改
+* `git stash apply stash@{X}` //取出相应的暂存，不删除`stash`内容
+* `git stash drop stash@{X}` //将记录列表中取出的对应暂存记录删除
+
+##### 标签(`tag`)
+
+标签是版本库的一个快照。标签实质是指向某个`commit`的指针
+
+* `git tag`打标签，默认为`HEAD`
+
+* 默认标签是打在最新提交的`commit`上的。如果想要打标签在以前的`commit`上，要`git log`找到历史提交的`commit id`，执行`git tag 标签名称 目标commit_id`，就把历史提交的指定的`commit id`的版本打上了指定的标签名称了
+
+* `git tag`：查看所有标签(标签不是按时间顺序列出，而是按字母排序的)
+
+* `git tag -a <标签名> -m "<说明>"`：创建带说明的标签。`-a`指定标签名，`-m`指定说明文字。用`show`可以查看说明
+
+* 如果标签还未推送到远程，只存储在本地，可以使用`git tag -d 要删除的标签名`对本地打错的标签进行安全的删除
+
+* `git push origin --tags`：一次性推送全部尚未推送到远程的本地标签
+
+* 如果标签推送到远程。`git tag -d 指定的标签名称`先删除本地`指定的标签`。`git push origin :refs/tags/远程对应指定的标签`，删除`远程对应指定的标签`
 
 Tips
 
@@ -212,9 +238,39 @@ git show 356f6def9d3fb7f3b9032ff5aa4b9110d4cca87e（文件提交时生成的哈�
 
 * `git reset --hard HEAD`：如果`commit`出错时，用`reset`回滚到`add`之前的状态
 
+* `git log --graph`：查看分支合并图
+
+* `git merge --no-ff 分支名称`：禁用`Fast forward`模式，因为使用Fast forward模式，删除分支后，分支历史信息会丢失
+
+* `git branch --set-upstream-to origin/`：用于创建本地分支和远程分支的链接关系
+
+* `git add -f`：强制提交已忽略的文件
+
+* `git check-ignore -v`：检查为什么`Git`会忽略该文件
+
+* `git diff`：查看文件修改的具体内容
+
+* `git log`：显示从最近到最远的提交历史
+
+* `git reflog`：显示命令历史
+
+* **`git checkout --`：撤销命令，用版本库里的文件替换掉工作区的文件**
+
+* `git rm 指定文件`：删除版本库的文件
+
 ##### `git`常用命令图谱
 
 ![git常用命令图谱](Git/git常用命令图谱.png)
+
+### `Git`自定义偏好设置
+
+* `git config --global color.ui true`：让`Git`显示颜色，会让命令输出看起来更醒目
+* 忽略特殊文件：创建一个`.gitignore`文件，把需要忽略的文件名填进去，`Git`就会自动忽略这些文件
+  * 忽略文件原则：
+     * 忽略操作系统自动生成的文件，如缩略图
+     * 忽略编译生成的中间文件、可执行文件等，也就是如果一个文件是通过另一个文件自动生成的，那自动生成的文件就没必要放进版本库
+     * 忽略自己的带有敏感信息的配置文件，如存放口令的配置文件
+* 给`Git`命令配别名
 
 ### 相关资料
 
