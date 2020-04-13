@@ -269,6 +269,10 @@ dispatch_group_notify(group, dispatch_get_main_queue(), ^{
   * 这个方法重点也是传入的`queue`,当传入的`queue`是通过`DISPATCH_QUEUE_CONCURRENT`参数自己创建的`queue`时，`dispatch_barrier_sync`这个方法会阻塞这个`queue`，同时还会阻塞当前线程，一直等到这个`queue`中排在它前面的任务都执行完成后才会开始执行自己，自己执行完毕后，才会取消阻塞，使这个`queue`中排在它后面的任务继续执行
   * 如果传入的不是自定义创建的`queue`，那么它就和`dispatch_sync`的功能一样了
 
+##### `DispatchSemaphone`信号量
+
+使用信号量可以很好的实现多线程同步的问题。
+
 #### `NSOperation`和`NSOperationQueue`
 
 `NSOperation`是苹果公司对`GCD`的封装，完全面向对象。`NSOperation`和`NSOperationQueue`分别对应`GCD`中的**任务**和**队列**。
