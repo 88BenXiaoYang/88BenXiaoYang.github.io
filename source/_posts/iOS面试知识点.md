@@ -151,4 +151,57 @@ Tips:
 
 ---
 
-##### 
+##### `category`和`extension`的区别
+
+* `extension`(扩展)
+  * 在编译期决定，是类的一部分。在编译期和头文件(`.h`)里的`@interface`以及实现文件(`.m`)里的`@implement`一起形成一个完整的类。`extension`伴随类的产生而产生，亦随类的消亡而消亡
+  * 一般用来隐藏类的私有信息。必须有类的源码才能为一个类添加`extension`，所以无法为系统的类，如`NSString`添加`extension`
+
+* `category`(分类)
+  * 是在运行期决定的
+
+从上面`category`和`extension`的区别来看，`extension`可以添加实例变量，而`category`是无法添加实例变量的，因在运行期，对象的内存布局已经确定，如果添加实例变量就会破坏类的内存布局，这对编译型语言来说是灾难性的。
+
+* `category`的加载过程
+  * 把`category`的实例方法、协议以及属性添加到类上
+  * 把`category`的类方法添加到类的`metaclass`上
+
+* 在类和`category`中都有`+load`方法时
+  * 在类的`+load`方法调用的时候，可以调用`category`中声明的方法，因为附加`category`到类的操作会先于`+load`方法的执行
+  * 类和`category`中的`+load`方法，调用顺序为，`+load`的执行顺序是先类，后`category`，而`category`的`+load`执行顺序是根据编译顺序决定的。对于`+load`的执行顺序是这样，但是对于**覆盖**掉的方法，则会先找到最后一个编译的`category`里对应的方法
+
+* 关于使用`category`时，出现类中的方法被`category`中同名的方法**覆盖**掉的理解
+  * `category`的方法**没有完全替换掉**原来类已经有的方法，即`category`和原来类都有同名方法`methodA`，那么`category`附加完成之后，类的方法列表里会有两个`methodA`
+  * `category`的方法被放到了新方法列表的前面，而原来类的方法被放到了新方法列表的后面，这也就是平常所说的`category`中的方法会**覆盖**掉原来类的同名方法，因为运行时在查找方法的时候是顺着方法列表的顺序查找的，只有找到对应名字的方法，就会返回，不管后面会不会还有一样名字的方法
+
+* 如何调用到原来类中被`category`**覆盖**掉的方法
+  * `category`并不是完全替换掉原来类中的同名方法，只是`category`中的方法在方法列表的前面，优先命中了而已，所以只要顺着方法列表找到最后一个对应名字的方法，就可以调用原来类中的方法
+  * 实现代码如下
+
+  ```
+    // 假设被覆盖的方法名叫 methodA。
+    Class currentClass = [OriginalClass class];
+    OriginalClass *my = [[OriginalClass alloc] init];
+
+    if (currentClass) {
+        unsigned int methodCount;
+        Method *methodList = class_copyMethodList(currentClass, &methodCount);
+        IMP lastImp = NULL;
+        SEL lastSel = NULL;
+        for (NSInteger i = 0; i < methodCount; i++) {
+            Method method = methodList[i];
+            NSString *methodName = [NSString stringWithCString:sel_getName(method_getName(method)) encoding:NSUTF8StringEncoding];
+            if ([@"methodA" isEqualToString:methodName]) {
+                lastImp = method_getImplementation(method);
+                lastSel = method_getName(method);
+            }
+        }
+        typedef void (*fn)(id,SEL);
+
+        if (lastImp != NULL) {
+            fn f = (fn) lastImp;
+            f(my, lastSel);
+        }
+        free(methodList);
+    }
+  ```
