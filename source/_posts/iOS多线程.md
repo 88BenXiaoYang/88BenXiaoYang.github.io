@@ -453,7 +453,7 @@ queue.addOperation(operation)
 * `NSOperationQueue`与`GCD`的比较
   * 队列的比较
      * `NSOperationQueue`中没有串行队列，但`NSOperationQueue`中有一个参数`maxConcurrentOperationCount`最大并发数，用来设置最多可以让多少个任务同时执行。当把该参数设置为`1`时，任务就是串行执行了
-  * 添加任务的比价
+  * 添加任务的比较
      * `NSOperationQueue`有一个添加任务的方法`- (void)addOperationWithBlock:(void (^)(void))block;`，和`GCD`类似，通过该方法就可以添加一个任务到队列中了
 
 ##### `NSOperation`的使用
