@@ -258,6 +258,16 @@ git show 356f6def9d3fb7f3b9032ff5aa4b9110d4cca87e（文件提交时生成的哈�
 
 * `git rm 指定文件`：删除版本库的文件
 
+* 替换指定分支上的文件
+  * 场景：分支branchA上有目标文件xxx，要将分支branchB上的文件替换为分支branchA上的文件xxx
+  * 操作步骤
+      * git checkout branchB - 切换到分支B上
+      * git checkout branchA - 文件路径(注：要指定文件的路径。文件的合并是基于分支的)
+
+* 分支覆盖
+  * 本地分支强制覆盖远程分支 - git push origin branch_name --force
+  * 强制更新以远程覆盖本地 - git checkout --force
+
 ##### `git`常用命令图谱
 
 ![git常用命令图谱](Git/git常用命令图谱.png)
