@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="UIKit框架结构 UIKit是常用的框架，显示、动画都通过Core Animation。Core Animation是核心动画，依赖于OpenGL ES做GPU渲染，Core Graphics做CPU渲染。最底层的Graphics HardWare是图形硬件。 视图绘制渲染过程整体流程 软硬件流程   在屏幕上显示视图，需要CPU和GPU一起协作。一部分数据通过Core Graphics、Cor">
+<meta property="og:type" content="article">
+<meta property="og:title" content="视图绘制渲染&amp;性能优化">
+<meta property="og:url" content="http://yoursite.com/2019/06/23/视图绘制渲染-性能优化/index.html">
+<meta property="og:site_name" content="Ben&#39;Blog">
+<meta property="og:description" content="UIKit框架结构 UIKit是常用的框架，显示、动画都通过Core Animation。Core Animation是核心动画，依赖于OpenGL ES做GPU渲染，Core Graphics做CPU渲染。最底层的Graphics HardWare是图形硬件。 视图绘制渲染过程整体流程 软硬件流程   在屏幕上显示视图，需要CPU和GPU一起协作。一部分数据通过Core Graphics、Cor">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2019/06/23/视图绘制渲染-性能优化/UIKitFramework.png">
+<meta property="og:image" content="http://yoursite.com/2019/06/23/视图绘制渲染-性能优化/UIViewDrawFlow.png">
+<meta property="og:image" content="http://yoursite.com/2019/06/23/视图绘制渲染-性能优化/HardwareDataFlow.png">
+<meta property="og:image" content="http://yoursite.com/2019/06/23/视图绘制渲染-性能优化/DrawToRenderFlow.jpeg">
+<meta property="og:image" content="http://yoursite.com/2019/06/23/视图绘制渲染-性能优化/DisplayFlow.png">
+<meta property="og:image" content="http://yoursite.com/2019/06/23/视图绘制渲染-性能优化/CommitRenderDetailFlow.png">
+<meta property="og:image" content="http://yoursite.com/2019/06/23/视图绘制渲染-性能优化/CommitTransactionDetailFlow.png">
+<meta property="og:image" content="http://yoursite.com/2019/06/23/视图绘制渲染-性能优化/TransactionLayout.png">
+<meta property="og:image" content="http://yoursite.com/2019/06/23/视图绘制渲染-性能优化/TransactionDisplay.png">
+<meta property="og:image" content="http://yoursite.com/2019/06/23/视图绘制渲染-性能优化/TransactionPrepare.png">
+<meta property="og:image" content="http://yoursite.com/2019/06/23/视图绘制渲染-性能优化/TransactionCommit.png">
+<meta property="og:image" content="http://yoursite.com/2019/06/23/视图绘制渲染-性能优化/LoseFrame.png">
+<meta property="og:image" content="http://yoursite.com/2019/06/23/视图绘制渲染-性能优化/图片解码和图像绘制的代码示例.png">
+<meta property="og:image" content="http://yoursite.com/2019/06/23/视图绘制渲染-性能优化/TiledBased.png">
+<meta property="og:image" content="http://yoursite.com/2019/06/23/视图绘制渲染-性能优化/NormalRenderPipe.png">
+<meta property="og:image" content="http://yoursite.com/2019/06/23/视图绘制渲染-性能优化/MaskOffscreenRender.png">
+<meta property="og:image" content="http://yoursite.com/2019/06/23/视图绘制渲染-性能优化/BlurEffect01.png">
+<meta property="og:image" content="http://yoursite.com/2019/06/23/视图绘制渲染-性能优化/BlurEffect02.png">
+<meta property="og:image" content="http://yoursite.com/2019/06/23/视图绘制渲染-性能优化/PropertyOptimizeByWWDC.png">
+<meta property="og:updated_time" content="2020-11-23T03:54:31.367Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="视图绘制渲染&amp;性能优化">
+<meta name="twitter:description" content="UIKit框架结构 UIKit是常用的框架，显示、动画都通过Core Animation。Core Animation是核心动画，依赖于OpenGL ES做GPU渲染，Core Graphics做CPU渲染。最底层的Graphics HardWare是图形硬件。 视图绘制渲染过程整体流程 软硬件流程   在屏幕上显示视图，需要CPU和GPU一起协作。一部分数据通过Core Graphics、Cor">
+<meta name="twitter:image" content="http://yoursite.com/2019/06/23/视图绘制渲染-性能优化/UIKitFramework.png">
+
+<link rel="canonical" href="http://yoursite.com/2019/06/23/视图绘制渲染-性能优化/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>视图绘制渲染&性能优化 | Ben'Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Ben'Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">工欲善其事，必先利其器</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/06/23/视图绘制渲染-性能优化/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Ben">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ben'Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          视图绘制渲染&性能优化
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-06-23 14:50:43" itemprop="dateCreated datePublished" datetime="2019-06-23T14:50:43+08:00">2019-06-23</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-11-23 11:54:31" itemprop="dateModified" datetime="2020-11-23T11:54:31+08:00">2020-11-23</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="UIKit框架结构"><a href="#UIKit框架结构" class="headerlink" title="UIKit框架结构"></a><code>UIKit</code>框架结构</h3><p><img src="/2019/06/23/视图绘制渲染-性能优化/UIKitFramework.png" alt="UIKitFramework"></p>
+<p><code>UIKit</code>是常用的框架，显示、动画都通过<code>Core Animation</code>。<code>Core Animation</code>是核心动画，依赖于<code>OpenGL ES</code>做<code>GPU</code>渲染，<code>Core Graphics</code>做<code>CPU</code>渲染。最底层的<code>Graphics HardWare</code>是图形硬件。</p>
+<h3 id="视图绘制渲染过程"><a href="#视图绘制渲染过程" class="headerlink" title="视图绘制渲染过程"></a>视图绘制渲染过程</h3><h4 id="整体流程"><a href="#整体流程" class="headerlink" title="整体流程"></a>整体流程</h4><ul>
+<li>软硬件流程</li>
+</ul>
+<p><img src="/2019/06/23/视图绘制渲染-性能优化/UIViewDrawFlow.png" alt="UIViewDrawFlow"></p>
+<p>在屏幕上显示视图，需要<code>CPU</code>和<code>GPU</code>一起协作。一部分数据通过<code>Core Graphics</code>、<code>Core Image</code>由<code>CPU</code>预处理，最终通过<code>OpenGL ES</code>将数据传送到<code>GPU</code>，最终显示到屏幕</p>
+<p><strong>Tips：</strong><code>Core Image支持CPU、GPU两种处理模式</code></p>
+<ul>
+<li>硬件参与流程</li>
+</ul>
+<p>上述流程硬件间数据的交互情况如下</p>
+<p><img src="/2019/06/23/视图绘制渲染-性能优化/HardwareDataFlow.png" alt="HardwareDataFlow"></p>
+<p>整个流程中<code>CPU</code>将准备好的<code>bitmap</code>放到<code>RAM</code>里，<code>GPU</code>去搬这块内存到<code>VRAM</code>中处理。这个过程<code>GPU</code>所能承受的极限大概在<code>16.67ms</code>完成一帧的处理，所以<code>60fps</code>就是<code>GPU</code>能处理的最高频率</p>
+<h4 id="流程详解"><a href="#流程详解" class="headerlink" title="流程详解"></a>流程详解</h4><h5 id="UIView从Draw到Render的过程"><a href="#UIView从Draw到Render的过程" class="headerlink" title="UIView从Draw到Render的过程"></a><code>UIView</code>从<code>Draw</code>到<code>Render</code>的过程</h5><p><img src="/2019/06/23/视图绘制渲染-性能优化/DrawToRenderFlow.jpeg" alt="DrawToRenderFlow"></p>
+<ul>
+<li>每一个<code>UIView</code>都有一个<code>layer</code>，每一个<code>layer</code>都有个<code>content</code>，这个<code>content</code>指向的是一块缓存，叫做<code>backing store</code></li>
+<li><code>UIView</code>的绘制和渲染是两个过程，当<code>UIView</code>被绘制时，<code>CPU</code>执行<code>drawRect</code>，通过<code>context</code>将数据写入<code>backing store</code></li>
+<li>当<code>backing store</code>写完后，通过<code>render server</code>交给<code>GPU</code>去渲染，将<code>backing store</code>中的<code>bitmap</code>数据显示在屏幕上</li>
+</ul>
+<h5 id="底层显示逻辑"><a href="#底层显示逻辑" class="headerlink" title="底层显示逻辑"></a>底层显示逻辑</h5><p><img src="/2019/06/23/视图绘制渲染-性能优化/DisplayFlow.png" alt="DisplayFlow"></p>
+<ol>
+<li><code>Core Animation</code>：通过<code>CPU</code>创建绘制视图，提交会话，包括自己和子树<code>(view hierarchy)</code>的<code>layout</code>状态，图片的解码和格式转换等</li>
+<li><code>Render Server</code>：解析提交的子树状态，生成绘制指令</li>
+<li><code>GPU</code>：执行绘制指令</li>
+<li>显示渲染后的数据</li>
+</ol>
+<ul>
+<li><code>Core Animation</code>和<code>Render Server</code>流程</li>
+</ul>
+<p><img src="/2019/06/23/视图绘制渲染-性能优化/CommitRenderDetailFlow.png" alt="CommitRenderDetailFlow"></p>
+<ul>
+<li><code>Core Animation</code>中<code>Commit Transaction</code>的详细过程</li>
+</ul>
+<p><img src="/2019/06/23/视图绘制渲染-性能优化/CommitTransactionDetailFlow.png" alt="CommitTransactionDetailFlow"></p>
+<ul>
+<li><code>Layout</code>(布局)</li>
+</ul>
+<p><img src="/2019/06/23/视图绘制渲染-性能优化/TransactionLayout.png" alt="TransactionLayout"></p>
+<ol>
+<li>调用<code>layoutSubviews</code>方法</li>
+<li>调用<code>addSubview</code>方法(会触发调用<code>drawRect</code>方法)</li>
+<li>填充内容，数据库查询</li>
+<li>通常会造成<code>CPU</code>或者<code>I/O</code>瓶颈</li>
+</ol>
+<ul>
+<li><code>Display</code>(显示)</li>
+</ul>
+<p><img src="/2019/06/23/视图绘制渲染-性能优化/TransactionDisplay.png" alt="TransactionDisplay"></p>
+<ol>
+<li>通过<code>drawRect:</code>绘制内容</li>
+<li><code>String</code>绘制</li>
+<li>通常会造成<code>CPU</code>或者内存瓶颈<ol>
+<li>每个<code>UIView</code>都有<code>CALayer</code>，同时图层有一个像素存储空间，存放视图。调用<code>-setNeedsDisplay</code>的时候，仅会设置图层为<code>dirty</code>。当渲染系统准备就绪，调用视图的<code>-display</code>方法，同时装配像素存储空间，建立一个<code>Core Graphics</code>上下文(<code>CGContextRef</code>)，将上下文<code>push</code>进上下文堆栈，绘图程序进入对应的内存存储空间</li>
+<li>如重写了视图的<code>-drawRect</code>，并在里面实现了指定的绘制代码，<code>UIKit</code>会将自动生成的<code>CGContextRef</code>放入上下文堆栈。当绘制完成后，视图的像素会被渲染到屏幕上。当下次再次调用视图的<code>-setNeedsDisplay</code>，将会再次调用<code>-drawRect</code>方法</li>
+</ol>
+</li>
+</ol>
+<ul>
+<li><code>Prepare</code>(准备提交)</li>
+</ul>
+<p><img src="/2019/06/23/视图绘制渲染-性能优化/TransactionPrepare.png" alt="TransactionPrepare"></p>
+<ol>
+<li>图片解码，把图片从<code>PNG</code>或<code>JPEG</code>等格式中解压出来，得到像素数据</li>
+<li>图片格式转换，如果<code>GPU</code>不支持这种颜色格式，<code>CPU</code>需要进行格式转换，因此尽量使用GPU能支持的图片格式。比如应用中有一些从网络下载的图片，而GPU恰好不支持这个格式，这就需要CPU预先进行格式转化</li>
+</ol>
+<ul>
+<li><code>Commit</code>(提交)</li>
+</ul>
+<p><img src="/2019/06/23/视图绘制渲染-性能优化/TransactionCommit.png" alt="TransactionCommit"></p>
+<ol>
+<li>打包<code>layers</code>并且提交到<code>Render Server</code>中</li>
+<li>递归提交子树的<code>layers</code></li>
+<li>如果子树很复杂，对<code>CPU</code>消耗很大，对性能造成影响，因此尽可能简化<code>viewTree</code></li>
+</ol>
+<h5 id="页面卡顿"><a href="#页面卡顿" class="headerlink" title="页面卡顿"></a>页面卡顿</h5><ul>
+<li><p>相关概念</p>
+<ul>
+<li>帧率：以一致且稳定的帧速率呈现您的绘图。<ul>
+<li><code>60fps</code>是<code>Apple</code>给出的最佳帧率，相当于每帧<code>16.67ms</code>。但是实际中如果能保证帧率可以稳定到<code>30fps</code>就能保证不会有卡顿的现象，<code>60fps</code>更多用在游戏上。所以如果应用能够保证<code>33.4ms</code>绘制一次屏幕，基本上就不会卡了</li>
+</ul>
+</li>
+<li><code>VSync</code>信号<ul>
+<li><code>iOS</code>的显示系统是由<code>VSync</code>信号驱动的，<code>VSync</code>信号由硬件时钟生成，每秒钟发出<code>60</code>次（这个值取决设备硬件，比如 iPhone 真机上通常是 59.97）。<code>iOS</code>图形服务接收到<code>VSync</code>信号后，会通过<code>IPC</code>通知到<code>App</code>内。<code>App</code>的<code>Runloop</code>在启动后会注册对应的<code>CFRunLoopSource</code>通过<code>mach_port</code>接收传过来的时钟信号通知，随后<code>Source</code>的回调会驱动整个<code>App</code>的动画与显示</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>卡顿原因</p>
+</li>
+</ul>
+<p><img src="/2019/06/23/视图绘制渲染-性能优化/LoseFrame.png" alt="LoseFrame"></p>
+<p>在<code>VSync</code>信号到来后，系统图形服务会通过<code>CADisplayLink</code>等机制通知<code>App</code>，<code>App</code>主线程开始在<code>CPU</code>中计算显示内容，比如视图的创建、布局计算、图片解码、文本绘制等。随后<code>CPU</code>会将计算好的内容提交到<code>GPU</code>去，由<code>GPU</code>进行变换、合成、渲染。随后<code>GPU</code>会把渲染结果提交到帧缓冲区去，等待下一次<code>VSync</code>信号到来时显示到屏幕上。由于垂直同步的机制，如果在一个<code>VSync</code>时间内，<code>CPU</code>或者<code>GPU</code>没有完成内容提交，则那一帧就会被丢弃，等待下一次机会再显示，而这时显示屏会保留之前的内容不变。这就是界面卡顿的原因。</p>
+<p>由此可知<code>CPU</code>和<code>GPU</code>不论哪个阻碍了显示流程(执行的操作复杂，耗时超过了<code>16.67ms</code>)，都会造成掉帧产生卡顿现象。所以开发时，需要分别对<code>CPU</code>和<code>GPU</code>压力进行评估和优化(进行渲染性能优化的依据)。</p>
+<h5 id="绘制渲染过程中CPU、GPU资源消耗的情况"><a href="#绘制渲染过程中CPU、GPU资源消耗的情况" class="headerlink" title="绘制渲染过程中CPU、GPU资源消耗的情况"></a>绘制渲染过程中<code>CPU</code>、<code>GPU</code>资源消耗的情况</h5><h6 id="CPU资源消耗的原因"><a href="#CPU资源消耗的原因" class="headerlink" title="CPU资源消耗的原因"></a><code>CPU</code>资源消耗的原因</h6><ul>
+<li>对象创建 <ul>
+<li>对象的创建会分配内存、调整属性、甚至还有读取文件等操作，比较消耗<code>CPU</code>资源。<strong>尽量用轻量的对象代替重量的对象，可以对性能有所优化。</strong>比如用<code>CALayer</code>代替<code>UIView</code>,用<code>CATextLayer</code>代替<code>UILabel</code></li>
+<li>通过<code>Storyboard</code>创建视图对象时，其资源消耗会比直接通过代码创建对象要大非常多</li>
+</ul>
+</li>
+<li>对象销毁<ul>
+<li>对象的销毁虽然消耗资源不多，但累积起来也是不容忽视的。通常当容器类持有大量对象时，其销毁时的资源消耗就非常明显</li>
+<li>如果对象可以放到后台线程去释放，那就挪到后台线程去释放</li>
+</ul>
+</li>
+<li>对象调整<ul>
+<li>当视图层次调整时，<code>UIView</code>、<code>CALayer</code>之间会出现很多方法调用与通知，所以在<strong>优化性能时，应该尽量避免调整视图层次、添加和移除视图</strong></li>
+</ul>
+</li>
+<li>布局计算<ul>
+<li>视图布局的计算是<code>App</code>中最为常见的消耗<code>CPU</code>资源的地方</li>
+<li>如果能在后台线程提前计算好视图布局、并且对视图布局进行缓存，那么这个地方基本就不会产生性能问题了</li>
+</ul>
+</li>
+<li><code>Autolayout</code><ul>
+<li><code>Autolayout</code>对于复杂视图来说常常会产生严重的性能问题。随着视图数量的增长，<code>Autolayout</code>带来的<code>CPU</code>消耗会呈指数级上升。参考数据可看<a href="http://pilky.me/36/" target="_blank" rel="noopener">这里</a></li>
+</ul>
+</li>
+<li>文本计算<ul>
+<li>如果一个界面中包含大量文字，文本的宽高计算会占用很大一部分资源，并且不可避免</li>
+<li>如果对文本显示没有特殊要求，可以参考下<code>UILabel</code>内部的实现方式：用<code>[NSAttributedString boundingRectWithSize:options:context:]</code>来计算文本宽高，用<code>-[NSAttributedString drawWithRect:options:context:]</code>来绘制文本。另外这两个操作尽可能的在后台操作</li>
+</ul>
+</li>
+<li>文本渲染<ul>
+<li>屏幕上能看到的所有文本内容控件，包括<code>UIWebView</code>，在底层都是通过<code>CoreText</code>排版、绘制为<code>Bitmap</code>显示的</li>
+<li>常见的文本控件(<code>UILabel</code>、<code>UITextView</code>等)，其排版和绘制都是在主线程进行的，当显示大量文本时，<code>CPU</code>的压力会非常大<ul>
+<li>对此解决方案只有一个，那就是自定义文本控件，用<code>TextKit</code>或最底层的<code>CoreText</code>对文本异步绘制</li>
+<li>尽管这实现起来非常麻烦，但其带来的优势也非常大，<code>CoreText</code>对象创建好后，能直接获取文本的宽高等信息，避免了多次计算(调整<code>UILabel</code>大小时算一遍、<code>UILabel</code>绘制时内部再算一遍)。<code>CoreText</code>对象占用内存较少，可以缓存下来以备稍后多次渲染</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>图片的解码<ul>
+<li>当用<code>UIImage</code>或<code>CGImageSource</code>的那几个方法创建图片时，图片数据并不会立刻解码。图片设置到<code>UIImageView</code>或者<code>CALayer.contents</code>中去，并且<code>CALayer</code>被提交到<code>GPU</code>前，<code>CGImage</code>中的数据才会得到解码。<strong>这一步是发生在主线程的，并且不可避免。</strong></li>
+<li>如果想要绕开这个机制，常见的做法是在后台线程先把图片绘制到<code>CGBitmapContext</code>中，然后从<code>Bitmap</code>直接创建图片。目前常见的网络图片库都自带这个功能</li>
+</ul>
+</li>
+<li>图像的绘制<ul>
+<li>图像的绘制通常是指用那些以<code>CG</code>开头的方法把图像绘制到画布中，然后从画布创建图片并显示这样一个过程。</li>
+<li>图像绘制最常见的地方就是<code>[UIView drawRect:]</code>里面了。由于<code>Core Graphic</code>方法通常都是线程安全的，所以图像的绘制可以很容易的放到后台线程进行</li>
+</ul>
+</li>
+<li>图片的格式<ul>
+<li>把图片从<code>PNG</code>或<code>JPEG</code>等格式中解压出来，得到像素数据。如果<code>GPU</code>不支持这种颜色格式，需要<code>CPU</code>进行格式转换，所以，图片要用<code>GPU</code>支持的图片数据格式</li>
+</ul>
+</li>
+</ul>
+<h6 id="图片解码和图像绘制的代码示例"><a href="#图片解码和图像绘制的代码示例" class="headerlink" title="图片解码和图像绘制的代码示例"></a>图片解码和图像绘制的代码示例</h6><p><img src="/2019/06/23/视图绘制渲染-性能优化/图片解码和图像绘制的代码示例.png" alt="图片解码和图像绘制的代码示例"></p>
+<h6 id="GPU资源消耗的原因"><a href="#GPU资源消耗的原因" class="headerlink" title="GPU资源消耗的原因"></a><code>GPU</code>资源消耗的原因</h6><p>相对于<code>CPU</code>来说，<code>GPU</code>能干的事情比较单一：接收提交的纹理(<code>Texture</code>)和顶点描述(三角形)，应用变换(<code>transform</code>)、混合并渲染，然后输出到屏幕上。通常你所能看到的内容，主要也就是纹理(图片)和形状(三角模拟的矢量图形)两类</p>
+<ul>
+<li>纹理的渲染<ul>
+<li>所有的<code>Bitmap</code>，包括图片、文本、栅格化的内容，最终都要由内存提交到显存，绑定为<code>GPU Texture</code></li>
+<li>不论是提交到显存的过程，还是<code>GPU</code>调整和渲染<code>Texture</code>的过程，都要消耗不少<code>GPU</code>资源</li>
+<li>当在较短时间显示大量图片时(比如<code>TableView</code>存在非常多的图片并且快速滑动时)，<code>CPU</code>占用率很低，<code>GPU</code>占用非常高，界面仍然会掉帧</li>
+<li>避免这种情况的方法只能是尽量减少在短时间内大量图片的显示，尽可能将多张图片合成为一张进行显示</li>
+<li>当图片过大，超过<code>GPU</code>的最大纹理尺寸时，图片需要先由<code>CPU</code>进行预处理，这对<code>CPU</code>和<code>GPU</code>都会带来额外的资源消耗</li>
+<li>目前来说，<code>iPhone 4S</code>以上机型，纹理尺寸上限都是<code>4096x4096</code>。所以，尽量不要让图片和视图的大小超过这个值。详细资料可看<a href="http://iosres.com" target="_blank" rel="noopener">这里</a></li>
+</ul>
+</li>
+<li>视图的混合(<code>Composing</code>)<ul>
+<li>当出现重叠的<code>UIView</code>或者<code>CALayer</code>的时候，<code>GPU</code>会去计算混合部分的像素，所以，尽可能少的设置<code>alpha</code>,尽可能多的设置背景颜色为纯色的背景</li>
+<li>设置<code>backgroundColor</code>较设置<code>opaque = true</code>更为有效</li>
+</ul>
+</li>
+<li>图形的生成<ul>
+<li><code>CALayer</code>的<strong><code>border</code>、圆角、阴影、遮罩(<code>mask</code>)，<code>CASharpLayer</code>的矢量图形显示</strong>，通常<strong>会触发离屏渲染(<code>offscreen rendering</code>)</strong>，而<strong>离屏渲染通常发生在<code>GPU</code>中</strong>。离屏渲染的过程会消耗大量的<code>GPU</code>资源，因此因尽量避免触发离屏渲染<ul>
+<li>如，当一个列表视图中出现大量圆角的<code>CALayer</code>，并且快速滑动时，可以观察到<code>GPU</code>资源已经占满，而<code>CPU</code>资源消耗很少。这时界面仍然能正常滑动，但平均帧数会降到很低</li>
+<li>为了避免这种情况，可以尝试开启<code>CALayer.shouldRasterize</code>属性，但这会把原本离屏渲染的操作转嫁到<code>CPU</code>上去</li>
+</ul>
+</li>
+<li>对于只需要圆角的某些场合，也可以用一张已经绘制好的圆角图片覆盖到原本视图上面来模拟相同的视觉效果</li>
+<li>最彻底的解决办法，就是把需要显示的图形在后台线程绘制为图片，避免使用圆角、阴影、遮罩等属性</li>
+</ul>
+</li>
+</ul>
+<h5 id="Tile-Based渲染"><a href="#Tile-Based渲染" class="headerlink" title="Tile-Based渲染"></a><code>Tile-Based</code>渲染</h5><p><code>Tiled-Based</code>渲染是移动设备的主流。整个屏幕会分解成<code>N*Npixels</code>组成的瓦片(<code>Tiles</code>)，<code>tiles</code>存储于<code>SoC</code>缓存(<code>SoC=system on chip</code>，片上系统，是在整块芯片上实现一个复杂系统功能，如<code>intel cpu</code>，整合了集显，内存控制器，<code>cpu</code>运核心，缓存，队列、非核心和<code>I/O</code>控制器)。几何形状会分解成若干个<code>tiles</code>，对于每一块<code>tile</code>，把必须的几何体提交到<code>OpenGL ES</code>，然后进行渲染(光栅化)。完毕后，将<code>tile</code>的数据发送回<code>cpu</code>。资料见<a href="https://github.com/loyinglin/LearnOpenGLES/tree/master/util/资料" target="_blank" rel="noopener">落影大神的PDF</a></p>
+<p><img src="/2019/06/23/视图绘制渲染-性能优化/TiledBased.png" alt="TiledBased"></p>
+<ul>
+<li><code>GPU</code>屏幕渲染的两种方式<ul>
+<li>当前屏幕渲染(<code>On-Screen Rendering</code>，即正常渲染)，指的是<code>GPU</code>的渲染操作是在当前用于显示的屏幕缓冲区中进行</li>
+<li>离屏渲染(<code>Off-Screen Rendering</code>)，指的是<code>GPU</code>在当前屏幕缓冲区以外新开辟一个缓冲区进行渲染操作</li>
+</ul>
+</li>
+</ul>
+<h6 id="正常渲染和离屏渲染"><a href="#正常渲染和离屏渲染" class="headerlink" title="正常渲染和离屏渲染"></a>正常渲染和离屏渲染</h6><ul>
+<li>正常渲染的渲染管道</li>
+</ul>
+<p><img src="/2019/06/23/视图绘制渲染-性能优化/NormalRenderPipe.png" alt="NormalRenderPipe"></p>
+<ol>
+<li><code>Command Buffer：`</code>OpenGL<code>提交一个渲染指令给</code>Command Buffer<code>，然后进行</code>GPU`渲染</li>
+<li><code>Tiler：</code>调用顶点着色器，把顶点数据进行分块(<code>Tiling</code>)</li>
+<li><code>Parameter Buffer：</code>接受分块完毕的<code>tile</code>和对应的渲染参数</li>
+<li><code>Renderer：</code>调用片元着色器，进行像素渲染</li>
+<li><code>Render Buffer:：</code>缓冲区，存储渲染完毕的像素</li>
+</ol>
+<ul>
+<li><p>离屏渲染</p>
+<ul>
+<li><p>为什么需要离屏渲染</p>
+<ul>
+<li>一般情况下，<code>OpenGL</code>会将提交到渲染服务(<code>Render Server</code>)的动画直接渲染，但是对于一些复杂的图像动画不能直接进行叠加渲染显示，而是需要根据<code>Command Buffer</code>分通道进行渲染之后再组合，在组合过程中，有些渲染通道不会直接显示，而这些没有直接显示在屏幕上的通道就是<code>Offscreen Render Pass</code></li>
+<li>离屏渲染(<code>Offscreen Render</code>)需要更多的渲染通道，而不同的渲染通道切换需要耗费一定的时间，这个时间内<code>GPU</code>会闲置，当通道达到一定数量，对性能会有较大的影响</li>
+</ul>
+</li>
+<li><p>离屏渲染的渲染管道(不同的离屏渲染效果，会有不同数量的渲染通道)</p>
+<ul>
+<li>遮罩(<code>mask</code>)</li>
+</ul>
+</li>
+</ul>
+<p><img src="/2019/06/23/视图绘制渲染-性能优化/MaskOffscreenRender.png" alt="MaskOffscreenRender"></p>
+<ol>
+<li>在第一条渲染管道中，<code>GPU</code>创建了一个新的缓存区来存储相机纹理(<code>Texture</code>)的渲染结果(渲染<code>layer</code>的<code>mask</code>纹理，同<code>Tile-Based的</code>基本渲染逻辑)</li>
+<li>在第二条渲染管道中，<code>GPU</code>创建了一个新的缓存区来存储蓝色的蒙版(<code>layer</code>)的渲染结果(渲染<code>layer</code>的<code>content</code>纹理，同<code>Tile-Based</code>的基本渲染逻辑)</li>
+<li>在第三条渲染管道中，才把前面的两个渲染结果取出来，合并组合，放到<code>Render Buffer</code>中(<code>Compositing</code>操作，合并<code>1、2</code>的纹理)</li>
+</ol>
+<p><strong>注意：前面的两个渲染结果并没有直接放到Render Buffer中，而是临时保存</strong></p>
+<p>由此可见，离屏渲染的消耗主要体现在两方面：</p>
+<ol>
+<li>创建新的缓存区</li>
+<li><p>上下文的切换。先是从当前屏幕切换到离屏，等到离屏渲染结束以后，将离屏缓冲区的渲染结果显示到屏幕上又需要将上下文环境从离屏切换到当前屏幕。而上下文环境的切换是要付出很大代价的</p>
+<ul>
+<li>模糊效果(<code>UIBlurEffect</code>)</li>
+</ul>
+<p><img src="/2019/06/23/视图绘制渲染-性能优化/BlurEffect01.png" alt="BlurEffect01"></p>
+<p><img src="/2019/06/23/视图绘制渲染-性能优化/BlurEffect02.png" alt="BlurEffect02"></p>
+<p>使用<code>UIBlurEffect</code>，应该是尽可能小的<code>view</code>，因为性能消耗巨大</p>
+</li>
+</ol>
+</li>
+</ul>
+<h6 id="常见的会触发离屏渲染操作的情况如下"><a href="#常见的会触发离屏渲染操作的情况如下" class="headerlink" title="常见的会触发离屏渲染操作的情况如下"></a>常见的会触发离屏渲染操作的情况如下</h6><ul>
+<li><p><code>shouldRasterize</code>(光栅化)</p>
+<ul>
+<li>这是一个手动开启离屏渲染的操作，开启光栅化是将一个<code>layer</code>预先渲染成位图(<code>bitmap</code>)，然后加入缓存中，当需要的时候再从缓存中拿出来，如果光栅化的元素在<code>100ms</code>内没有被使用就会被移除</li>
+<li>因此，光栅化适用于静态内容的视图，也就是内部结构和内容不发生变化的视图，当视图的内容和结构一直在发生变化，就不应该开启光栅化，因为它会一直创建缓存</li>
+</ul>
+</li>
+<li><p><code>masks</code>(遮罩)</p>
+<ul>
+<li>单独设置<code>cornerRadius</code>或者<code>masksToBounds = true</code>，并不会引起离屏渲染，他们的合体才会引起离屏渲染</li>
+<li>为避免遮罩引起的离屏渲染，效果上的处理，可参考<a href="https://github.com/johnil/VVeboTableViewDemo" target="_blank" rel="noopener">VVebo</a>，在要添加圆角的视图上再叠加一个部分透明的视图，只对圆角部分进行遮挡，遮挡的部分背景与周围背景相同</li>
+<li>彻底的方法还是在后台线程中利用<code>CoreGraphic</code>来绘制图片，避免引起离屏渲染</li>
+</ul>
+</li>
+<li><p><code>shadows</code>(阴影)</p>
+<ul>
+<li>可以通过指定阴影路径，避免离屏渲染。如，<code>imgView.layer.shadowPath =UIBezierPath(rect: imgView.bounds).CGPath</code></li>
+</ul>
+</li>
+<li><p><code>EdgeAntialiasing</code>(抗锯齿)</p>
+<ul>
+<li>这个功能貌似在<code>iOS 8</code>和<code>iOS 9</code>上并不会触发离屏渲染，对性能也没有什么影响，也许这个功能已经被优化了</li>
+</ul>
+</li>
+<li><p><code>-(void)drawRect</code>(<code>CPU</code>离屏渲染)</p>
+<ul>
+<li>如果重写了<code>drawRect</code>方法，并且使用<code>Core Graphics</code>的技术进行了绘制操作，就涉及到了<code>CPU</code>渲染</li>
+<li>整个渲染过程由<code>CPU</code>在<code>App</code>内同步地完成，渲染得到的<code>bitmap</code>最后再交由<code>GPU</code>用于显示</li>
+<li>但是应该尽量避免这种方法，因为如果使用这个方法不恰当的话会使内存暴涨，因<code>CPU</code>自身做渲染的性能也不好。重写drawRect致使内存暴涨的原因见<a href="https://bihongbo.com/2016/01/03/memoryGhostdrawRect/" target="_blank" rel="noopener">内存恶鬼drawRect</a></li>
+<li>因此，能避免重写drawRect方法就尽可能避免</li>
+</ul>
+</li>
+</ul>
+<p>离屏渲染的优化可见<a href="https://www.jianshu.com/p/ca51c9d3575b" target="_blank" rel="noopener">离屏渲染优化详解：实例示范+性能测试</a></p>
+<h3 id="性能优化"><a href="#性能优化" class="headerlink" title="性能优化"></a>性能优化</h3><p><code>WWDC</code>推荐的检查项目</p>
+<p><img src="/2019/06/23/视图绘制渲染-性能优化/PropertyOptimizeByWWDC.png" alt="PropertyOptimizeByWWDC"></p>
+<ul>
+<li>根据<code>WWDC</code>推荐的检查项目进行检查<ul>
+<li>帧率一般在多少？<ul>
+<li><code>60</code>帧每秒 (<code>TimeProfiler</code>)</li>
+</ul>
+</li>
+<li>是否存在<code>CPU</code>和<code>GPU</code>瓶颈？(通过工具查看占有率来进行检查)<ul>
+<li>更少的使用<code>CPU</code>和<code>GPU</code>可以有效的保存电量</li>
+</ul>
+</li>
+<li>额外的使用<code>CPU</code>来进行渲染？<ul>
+<li>重写了<code>drawRect</code>会导致<code>CPU</code>渲染</li>
+<li>在<code>CPU</code>进行渲染时，<code>GPU</code>大多数情况是处于等待状态</li>
+</ul>
+</li>
+<li>是否存在过多离屏渲染？<ul>
+<li>越少越好</li>
+<li>离屏渲染会导致上下文切换，<code>GPU</code>产生<code>idle</code>(闲置)；</li>
+</ul>
+</li>
+<li>是否渲染过多视图？<ul>
+<li>视图越少越好</li>
+<li>透明度为1的视图更受欢迎</li>
+</ul>
+</li>
+<li>使用奇怪的图片格式和大小？<ul>
+<li>避免格式转换和调整图片大小</li>
+<li>一个图片如果不被<code>GPU</code>支持，那么需要<code>CPU</code>来转换。（<code>Xcode</code>有对<code>PNG</code>图片进行特殊的算法优化）</li>
+</ul>
+</li>
+<li>使用昂贵的特效？<ul>
+<li>理解特效的消耗，同时调整合适的大小</li>
+<li>例如前面提到的<code>UIBlurEffect</code></li>
+</ul>
+</li>
+<li>视图树上不必要的元素？<ul>
+<li>理解视图树上所有点的必要性，去掉不必要的元素</li>
+<li>忘记<code>remove</code>视图是很常见的事情，特别是当<code>View</code>的类比较大的时候，因此需检查<code>remove</code>掉不需要的视图</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="性能检查中使用的工具"><a href="#性能检查中使用的工具" class="headerlink" title="性能检查中使用的工具"></a>性能检查中使用的工具</h4><p>遇到性能问题，先分析、定位问题所在。分析、定位问题可使用工具<code>Xcode</code>、<code>Instrument</code>。</p>
+<h5 id="Xcode"><a href="#Xcode" class="headerlink" title="Xcode"></a><code>Xcode</code></h5><p>使用<code>Xcode</code>查看应用的渲染情况。查看渲染情况选项的设置，<code>Xcode</code>导航栏 中的<code>Debug -&gt;View Debuging -&gt;Rendering</code>。</p>
+<h6 id="具体选项的功能及标识颜色"><a href="#具体选项的功能及标识颜色" class="headerlink" title="具体选项的功能及标识颜色"></a>具体选项的功能及标识颜色</h6><ul>
+<li><p><code>Color Blended Layers</code>(混合)</p>
+<ul>
+<li>这个选项基于渲染程度对屏幕中的混合区域进行绿到红的高亮显示，<strong>越红表示性能越差</strong>，会对帧率等指标造成较大的影响。红色通常是由于多个半透明图层叠加引起</li>
+</ul>
+</li>
+<li><p><code>Color Hits Green and Misses Red</code>(命中/不命中)</p>
+<ul>
+<li>当<code>UIView.layer.shouldRasterize = YES</code>时，耗时的图片绘制会被缓存，并当做一个简单的扁平图片来呈现。这时候，如果页面的其他区块(比如<code>UITableViewCell</code>的复用)使用缓存直接命中，就显示绿色，反之，如果不命中，这时就显示红色。<strong>红色越多，性能越差</strong>。因为栅格化生成缓存的过程是有开销的，如果缓存能被大量命中和有效使用，则总体上会降低开销，反之则意味着要频繁生成新的缓存，这会让性能问题雪上加霜</li>
+</ul>
+</li>
+<li><p><code>Color Copied Images</code></p>
+<ul>
+<li>对于<code>GPU</code>不支持的色彩格式的图片只能由<code>CPU</code>来处理，把这样的图片标为蓝色。<strong>蓝色越多，性能越差</strong></li>
+</ul>
+</li>
+<li><p><code>Color Immediately</code></p>
+<ul>
+<li>通常<code>Core Animation Instruments</code>以每毫秒<code>10</code>次的频率更新图层调试颜色。对某些效果来说，这显然太慢了。这个选项就可以用来设置每帧都更新（可能会影响到渲染性能，而且会导致帧率测量不准，所以不要一直都设置它）</li>
+</ul>
+</li>
+<li><p><code>Color Misaligned Images</code></p>
+<ul>
+<li>这个选项检查了图片是否被缩放，以及像素是否对齐。被放缩的图片会被标记为黄色，像素不对齐则会标注为紫色。<strong>黄色、紫色越多，性能越差</strong></li>
+</ul>
+</li>
+<li><p><code>Color Offscreen-Rendered Yellow</code>(离屏渲染)</p>
+<ul>
+<li>这个选项会把那些离屏渲染的图层显示为黄色。<strong>黄色越多，性能越差</strong>。这些显示为黄色的图层很可能需要用<code>shadowPath</code>或者<code>shouldRasterize</code>来优化</li>
+</ul>
+</li>
+<li><p><code>Color OpenGL Fast Path Blue</code></p>
+<ul>
+<li>这个选项会把任何直接使用<code>OpenGL</code>绘制的图层显示为蓝色。蓝色越多，性能越好。如果仅仅使用<code>UIKit</code>或者<code>Core Animation</code>的<code>API</code>，那么不会有任何效果</li>
+</ul>
+</li>
+<li><p><code>Flash Updated Regions</code></p>
+<ul>
+<li>这个选项会把重绘的内容显示为黄色。<strong>黄色越多，性能越差</strong>。通常我们希望只是更新的部分被标记为黄色</li>
+</ul>
+</li>
+</ul>
+<h5 id="Instrument"><a href="#Instrument" class="headerlink" title="Instrument"></a><code>Instrument</code></h5><p>开启<code>Instrument</code>，<code>command + I</code></p>
+<p>使用<code>Instrument</code>除了跟踪程序崩溃原因，还可使用其<code>Core Animation</code>和<code>GPU driver</code>来看视图渲染过程中的性能</p>
+<ul>
+<li><code>Core Animation</code><ul>
+<li><code>Color Blended Layers</code>：看半透明<code>layer</code>的遮盖情况</li>
+<li><code>Core Animation template</code>只是能让开发者直观地看到哪些地方有可能需要优化，但是到底要不要优化，还是要看<code>GPU driver</code>的表现</li>
+</ul>
+</li>
+<li><code>GPU Driver</code><ul>
+<li><code>Renderer Utilization</code> ——如果这个值大于50%的话，表示<code>GPU</code>的性能受到<code>fill-rate</code>的限制，可能有太多的<code>Offscreen rendering</code>，<code>overdraw</code>，<code>blending</code></li>
+<li><code>Tiler Utilization</code> ——如果这个值大于<code>50%</code>，表示可能有太多的<code>layers</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="面试题"><a href="#面试题" class="headerlink" title="面试题"></a>面试题</h3><ol>
+<li><code>APP</code>从点击屏幕（硬件）到完全渲染，中间发生了什么?(视图呈现到屏幕上，经过了哪些流程?)</li>
+</ol>
+<p>程序执行<code>addSubview:</code>时，一个视图由<code>CPU</code>进行<code>Frame</code>布局，准备视图和图层的层级关系，查询是否有重写<code>drawRect:</code>或<code>drawLayer:inContext:</code>方法。<strong>注意：如果有重写的话，这里的渲染是会占用CPU进行处理的。</strong><code>CPU</code>会将处理视图和图层的层级关系打包，通过<code>IPC</code>(内部处理通信)通道提交给渲染服务，渲染服务由<code>OpenGL ES</code>和<code>GPU</code>组成。渲染服务首先将图层数据交给<code>OpenGL ES</code>进行纹理生成和着色。生成前后帧缓存，再根据显示硬件的刷新频率，一般以设备的<code>Vsync</code>信号和<code>CADisplayLink</code>为标准，进行前后帧缓存的切换。最后，将最终要显示在画面上的后帧缓存交给<code>GPU</code>，进行采集图片和形状，运行变换，应用文理和混合。最终显示在屏幕上。</p>
+<ol start="2">
+<li><p><code>UIView</code>是如何显示到屏幕上的</p>
+<ul>
+<li>需要从<code>RunLoop</code>开始，<code>RunLoop</code>是一个<code>60fps</code>的回调，即每<code>16.67ms</code>绘制一次屏幕，也就是需要在这个时间内完成<code>view</code>缓冲区的创建</li>
+<li><code>view</code>内容的绘制是<code>CPU</code>的工作，然后把缓冲区交给<code>GPU</code>渲染</li>
+<li>渲染包括了多个view的拼接<code>(compositing)</code>、纹理的渲染<code>(Texture)</code>等，最后<code>Display</code>到屏幕上</li>
+<li>但如果在<code>16.67ms</code>内要处理的操作太多，导致<code>CPU、GPU</code>无法在指定的时间内完成指定的工作，那么就会出现卡顿现象，即丢帧<ul>
+<li><code>60fps</code>是<code>Apple</code>给出的最佳帧率，但是实际中如果能保证帧率可以稳定到<code>30fps</code>就能保证不会有卡顿的现象，<code>60fps</code>更多用在游戏上。所以如果应用能够保证<code>33.4ms</code>绘制一次屏幕，基本上就不会卡了</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><code>UIView</code>从<code>Draw</code>到<code>Render</code>的过程有如下几步</p>
+<ul>
+<li>每一个<code>UIView</code>都有一个<code>layer</code>，每一个<code>layer</code>都有个<code>content</code>，这个<code>content</code>指向的是一块缓存，叫做<code>backing store</code>。<strong>缓存区</strong></li>
+<li><code>UIView</code>的绘制和渲染是两个过程，当<code>UIView</code>被绘制时，<code>CPU</code>执行<code>drawRect</code>，通过<code>context</code>将数据写入<code>backing store</code>。<strong>绘制数据写入缓存区</strong></li>
+<li>当<code>backing store</code>写完后，通过<code>render server</code>交给<code>GPU</code>去渲染，将<code>backing store</code>中的<code>bitmap</code>数据显示在屏幕上。<strong>缓存区数据的渲染</strong></li>
+<li>总结：<code>CPU</code>就是做绘制的操作把内容放到缓存里，<code>GPU</code>负责从缓存里读取数据然后渲染到屏幕上。<strong>CPU-绘制、GPU-渲染</strong>。过程如下</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Screen -Display/Link-&gt; GPU(VRAM) &lt;-&gt; CPU(RAM)</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>  即<code>CPU</code>将准备好的<code>bitmap</code>放到<code>RAM</code>里，<code>GPU</code>去搬这块内存到<code>VRAM</code>中处理。这个过程<code>GPU</code>所能承受的极限大概在<code>16.67ms</code>完成一帧的处理，所以<code>60fps</code>就是<code>GPU</code>能处理的最高频率</p>
+<ol start="4">
+<li><code>iOS</code>上视图或动画渲染的各个阶段</li>
+</ol>
+<p>共有<code>6</code>个步骤</p>
+<p>在<code>APP</code>内部的有<code>4</code>个阶段</p>
+<ul>
+<li>布局，在这个阶段，设置<code>layer</code>的属性</li>
+<li>创建，创建<code>backing image</code>。可以通过<code>setContents</code>将一个<code>image</code>传给<code>layer</code>，或通过<code>drawRect:/drawLayer:inContext:</code>来画出来</li>
+<li>准备，在这个阶段，准备要渲染的<code>layer</code>的各种属性数据，以及要做的动画的参数，准备传给<code>render server</code>。同时在这个阶段会解压要渲染的<code>image</code></li>
+<li>提交，在这个阶段，<code>Core Animation</code>打包<code>layer</code>的信息以及要做的动画的参数，通过<code>IPC</code>传递给<code>render server</code></li>
+</ul>
+<p>在<code>APP</code>外部的<code>2</code>个阶段，当提交的数据到达<code>render server</code>后，会做下面两件事</p>
+<ul>
+<li>根据<code>layer</code>的各种属性(如果是动画的，会计算动画的<code>layer</code>的属性的中间值)，用<code>OpenGL</code>准备渲染</li>
+<li>渲染这些可视的<code>layer</code>到屏幕</li>
+</ul>
+<ol start="5">
+<li>渲染性能优化的注意点</li>
+</ol>
+<ul>
+<li>隐藏的绘制：<code>catextlayer</code>和<code>uilabel</code>都是将<code>text</code>画入<code>backing image</code>的。如果改了一个包含<code>text</code>的<code>view</code>的<code>frame</code>的话，<code>text</code>会被重新绘制</li>
+<li><code>Rasterize</code>：当使用<code>layer</code>的<code>shouldRasterize</code>的时候（记得设置适当的<code>layer</code>的<code>rasterizationScale</code>），<code>layer</code>会被强制绘制到一个<code>offscreen image</code>上，并且会被缓存起来。这种方法可以用来缓存绘制耗时（比如有比较绚的效果）但是不经常改的<code>layer</code>，如果<code>layer</code>经常变，就不适合用</li>
+<li>避免离屏渲染，因使用圆角、遮罩、阴影等效果，会产生离屏渲染过程。因此想要上述效果时，能通过图片伸展实现的，就尽量不要使<code>layer</code>上对应的属性来实现上述效果。如，实现<code>rounded corner</code>，可以将一个圆形的图片赋值于<code>layer</code>的<code>content</code>的属性。并且设置好<code>contentsCenter</code>和<code>contentScale</code>属性</li>
+<li><code>Blending and Overdraw</code>：如果一个<code>layer</code>被另一个<code>layer</code>完全遮盖，<code>GPU</code>会做优化不渲染被遮盖的<code>layer</code>，但是计算一个<code>layer</code>是否被另一个<code>layer</code>完全遮盖是很耗<code>cpu</code>的。将几个半透明的<code>layer</code>的<code>color</code>融合在一起也是很消耗<code>cpu</code>的</li>
+</ul>
+<p>基于上述原因，在开发过程中，为保证渲染性能的最优，常依据如下规则进行操作</p>
+<ul>
+<li>设置<code>view</code>的<code>backgroundColor</code>为一个固定的，不透明的<code>color</code></li>
+<li>如果一个<code>view</code>是不透明的，设置<code>opaque</code>属性为<code>YES</code>。（直接告诉程序这个是不透明的，而不是让程序去计算）这样会减少<code>blending</code>(调和)和 <code>overdraw</code></li>
+<li>如果使用<code>image</code>的话，尽量避免设置<code>image</code>的<code>alpha</code>为透明的，如果一些效果需要几个图片融合而成，就让设计用一张图画好，不要让程序在运行的时候去动态的融合</li>
+</ul>
+<ol start="6">
+<li><code>GPU</code>的挑战</li>
+</ol>
+<ul>
+<li>将数据从<code>RAM</code>搬到<code>VRAM</code>中</li>
+<li><p>将<code>Texture</code>(纹理)渲染到屏幕上(主要的瓶颈点)，渲染纹理基本要处理以下问题</p>
+<ul>
+<li>合成<code>(compositing)</code><ul>
+<li><code>Compositing</code>是指将多个纹理拼到一起的过程，对应<code>UIKit</code>，是指处理多个<code>view</code>合到一起的情况(<code>drawRect</code>只有当<code>addsubview</code>情况下才会触发)。如果<code>view</code>之间没有叠加，那么<code>GPU</code>只需要做普通渲染即可。 如果多个<code>view</code>之间有叠加部分，<code>GPU</code>需要做混合<code>(blending)</code></li>
+</ul>
+</li>
+<li>尺寸<code>(Size)</code><ul>
+<li>这个问题，主要是处理<code>image</code>带来的，假如内存里有一张<code>400x400</code>的图片，要放到<code>100x100</code>的<code>imageview</code>里，如果不做任何处理，直接丢进去，问题就大了，这意味着，<code>GPU</code>需要对大图进行缩放到小的区域显示，需要做像素点的(取样)<code>sampling</code>，这种<code>smapling</code>的代价很高，又需要兼顾像素配向<code>pixel alignment</code>。计算量会飙升。</li>
+</ul>
+</li>
+<li><p>离屏渲染<code>(Offscreen Rendering And Mask)</code></p>
+<ul>
+<li><p><code>iOS</code>中图形绘制框架的结构<br><code>UIKit</code>是<code>iOS</code>中用来管理用户图形交互的框架，但是<code>UIKit</code>本身构建在<code>Core Animation</code>框架之上，<code>Core Animation</code>分成了两部分<code>OpenGL ES</code>和<code>Core Graphics</code>，<code>OpenGL ES</code>是直接调用底层的<code>GPU</code>进行渲染；<code>Core Graphics</code>是一个基于<code>CPU</code>的绘制引擎</p>
+</li>
+<li><p><code>OpenGL</code>中，<code>GPU</code>屏幕渲染有以下两种方式</p>
+<ul>
+<li><code>On-Screen Rendering</code>即当前屏幕渲染，指的是<code>GPU</code>的渲染操作是在当前用于显示的屏幕缓冲区中进行</li>
+<li><code>Off-Screen Rendering</code>即离屏渲染，指的是<code>GPU</code>在当前屏幕缓冲区以外新开辟一个缓冲区进行渲染操作</li>
+<li>离屏渲染的代价主要包括两方面内容<ul>
+<li>创建新的缓冲区</li>
+<li>上下文的切换<ul>
+<li>离屏渲染的整个过程，需要多次切换上下文环境：先是从当前屏幕<code>(On-Screen)</code>切换到离屏<code>(Off-Screen)</code>；等到离屏渲染结束以后，将离屏缓冲区的渲染结果显示到屏幕上有需要将上下文环境从离屏切换到当前屏幕。而上下文环境的切换是要付出很大代价的</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>触发离屏渲染的方式<ul>
+<li><code>shouldRasterize</code>（光栅化）</li>
+<li><code>masks</code>（遮罩）</li>
+<li><code>shadows</code>（阴影）</li>
+<li><code>edge antialiasing</code>（抗锯齿）</li>
+<li><code>group opacity</code>（不透明）</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>对于<strong>当屏渲染、离屏渲染和CPU渲染</strong>的来说，当屏渲染永远是最好的选择</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/06/18/网络编程/" rel="prev" title="网络编程">
+      <i class="fa fa-chevron-left"></i> 网络编程
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/07/14/音视频/" rel="next" title="音视频">
+      音视频 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#UIKit框架结构"><span class="nav-number">1.</span> <span class="nav-text">UIKit框架结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#视图绘制渲染过程"><span class="nav-number">2.</span> <span class="nav-text">视图绘制渲染过程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#整体流程"><span class="nav-number">2.1.</span> <span class="nav-text">整体流程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#流程详解"><span class="nav-number">2.2.</span> <span class="nav-text">流程详解</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#UIView从Draw到Render的过程"><span class="nav-number">2.2.1.</span> <span class="nav-text">UIView从Draw到Render的过程</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#底层显示逻辑"><span class="nav-number">2.2.2.</span> <span class="nav-text">底层显示逻辑</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#页面卡顿"><span class="nav-number">2.2.3.</span> <span class="nav-text">页面卡顿</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#绘制渲染过程中CPU、GPU资源消耗的情况"><span class="nav-number">2.2.4.</span> <span class="nav-text">绘制渲染过程中CPU、GPU资源消耗的情况</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#CPU资源消耗的原因"><span class="nav-number">2.2.4.1.</span> <span class="nav-text">CPU资源消耗的原因</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#图片解码和图像绘制的代码示例"><span class="nav-number">2.2.4.2.</span> <span class="nav-text">图片解码和图像绘制的代码示例</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#GPU资源消耗的原因"><span class="nav-number">2.2.4.3.</span> <span class="nav-text">GPU资源消耗的原因</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Tile-Based渲染"><span class="nav-number">2.2.5.</span> <span class="nav-text">Tile-Based渲染</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#正常渲染和离屏渲染"><span class="nav-number">2.2.5.1.</span> <span class="nav-text">正常渲染和离屏渲染</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#常见的会触发离屏渲染操作的情况如下"><span class="nav-number">2.2.5.2.</span> <span class="nav-text">常见的会触发离屏渲染操作的情况如下</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#性能优化"><span class="nav-number">3.</span> <span class="nav-text">性能优化</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#性能检查中使用的工具"><span class="nav-number">3.1.</span> <span class="nav-text">性能检查中使用的工具</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Xcode"><span class="nav-number">3.1.1.</span> <span class="nav-text">Xcode</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#具体选项的功能及标识颜色"><span class="nav-number">3.1.1.1.</span> <span class="nav-text">具体选项的功能及标识颜色</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Instrument"><span class="nav-number">3.1.2.</span> <span class="nav-text">Instrument</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#面试题"><span class="nav-number">4.</span> <span class="nav-text">面试题</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Ben</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">51</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">categories</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ben</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

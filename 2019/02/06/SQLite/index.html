@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="SQLite原生语言是C语言。SQLite数据库的所有操作都是在事务上下文内完成的。  事务生命周期  123事务在哪些对象上运行，这与API直接相关，数据库写操作时，是在用一个连接，一次一个事务。因此，所有语句的对象都是运行在派生它们自身的连接的单个事务上下文中。  事务：读事务、写事务  1所有的操作，写操作或者读操作，都必须经历：未加锁、待定锁、共享锁。  锁  SQLite的锁是基于标准的">
+<meta name="keywords" content="数据库">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SQLite">
+<meta property="og:url" content="http://yoursite.com/2019/02/06/SQLite/index.html">
+<meta property="og:site_name" content="Ben&#39;Blog">
+<meta property="og:description" content="SQLite原生语言是C语言。SQLite数据库的所有操作都是在事务上下文内完成的。  事务生命周期  123事务在哪些对象上运行，这与API直接相关，数据库写操作时，是在用一个连接，一次一个事务。因此，所有语句的对象都是运行在派生它们自身的连接的单个事务上下文中。  事务：读事务、写事务  1所有的操作，写操作或者读操作，都必须经历：未加锁、待定锁、共享锁。  锁  SQLite的锁是基于标准的">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-11-23T03:54:31.134Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="SQLite">
+<meta name="twitter:description" content="SQLite原生语言是C语言。SQLite数据库的所有操作都是在事务上下文内完成的。  事务生命周期  123事务在哪些对象上运行，这与API直接相关，数据库写操作时，是在用一个连接，一次一个事务。因此，所有语句的对象都是运行在派生它们自身的连接的单个事务上下文中。  事务：读事务、写事务  1所有的操作，写操作或者读操作，都必须经历：未加锁、待定锁、共享锁。  锁  SQLite的锁是基于标准的">
+
+<link rel="canonical" href="http://yoursite.com/2019/02/06/SQLite/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>SQLite | Ben'Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Ben'Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">工欲善其事，必先利其器</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/02/06/SQLite/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Ben">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ben'Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          SQLite
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-02-06 12:10:46" itemprop="dateCreated datePublished" datetime="2019-02-06T12:10:46+08:00">2019-02-06</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-11-23 11:54:31" itemprop="dateModified" datetime="2020-11-23T11:54:31+08:00">2020-11-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/数据库/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>SQLite原生语言是C语言。SQLite数据库的所有操作都是在事务上下文内完成的。</p>
+<ul>
+<li>事务生命周期</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">事务在哪些对象上运行，这与API直接相关，数据库写操作时，是在用一个</span><br><span class="line">连接，一次一个事务。因此，所有语句的对象都是运行在派生它们自身的连</span><br><span class="line">接的单个事务上下文中。</span><br></pre></td></tr></table></figure>
+<ul>
+<li>事务：读事务、写事务</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">所有的操作，写操作或者读操作，都必须经历：未加锁、待定锁、共享锁。</span><br></pre></td></tr></table></figure>
+<ul>
+<li>锁</li>
+</ul>
+<p>SQLite的锁是基于标准的文件锁定实现的。SQLite在数据库文件中有三种不同的文件锁：<code>保留字节、待定字节、一个共享区域</code>。</p>
+<p>SQLite的故障恢复机制使用保留字节来判断什么时候需要恢复数据库（涉及关键字：一致性、热日志、“回放”日志&lt;将数据库还原到初始的被中断的事务之前的状态&gt;）（热日志：系统异常崩溃时的日志）。热日志就是隐式的独占锁。</p>
+<p>通过在保留状态完成所有数据库的工作，可以最小化独占状态的时间。如果在保留状态完成所有的工作，那么独占状态的持有时间只是将修改页面刷新到磁盘那么长（因不用编译更多的查询，处理更多的结果，然后写到磁盘）。在保留状态中处理，可以显著提高整体的并发性。</p>
+<p>保留状态下，pager实际上管理三种页：<code>已修改页、未修改页和日志页</code>。日志页，就是已修改页的原始版本。</p>
+<ul>
+<li>SQLite API</li>
+</ul>
+<p>SQLite API由两个基本部分组成：<code>核心API和扩展API</code>。<br>核心API围绕两个基本的用于执行SQL命令的<strong>数据结构：</strong><code>连接和语句</code>。<br>命令通过三个步骤执行：<code>编译、执行和完成</code>。<br>SQLite的封装函数exec()和get_table()将上面三步封装成一个函数调用，自动处理相关联的语句对象。</p>
+<p>Tips:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">关键字：连接、句柄、事务、锁</span><br></pre></td></tr></table></figure>
+<h5 id="操作数据库"><a href="#操作数据库" class="headerlink" title="操作数据库"></a>操作数据库</h5><p>在执行SQL命令前，首先要连接数据库。连接称为打开较形象，因为SQLite数据库包含在单个操作系统文件（一个文件对应一个数据库），与此对应，断开称为关闭。打开数据库的函数的声明中的flags，作用是进一步控制数据库句柄的事务行为。</p>
+<p><strong>注：在写另一个连接之前始终要调用finalize()或reset()。</strong></p>
+<p><strong>堆上的变量需要手动释放，栈上的变量系统自动管理。</strong></p>
+<ul>
+<li>SQLite原生数据类型（存储类）5种：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">integer、float、text、blob、null对应的整数值为:</span><br><span class="line">integer（1）、float（2）、text（3）、blob（4）、null（5）</span><br></pre></td></tr></table></figure>
+<ul>
+<li>列类型声明</li>
+</ul>
+<p>SQLite在创建表字段时，支持声明列类型和不声明列类型的情况：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">声明列类型：即在创建字段时指明字段所在的域值类型（严格类型）；</span><br><span class="line"></span><br><span class="line">不声明列类型：即在创建字段时不指明字段所在的域值类型，具体类型根据</span><br><span class="line">插入的值进行推断确定当前的字段域值类型（动态类型）。</span><br></pre></td></tr></table></figure>
+<p>即，SQLite的显示类型声明，列可以有类型且类型可依据值来推断。</p>
+<ul>
+<li>参数编号</li>
+</ul>
+<p>SQL中的参数，位置参数从1开始，顺序使用整数值，为每个参数分配一个可唯一标识的编号。在SQL语句中给参数编号时，允许的范围是整数值1~999 。若要取得最优的性能和内存利用率，应选择较小的数字。</p>
+<ul>
+<li>绑定函数</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">绑定函数分为两类：</span><br><span class="line">一类用于标量值（int、double、int64、NULL）；</span><br><span class="line">一类用于数组（blob、text、text16）。</span><br><span class="line">绑定函数的区别：在于数组绑定函数需要一个长度参数和指向清理函数的指针。</span><br></pre></td></tr></table></figure>
+<ul>
+<li>三种一定要在代码中关注的情况是：<code>错误、繁忙情况、模式更改</code>。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">繁忙处理程序的唯一局限是它们可能不会关闭数据库。</span><br></pre></td></tr></table></figure>
+<ul>
+<li>会遇到的情况</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">遇到SQLITE_BUSY时的简单处理就是重新再调用一次。</span><br><span class="line">SQLITE_SCHEMA情况存在的最终原因与VDBE有关。</span><br><span class="line"></span><br><span class="line">SQLite中与线程相关的一个限制是UNIX平台上的系统调用fork()。决不</span><br><span class="line">要尝试在fork()调用中将连接传递给子进程，否则将无法正常工作。</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/数据库/" rel="tag"># 数据库</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/01/26/SQL基础/" rel="prev" title="SQL基础">
+      <i class="fa fa-chevron-left"></i> SQL基础
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/02/06/数据库规范/" rel="next" title="数据库规范">
+      数据库规范 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-5"><a class="nav-link" href="#操作数据库"><span class="nav-number">1.</span> <span class="nav-text">操作数据库</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Ben</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">51</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">categories</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ben</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

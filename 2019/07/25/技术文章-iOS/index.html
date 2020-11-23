@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="AppStore审核指南，中文版，英文版  技术方向 函数式响应编程  iOS应用架构谈   技术详解 emoji表情符号兼容方案  内存检测  方法混合-Method Swizzling  关联  应用热修复(hot-fix)JSPatch  OC与JS交互  使用JavaScriptCore实现OC与JS的交互 OC与JS的交互详解   核心动画  Core Animation 核心动画编程">
+<meta property="og:type" content="article">
+<meta property="og:title" content="技术文章-iOS">
+<meta property="og:url" content="http://yoursite.com/2019/07/25/技术文章-iOS/index.html">
+<meta property="og:site_name" content="Ben&#39;Blog">
+<meta property="og:description" content="AppStore审核指南，中文版，英文版  技术方向 函数式响应编程  iOS应用架构谈   技术详解 emoji表情符号兼容方案  内存检测  方法混合-Method Swizzling  关联  应用热修复(hot-fix)JSPatch  OC与JS交互  使用JavaScriptCore实现OC与JS的交互 OC与JS的交互详解   核心动画  Core Animation 核心动画编程">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-11-23T03:54:31.353Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="技术文章-iOS">
+<meta name="twitter:description" content="AppStore审核指南，中文版，英文版  技术方向 函数式响应编程  iOS应用架构谈   技术详解 emoji表情符号兼容方案  内存检测  方法混合-Method Swizzling  关联  应用热修复(hot-fix)JSPatch  OC与JS交互  使用JavaScriptCore实现OC与JS的交互 OC与JS的交互详解   核心动画  Core Animation 核心动画编程">
+
+<link rel="canonical" href="http://yoursite.com/2019/07/25/技术文章-iOS/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>技术文章-iOS | Ben'Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Ben'Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">工欲善其事，必先利其器</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/07/25/技术文章-iOS/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Ben">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ben'Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          技术文章-iOS
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-07-25 09:56:20" itemprop="dateCreated datePublished" datetime="2019-07-25T09:56:20+08:00">2019-07-25</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-11-23 11:54:31" itemprop="dateModified" datetime="2020-11-23T11:54:31+08:00">2020-11-23</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <ul>
+<li><code>AppStore</code>审核指南，<a href="http://www.cocoachina.com/appstore/20140910/9574.html" target="_blank" rel="noopener">中文版</a>，<a href="https://developer.apple.com/app-store/review/guidelines/" target="_blank" rel="noopener">英文版</a></li>
+</ul>
+<h3 id="技术方向"><a href="#技术方向" class="headerlink" title="技术方向"></a>技术方向</h3><ul>
+<li><p><a href="https://kevinhm.gitbooks.io/functionalreactiveprogrammingonios/content/index.html" target="_blank" rel="noopener">函数式响应编程</a></p>
+</li>
+<li><p><a href="https://casatwy.com/iosying-yong-jia-gou-tan-kai-pian.html" target="_blank" rel="noopener">iOS应用架构谈</a></p>
+</li>
+</ul>
+<h3 id="技术详解"><a href="#技术详解" class="headerlink" title="技术详解"></a>技术详解</h3><ul>
+<li><p><code>emoji</code>表情符号兼容<a href="http://blog.csdn.net/qdkfriend/article/details/7576524" target="_blank" rel="noopener">方案</a></p>
+</li>
+<li><p><a href="http://blog.csdn.net/totogo2010/article/details/8233565" target="_blank" rel="noopener">内存检测</a></p>
+</li>
+<li><p>方法混合-<a href="http://blog.csdn.net/yiyaaixuexi/article/details/9374411" target="_blank" rel="noopener">Method Swizzling</a></p>
+</li>
+<li><p><a href="http://blog.csdn.net/onlyou930/article/details/9299169" target="_blank" rel="noopener">关联</a></p>
+</li>
+<li><p><a href="http://www.jianshu.com/p/0cb81bf23d7a" target="_blank" rel="noopener">应用热修复(hot-fix)JSPatch</a></p>
+</li>
+<li><p><code>OC</code>与<code>JS</code>交互</p>
+<ul>
+<li><a href="https://www.jianshu.com/p/cdaf9bc3d65d" target="_blank" rel="noopener">使用JavaScriptCore实现OC与JS的交互</a></li>
+<li><a href="https://www.cnblogs.com/oc-bowen/p/5547812.html" target="_blank" rel="noopener">OC与JS的交互详解</a></li>
+</ul>
+</li>
+<li><p>核心动画</p>
+<ul>
+<li><a href="https://www.jianshu.com/p/8c1c1697c0ce" target="_blank" rel="noopener">Core Animation</a></li>
+<li><a href="https://www.jianshu.com/p/85a568456b1f" target="_blank" rel="noopener">核心动画编程指南</a></li>
+</ul>
+</li>
+<li><p><a href="http://www.jianshu.com/p/0bece5f27650" target="_blank" rel="noopener">事件穿透</a></p>
+</li>
+<li><p>SDWebImage解读</p>
+<ul>
+<li><a href="https://www.jianshu.com/p/be9a0a088feb" target="_blank" rel="noopener">SDWebImage解读</a></li>
+<li><a href="http://www.2cto.com/kf/201604/500830.html" target="_blank" rel="noopener">你真的会用SDWebImage</a></li>
+</ul>
+</li>
+<li><p><a href="https://blog.csdn.net/jiang314/article/details/51878797" target="_blank" rel="noopener">AFN解析</a></p>
+</li>
+<li><p><a href="http://www.mamicode.com/info-detail-877996.html" target="_blank" rel="noopener">Socket编程</a></p>
+</li>
+<li><p><a href="https://blog.ibireme.com/2015/05/18/runloop/" target="_blank" rel="noopener">深入理解RunLoop</a></p>
+</li>
+<li><p><a href="https://blog.csdn.net/cocoarannie/article/details/11857141" target="_blank" rel="noopener">回调机制-代理,通知中心以及Block</a></p>
+</li>
+<li><p><a href="https://blog.csdn.net/margin_zh/article/details/6062676" target="_blank" rel="noopener">MVC模式</a></p>
+</li>
+<li><p><a href="http://blog.sina.com.cn/s/blog_6d61743b01018v0u.html" target="_blank" rel="noopener">UIApplication代理方法的作用</a></p>
+</li>
+<li><p><a href="http://www.cocoachina.com/articles/11270" target="_blank" rel="noopener">保存app内容到手机桌面</a></p>
+</li>
+<li><p><a href="https://my.oschina.net/u/2340880/blog/405847" target="_blank" rel="noopener">使用原生API进行二维码和条形码的扫描</a></p>
+</li>
+<li><p><a href="http://blog.sina.com.cn/s/blog_8ded6a080102v4ux.html" target="_blank" rel="noopener">使用UIImageView实现加载GIF图片</a></p>
+</li>
+<li><p>线程</p>
+<ul>
+<li><a href="http://blog.sina.com.cn/s/blog_5f1a6dd401010st4.html" target="_blank" rel="noopener">线程 NSCondition NSThread</a></li>
+</ul>
+</li>
+<li><p>设计模式</p>
+<ul>
+<li><a href="https://blog.csdn.net/hguisu/article/details/7558249" target="_blank" rel="noopener">策略模式</a></li>
+</ul>
+</li>
+<li><p>网络相关</p>
+<ul>
+<li><a href="https://www.cnblogs.com/bizhu/archive/2012/05/12/2497493.html" target="_blank" rel="noopener">TCP与UDP的区别</a></li>
+<li><a href="https://blog.csdn.net/dlutbrucezhang/article/details/8577810" target="_blank" rel="noopener">Socket通信原理和实践</a></li>
+</ul>
+</li>
+<li><p>正则表达式</p>
+<ul>
+<li><a href="https://www.cnblogs.com/heyonggang/archive/2013/12/16/3476885.html" target="_blank" rel="noopener">正则表达式</a></li>
+<li><a href="https://www.tuicool.com/articles/aAJRju" target="_blank" rel="noopener">正则表达式测试</a></li>
+</ul>
+</li>
+<li><p>自定义键盘</p>
+<ul>
+<li><a href="http://www.cocoachina.com/articles/9661" target="_blank" rel="noopener">自定义表情键盘</a><ul>
+<li><a href="http://blog.sina.com.cn/s/blog_6317728d0102vwjv.html" target="_blank" rel="noopener">自定义emoji表情键盘总结</a></li>
+<li><a href="https://www.2cto.com/kf/201503/380192.html" target="_blank" rel="noopener">系统自带表情的获取</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><a href="https://www.jianshu.com/p/2ace1d3030a1?utm_campaign=hugo&amp;utm_medium=reader_share&amp;utm_content=note&amp;utm_source=qq" target="_blank" rel="noopener">iOS多环境配置</a></p>
+</li>
+<li><p><a href="https://www.cnblogs.com/LifeTechnologySupporter/p/5033852.html" target="_blank" rel="noopener">开发者相关的几种证书</a></p>
+</li>
+</ul>
+<h4 id="UI处理"><a href="#UI处理" class="headerlink" title="UI处理"></a>UI处理</h4><ul>
+<li><a href="http://www.cocoachina.com/articles/7401" target="_blank" rel="noopener">自定义Collection View布局</a></li>
+</ul>
+<h4 id="问题参考解决方案"><a href="#问题参考解决方案" class="headerlink" title="问题参考解决方案"></a>问题参考解决方案</h4><ul>
+<li><a href="https://www.jianshu.com/p/bfb237f5c20c" target="_blank" rel="noopener">改变UITableView的headerView、footerView背景颜色</a></li>
+</ul>
+<h3 id="论坛"><a href="#论坛" class="headerlink" title="论坛"></a>论坛</h3><ul>
+<li><a href="http://bbs.iosre.com" target="_blank" rel="noopener">iosre</a></li>
+</ul>
+<h3 id="源码推荐"><a href="#源码推荐" class="headerlink" title="源码推荐"></a>源码推荐</h3><ul>
+<li><p><a href="http://www.cocoachina.com/articles/11223" target="_blank" rel="noopener">iOS录音和播放功能demo,多样式进度指示器</a></p>
+</li>
+<li><p><a href="http://www.code4app.com/forum.php?mod=viewthread&amp;tid=10405&amp;extra=page%3D1%26filter%3Dsortid%26sortid%3D1" target="_blank" rel="noopener">精巧顺滑的下载动画</a></p>
+</li>
+</ul>
+<h3 id="工具-应用"><a href="#工具-应用" class="headerlink" title="工具/应用"></a>工具/应用</h3><ul>
+<li><p>图片压缩</p>
+<ul>
+<li><a href="https://tinypng.com" target="_blank" rel="noopener">图片压缩tinypng</a></li>
+<li><a href="https://www.macupdate.com/app/mac/28766/imageoptim/" target="_blank" rel="noopener">ImageOptim</a><ul>
+<li>压图依据：图片文件中往往包含一些注释、颜色profile等多余信息，移除后图片质量不变，体积更小载入更快。<br>imageoptim：支持PNG/JPEG/GIF动画（PNG/JPEG/GIF是各种影像优化工具的图形前缀：AdvPNG、OptiPNG、Pngcrush、JpegOptim、Jpegtran、Gifsicle、PngOut）</li>
+<li><a href="https://www.appinn.com/imageoptim/" target="_blank" rel="noopener">相关资料</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>XnConvert</p>
+<ul>
+<li>是一款简单易用的批量图像格式转换软件。你可以轻松的实现图像格式的转换、缩放图像比例、添加滤镜特效、水印等等</li>
+<li><a href="https://www.xnview.com/en/xnconvert/" target="_blank" rel="noopener">官网</a></li>
+</ul>
+</li>
+<li><p>bug统计</p>
+<ul>
+<li><a href="https://www.infoq.cn/article/crashlytics-crash-statistics-tools/" target="_blank" rel="noopener">Crashlytics</a></li>
+</ul>
+</li>
+<li><p><a href="https://www.cnblogs.com/weiming4219/p/7908668.html" target="_blank" rel="noopener">抓包工具Charles</a></p>
+</li>
+<li><p><a href="https://xclient.info" target="_blank" rel="noopener">Xclient</a></p>
+</li>
+<li><p><a href="http://www.sdifen.com" target="_blank" rel="noopener">史蒂芬周的博客</a></p>
+</li>
+<li><p><a href="https://lanhuapp.com" target="_blank" rel="noopener">蓝湖</a>(相同功能网站：标你妹啊)</p>
+</li>
+<li><p><a href="https://www.williamlong.info/archives/4319.html" target="_blank" rel="noopener">好用的MarkDown编辑器一览</a></p>
+</li>
+<li><p><a href="https://www.jb51.net/article/55442.htm" target="_blank" rel="noopener">git命令表</a></p>
+</li>
+<li><p><a href="https://bbs.feng.com/read-htm-tid-11181844.html" target="_blank" rel="noopener">传输工具-iTransfer</a></p>
+</li>
+<li><p><a href="https://github.com/sqlitebrowser/sqlitebrowser/releases/tag/v3.10.1" target="_blank" rel="noopener">DB工具</a></p>
+</li>
+</ul>
+<h3 id="GIT"><a href="#GIT" class="headerlink" title="GIT"></a><code>GIT</code></h3><ul>
+<li><p><a href="https://github.com/ibireme/YYKit" target="_blank" rel="noopener">YYKit</a></p>
+</li>
+<li><p><a href="https://github.com/Rita5969/afnetwork3.0-for-webservice" target="_blank" rel="noopener">webService相关</a></p>
+</li>
+<li><p><a href="https://github.com/TeamStuQ/skill-map" target="_blank" rel="noopener">技能图谱</a></p>
+</li>
+<li><p><a href="https://github.com/Tim9Liu9/TimLiu-iOS?hmsr=toutiao.io&amp;utm_medium=toutiao.io&amp;utm_source=toutiao.io" target="_blank" rel="noopener">iOS、Mac开源项目及库</a></p>
+</li>
+</ul>
+<h3 id="技术大神"><a href="#技术大神" class="headerlink" title="技术大神"></a>技术大神</h3><ul>
+<li><p><a href="http://blog.ibireme.com" target="_blank" rel="noopener">YYKit作者博客</a></p>
+</li>
+<li><p><a href="http://www.liaoxuefeng.com" target="_blank" rel="noopener">廖雪峰</a></p>
+</li>
+<li><p><a href="http://www.ruanyifeng.com" target="_blank" rel="noopener">阮一峰</a></p>
+</li>
+<li><p><a href="https://casatwy.com" target="_blank" rel="noopener">casatwy</a></p>
+</li>
+<li><p><a href="https://github.com/chenliming777/awesome-awesomeness-zh_CN" target="_blank" rel="noopener">陈立明</a></p>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/07/14/音视频/" rel="prev" title="音视频">
+      <i class="fa fa-chevron-left"></i> 音视频
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/07/26/RunLoop/" rel="next" title="RunLoop">
+      RunLoop <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#技术方向"><span class="nav-number">1.</span> <span class="nav-text">技术方向</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#技术详解"><span class="nav-number">2.</span> <span class="nav-text">技术详解</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#UI处理"><span class="nav-number">2.1.</span> <span class="nav-text">UI处理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#问题参考解决方案"><span class="nav-number">2.2.</span> <span class="nav-text">问题参考解决方案</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#论坛"><span class="nav-number">3.</span> <span class="nav-text">论坛</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#源码推荐"><span class="nav-number">4.</span> <span class="nav-text">源码推荐</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#工具-应用"><span class="nav-number">5.</span> <span class="nav-text">工具/应用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GIT"><span class="nav-number">6.</span> <span class="nav-text">GIT</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#技术大神"><span class="nav-number">7.</span> <span class="nav-text">技术大神</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Ben</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">51</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">categories</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ben</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

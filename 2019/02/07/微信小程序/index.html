@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="背景当微信中的WebView逐渐成为移动Web的一个重要入口时，微信就有相关的JS API了。为了使在微信中对网页的开发简洁、高效，微信在2015年发布了一整套网页开发工具包JS-SDK，让开发者可以使用到微信的原生能力。 JS-SDK解决了移动网页能力不足的问题，通过暴露微信的接口使得Web开发者能够拥有更多的能力，然而在更多的能力之外，JS-SDK的模式并没有解决使用移动网页遇到的体验不良的问">
+<meta name="keywords" content="前端">
+<meta property="og:type" content="article">
+<meta property="og:title" content="微信小程序">
+<meta property="og:url" content="http://yoursite.com/2019/02/07/微信小程序/index.html">
+<meta property="og:site_name" content="Ben&#39;Blog">
+<meta property="og:description" content="背景当微信中的WebView逐渐成为移动Web的一个重要入口时，微信就有相关的JS API了。为了使在微信中对网页的开发简洁、高效，微信在2015年发布了一整套网页开发工具包JS-SDK，让开发者可以使用到微信的原生能力。 JS-SDK解决了移动网页能力不足的问题，通过暴露微信的接口使得Web开发者能够拥有更多的能力，然而在更多的能力之外，JS-SDK的模式并没有解决使用移动网页遇到的体验不良的问">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2019/02/07/微信小程序/小程序的运行环境.png">
+<meta property="og:image" content="http://yoursite.com/2019/02/07/微信小程序/常用机型rpx尺寸换算表.png">
+<meta property="og:image" content="http://yoursite.com/2019/02/07/微信小程序/小程序WSXX现阶段支持的选择器.png">
+<meta property="og:image" content="http://yoursite.com/2019/02/07/微信小程序/WXSS选择器优先级.png">
+<meta property="og:image" content="http://yoursite.com/2019/02/07/微信小程序/App构造器的参数.png">
+<meta property="og:image" content="http://yoursite.com/2019/02/07/微信小程序/onLaunch_onShow的参数.png">
+<meta property="og:image" content="http://yoursite.com/2019/02/07/微信小程序/Page构造器的参数01.png">
+<meta property="og:image" content="http://yoursite.com/2019/02/07/微信小程序/Page构造器的参数02.png">
+<meta property="og:image" content="http://yoursite.com/2019/02/07/微信小程序/组件共有属性.png">
+<meta property="og:image" content="http://yoursite.com/2019/02/07/微信小程序/属性集中设置容器的属性.png">
+<meta property="og:image" content="http://yoursite.com/2019/02/07/微信小程序/属性集中设置项目的属性.png">
+<meta property="og:image" content="http://yoursite.com/2019/02/07/微信小程序/小程序的启动流程.png">
+<meta property="og:image" content="http://yoursite.com/2019/02/07/微信小程序/页面层级准备过程图.png">
+<meta property="og:image" content="http://yoursite.com/2019/02/07/微信小程序/页面初始数据通信时序图.png">
+<meta property="og:image" content="http://yoursite.com/2019/02/07/微信小程序/视图层重渲染流程图.png">
+<meta property="og:updated_time" content="2020-11-23T03:54:31.348Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="微信小程序">
+<meta name="twitter:description" content="背景当微信中的WebView逐渐成为移动Web的一个重要入口时，微信就有相关的JS API了。为了使在微信中对网页的开发简洁、高效，微信在2015年发布了一整套网页开发工具包JS-SDK，让开发者可以使用到微信的原生能力。 JS-SDK解决了移动网页能力不足的问题，通过暴露微信的接口使得Web开发者能够拥有更多的能力，然而在更多的能力之外，JS-SDK的模式并没有解决使用移动网页遇到的体验不良的问">
+<meta name="twitter:image" content="http://yoursite.com/2019/02/07/微信小程序/小程序的运行环境.png">
+
+<link rel="canonical" href="http://yoursite.com/2019/02/07/微信小程序/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>微信小程序 | Ben'Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Ben'Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">工欲善其事，必先利其器</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/02/07/微信小程序/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Ben">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ben'Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          微信小程序
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-02-07 11:34:46" itemprop="dateCreated datePublished" datetime="2019-02-07T11:34:46+08:00">2019-02-07</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-11-23 11:54:31" itemprop="dateModified" datetime="2020-11-23T11:54:31+08:00">2020-11-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/前端/" itemprop="url" rel="index"><span itemprop="name">前端</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>当微信中的<code>WebView</code>逐渐成为移动<code>Web</code>的一个重要入口时，微信就有相关的<code>JS API</code>了。为了使在微信中对网页的开发简洁、高效，微信在<code>2015</code>年发布了一整套<strong>网页开发工具包<code>JS-SDK</code></strong>，让开发者可以使用到微信的原生能力。</p>
+<p><code>JS-SDK</code>解决了<strong>移动网页</strong>能力不足的问题，通过暴露微信的接口使得<code>Web</code>开发者能够拥有更多的能力，然而在更多的能力之外，<code>JS-SDK</code>的模式并没有解决使用移动网页遇到的体验不良的问题。</p>
+<p>使用移动网页遇到的体验不良问题，有：</p>
+<ol>
+<li>白屏过程(在移动端，受限于设备性能和网络速度，白屏会更加明显。有微信<code>Web</code>资源离线存储的解决方案)<ul>
+<li>微信<code>Web</code>资源离线存储是面向<code>Web</code>开发者提供的基于微信内的<code>Web</code>加速方案：通过使用微信离线存储，<code>Web</code>开发者可借助微信提供的资源存储能力，直接从微信本地加载<code>Web</code>资源而不需要再从服务端拉取，从而减少网页加载时间，为微信用户提供更优质的网页浏览体验。每个公众号下所有<code>Web App</code>累计最多可缓存<code>5M</code>的资源</li>
+<li>简单的页面通过<strong>离线存储</strong>能够解决白屏问题，但对于复杂页面(如页面加载了大量的<code>CSS</code>或是<code>JavaScript</code>文件)，依然会有白屏问题，因为构建复杂页面的文件的执行时间占用了大量的<code>UI</code>线程</li>
+</ul>
+</li>
+<li>缺少操作的反馈，主要表现在：<ul>
+<li>页面切换的生硬</li>
+<li>点击的迟滞感</li>
+</ul>
+</li>
+</ol>
+<p>为解决上述的用户体验问题，使开发者对移动网页的开发简洁、高效，全新的系统小程序应运而生。小程序具有以下特点：</p>
+<ul>
+<li>快速的加载</li>
+<li>更强大的能力</li>
+<li>原生的体验</li>
+<li>易用且安全的微信数据开放</li>
+<li>高效和简单的开发</li>
+</ul>
+<h3 id="小程序与普通网页开发的区别"><a href="#小程序与普通网页开发的区别" class="headerlink" title="小程序与普通网页开发的区别"></a>小程序与普通网页开发的区别</h3><p>小程序的主要开发语言是<code>JavaScript</code></p>
+<p>网页开发<strong>渲染线程</strong>和<strong>脚本线程</strong>是互斥的，这也是为什么长时间的脚本运行可能会导致页面失去响应，而在小程序中，二者是分开的，分别运行在不同的线程中。网页开发者可以使用到各种<strong>浏览器暴露出来的<code>DOM API</code></strong>，进行<code>DOM</code>选中和操作。小程序的<strong>逻辑层</strong>和<strong>渲染层</strong>是分开的，逻辑层运行在<code>JSCore</code>中，并没有一个完整<strong>浏览器对象</strong>，因而缺少相关的<code>DOM API</code>和<code>BOM API</code>。这一区别导致了前端开发非常熟悉的一些库，例如<code>jQuery</code>、<code>Zepto</code>等，在小程序中是无法运行的。同时<code>JSCore</code>的环境同<code>NodeJS</code>环境也是不尽相同，所以一些<code>NPM</code>的包在小程序中也是无法运行的。</p>
+<p><strong>网页开发</strong>者需要面对的环境是各式各样的<strong>浏览器</strong>，<code>PC</code>端需要面对<code>IE</code>、<code>Chrome</code>、<code>QQ</code>浏览器等，在移动端需要面对<code>Safari</code>、<code>Chrome</code>以及<code>iOS</code>、<code>Android</code>系统中的各式<code>WebView</code>。而小程序开发过程中需要面对的是两大操作系统<code>iOS</code>和<code>Android</code>的微信客户端，以及用于辅助开发的小程序开发者工具，小程序中三大运行环境也是有所区别的，区别如下：</p>
+<p><img src="/2019/02/07/微信小程序/小程序的运行环境.png" alt="小程序的运行环境"></p>
+<h3 id="小程序代码组成"><a href="#小程序代码组成" class="headerlink" title="小程序代码组成"></a>小程序代码组成</h3><p>小程序由配置代码<code>JSON</code>文件、模板代码<code>WXML</code>文件、样式代码<code>WXSS</code>文件以及<strong>逻辑代码</strong><code>JavaScript</code>文件组成。</p>
+<h5 id="JSON配置"><a href="#JSON配置" class="headerlink" title="JSON配置"></a><code>JSON</code>配置</h5><p><code>JSON</code>是一种数据格式，并不是编程语言。在小程序中<code>.json</code>为后缀的<code>JSON</code>文件是配置文件。</p>
+<p><code>JSON</code>文件在小程序代码中扮演静态配置的作用，在小程序运行之前就决定了小程序一些表现，需要注意的是小程序是无法在运行过程中去动态更新<code>JSON</code>配置文件从而发生对应变化的。</p>
+<ul>
+<li><code>JSON</code>语法</li>
+</ul>
+<p>通过<code>key-value</code>的方式来表达数据，<code>JSON</code>中键和值都用双引号包裹。<code>JSON</code>文件中无法使用注释，添加注释将会引发报错。</p>
+<ul>
+<li><code>JSON</code>的值只能是以下几种数据格式<ol>
+<li>数字，包含浮点数和整数</li>
+<li>字符串，需要包裹在双引号中</li>
+<li><code>Bool</code>值，<code>true</code>或者<code>false</code></li>
+<li>数组，需要包裹在方括号中<code>[]</code></li>
+<li>对象，需要包裹在大括号中<code>{}</code></li>
+<li><code>Null</code></li>
+</ol>
+</li>
+</ul>
+<p><strong>小程序配置 app.json</strong></p>
+<p><code>app.json</code> 是当前小程序的<strong>全局配置</strong>，包括了小程序的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">所有页面路径、</span><br><span class="line">界面表现、</span><br><span class="line">网络超时时间、</span><br><span class="line">底部 tab 等。</span><br></pre></td></tr></table></figure>
+<p>主要配置项的含义：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">pages - 用于指定小程序由哪些页面组成，每一项都对应一个页面的 路径+文件名 信息。</span><br><span class="line">文件名不需要写文件后缀，框架会自动去寻找对应位置的 .json, .js, .wxml, .wxss 四个文件进行处理。</span><br><span class="line"></span><br><span class="line">pages配置项的值是数组，数组的第一项代表小程序的初始页面（首页）。小程序中新增/减少页面，都需要对 pages 数组进行修改。</span><br><span class="line"></span><br><span class="line">tabBar - 指定 tab 栏的表现，以及 tab 切换时显示的对应页面。</span><br><span class="line">其中 tabBar 的 list 属性接受一个数组，只能配置最少 2 个、最多 5 个 tab。tab 按数组的顺序排序，每个项都是一个对象。</span><br></pre></td></tr></table></figure>
+<p>配置项细节可参考<a href="https://developers.weixin.qq.com/miniprogram/dev/framework/config.html" target="_blank" rel="noopener">小程序的配置 app.json</a></p>
+<p><strong>工具配置 project.config.json</strong></p>
+<p>使用场景：开发者在小程序开发者工具上做的任何配置都会写入到这个文件，当重新安装工具或换电脑时，只要载入同一个项目的代码包，开发者工具就自动会帮你恢复到之前开发项目时的个性化配置。</p>
+<p>配置项细节可参考<a href="https://developers.weixin.qq.com/miniprogram/dev/devtools/projectconfig.html" target="_blank" rel="noopener">开发者工具的配置</a></p>
+<p><strong>页面配置 page.json</strong></p>
+<p>这类配置是<code>pages/xxx</code>目录下和小程序页面相关的配置。让开发者可以独立定义每个页面的属性，如顶部颜色、是否允许下拉刷新。</p>
+<p>页面的配置只能设置<code>app.json</code>中部分<code>window</code>配置项的内容，页面中配置项会覆盖<code>app.json</code>的<code>window</code>中相同的配置项。</p>
+<p>配置项细节可参考<a href="https://developers.weixin.qq.com/miniprogram/dev/framework/config.html#页面配置" target="_blank" rel="noopener">页面配置</a></p>
+<h5 id="wxml后缀的WXML模板文件"><a href="#wxml后缀的WXML模板文件" class="headerlink" title=".wxml后缀的WXML模板文件"></a><code>.wxml</code>后缀的<code>WXML</code>模板文件</h5><p><code>WXML</code>全称是<code>WeiXin Markup Language</code>，是小程序框架设计的一套标签语言，结合小程序的基础组件、事件系统，可以构建出页面的结构。<code>WXML</code>要求标签必须是严格闭合的，没有闭合将会导致编译错误。</p>
+<p><strong>标签</strong>可以拥有<strong>属性</strong>，属性提供了有关的<strong><code>WXML</code>元素</strong>更多信息。<strong>属性总是定义在开始标签中</strong>，除了一些特殊的属性外，其余<strong>属性的格式都是key=”value”的方式成对出现</strong>。需要注意的是，<code>WXML</code>中的<strong>属性是大小写敏感的</strong>，也就是说<code>class</code>和<code>Class</code>在<code>WXML</code>中是不同的属性。</p>
+<p>网页编程采用的是<code>HTML + CSS + JS</code>这样的组合，其中：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">HTML： 是用来描述当前这个页面的结构；</span><br><span class="line">CSS： 用来描述页面的样子；</span><br><span class="line">JS： 通常是用来处理这个页面和用户的交互。</span><br></pre></td></tr></table></figure>
+<p>和<code>HTML</code>相似，<code>WXML</code>由标签、属性等构成。也有很多不一样的地方，区别如下：</p>
+<ol>
+<li>标签名字不一样：</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">写 HTML 的时候，经常会用到的标签是 div，p，span，在写一个页面的</span><br><span class="line">时候可以根据这些基础的标签组合出不一样的组件，如日历、弹窗等。基于</span><br><span class="line">此小程序把常用的组件包装起来，用指定的标签表示包装起来的组件，同时</span><br><span class="line">被包装起来的组件拥有对应的基本能力。如小程序的 WXML 用的标签是 </span><br><span class="line">view，button，text等，这些标签就是小程序给开发者包装好的基本组件</span><br><span class="line">能力，除此之外微信还提供了地图、视频、音频等组件能力。</span><br></pre></td></tr></table></figure>
+<p>更多组件能力的详细信息可参考<a href="https://developers.weixin.qq.com/miniprogram/dev/quickstart/basic/framework.html" target="_blank" rel="noopener">小程序的能力</a>、<a href="https://developers.weixin.qq.com/miniprogram/dev/component/" target="_blank" rel="noopener">小程序的组件</a></p>
+<ol start="2">
+<li>多了一些<code>wx:if</code>这样的属性</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">多了一些 wx:if 这样的属性以及 &#123;&#123;&#125;&#125; 这样的表达式。</span><br><span class="line"></span><br><span class="line">小程序中，wx:if 这样的属性和 &#123;&#123;&#125;&#125; 这样的表达式引入的背景：</span><br><span class="line"></span><br><span class="line">在网页的一般开发流程中，通常会通过 JS 操作 DOM（对应 HTML 的描述</span><br><span class="line">产生的树），以引起界面的一些变化响应用户的行为。如，用户点击某个按</span><br><span class="line">钮的时候，JS 会记录一些状态到 JS 变量里边，同时通过 DOM API 操</span><br><span class="line">控 DOM 的属性或者行为，进而引起界面一些变化。当项目越来越大的时</span><br><span class="line">候，代码会充斥着非常多的界面交互逻辑和程序的各种状态变量，显然这不</span><br><span class="line">是一个很好的开发模式，因此就有了 MVVM 的开发模式（如React，</span><br><span class="line">Vue），提倡把渲染和逻辑分离。</span><br></pre></td></tr></table></figure>
+<p><strong>小程序框架的思路：</strong>简单来说就是不要再让 <code>JS</code> 直接操控 <code>DOM</code>，<code>JS</code> 只需要管理状态即可，然后再通过一种<strong>模板语法</strong>来描述状态和界面结构的关系即可。</p>
+<ul>
+<li>数据绑定</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">数据绑定实现程序运行的过程中，可以动态的去改变渲染界面。在Web开发中，开发者使用JavaScript</span><br><span class="line">通过Dom接口来完成界面的实时更新。在小程序中，使用WXML语言所提供的数据绑定功能，来完成</span><br><span class="line">此项功能。</span><br><span class="line"></span><br><span class="line">WXML通过&#123;&#123;变量名&#125;&#125;来绑定WXML文件和对应的JavaScript文件中的data对象属性。</span><br><span class="line"></span><br><span class="line">属性值也可以动态的去改变，有所不同的是，属性值必须被包裹在双引号中。需要注意的是变量名是大小写敏</span><br><span class="line">感的，也就是说&#123;&#123;name&#125;&#125;和&#123;&#123;Name&#125;&#125;是两个不同的变量。没有被定义的变量或者是被设置为</span><br><span class="line">undefined的变量不会被同步到wxml中。</span><br></pre></td></tr></table></figure>
+<ul>
+<li>逻辑语法</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">通过&#123;&#123;变量名&#125;&#125;语法可以使得WXML拥有动态渲染的能力，除此外还可以在&#123;&#123; &#125;&#125;内进行简单的逻辑运算。</span><br><span class="line"></span><br><span class="line">&#123;&#123;&#125;&#125;内支持的逻辑运算：</span><br><span class="line">  * 三元运算</span><br><span class="line">  * 算数运算(类似于算数运算，支持字符串的拼接)</span><br><span class="line">  * &#123;&#123;&#125;&#125;中可以直接放置数字、字符串或者是数组</span><br></pre></td></tr></table></figure>
+<ul>
+<li>条件逻辑</li>
+</ul>
+<p><code>WXML</code>中，使用<code>wx:if=&quot;&quot;</code>来判断是否需要<strong>渲染</strong>该代码块。使用<code>wx:elif</code>和<code>wx:else</code>来添加一个<code>else</code>块。</p>
+<p>因为<code>wx:if</code>是一个<strong>控制属性</strong>，需要将它添加到一个标签上。如果要一次性判断多个组件标签，可以使用一个<code>&lt;block/&gt;</code>标签将多个组件包装起来，并在上边使用<code>wx:if</code>控制属性。</p>
+<ul>
+<li>列表渲染</li>
+</ul>
+<p>在组件上使用<code>wx:for</code>控制属性绑定一个数组，即可使用数组中各项的数据重复渲染该组件。默认数组的当前项的下标变量名默认为<code>index</code>，数组当前项的变量名默认为<code>item</code>。使用<code>wx:for-item</code>指定数组当前元素的变量名，使用<code>wx:for-index</code>指定数组当前下标的变量名(相当于命名别名)。</p>
+<p>如果需要保持列表项目的特征和状态时(如：<code>&lt;input/&gt;</code>中的输入内容，<code>&lt;switch/&gt;</code>的选中状态)，需要使用<code>wx:key</code>来指定列表中项目的唯一标识符。基于在渲染时，带有<code>key</code>的组件，框架会确保他们被重新排序，而不是重新创建，以确保使组件保持自身的状态，并且提高列表渲染时的效率。</p>
+<p><code>wx:key</code>的值以两种形式提供：</p>
+<ol>
+<li><strong>字符串</strong>，代表在<code>for</code>循环的<code>array</code>中<code>item</code>的某个<code>property</code>，该<code>property</code>的值需要是列表中<strong>唯一的字符串或数字，且不能动态改变</strong></li>
+<li>保留关键字<code>this</code>代表在<code>for</code>循环中的<code>item</code>本身，这种表示需要<code>item</code>本身是一个唯一的字符串或者数字</li>
+</ol>
+<ul>
+<li>模版</li>
+</ul>
+<p><code>WXML</code>提供模板(<code>template</code>)，可以在模板中定义代码片段，然后在不同的地方调用。使用<code>name</code>属性，作为模板的名字。然后在<code>&lt;template/&gt;</code>内定义代码片段。</p>
+<p>定义模版：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;template name=&quot;msgItem&quot;&gt;</span><br><span class="line">  &lt;view&gt;</span><br><span class="line">    &lt;text&gt; &#123;&#123;index&#125;&#125;: &#123;&#123;msg&#125;&#125; &lt;/text&gt;</span><br><span class="line">    &lt;text&gt; Time: &#123;&#123;time&#125;&#125; &lt;/text&gt;</span><br><span class="line">  &lt;/view&gt;</span><br><span class="line">&lt;/template&gt;</span><br></pre></td></tr></table></figure>
+<p>使用<code>is</code>属性，声明需要使用的模板，然后将模板所需要的<code>data</code>传入。<code>is</code>可以动态决定具体需要渲染哪个模板。</p>
+<ul>
+<li>引用</li>
+</ul>
+<p><code>WXML</code>提供两种文件引用方式<code>import</code>和<code>include</code>。</p>
+<ol>
+<li><code>import</code>可以在该文件中使用目标文件定义的<code>template</code>。需要注意的是<code>import</code>有作用域的概念，即只会<code>import</code>目标文件中定义的<code>template</code>，而不会<code>import</code>目标文件中<code>import</code>的<code>template</code>，简言之就是<code>import</code>不具有递归的特性</li>
+<li><code>include</code>可以将目标文件中除了<code>&lt;template/&gt;`</code><wxs><code>外的整个代码引入，相当于是拷贝到</code>include`位置</wxs></li>
+</ol>
+<h5 id="wxss后缀的WXSS样式文件"><a href="#wxss后缀的WXSS样式文件" class="headerlink" title=".wxss后缀的WXSS样式文件"></a><code>.wxss</code>后缀的<code>WXSS</code>样式文件</h5><p><code>WXSS</code>(<code>WeiXin Style Sheets</code>)是一套用于小程序的<strong>样式语言</strong>，用于描述<code>WXML</code>的<strong>组件样式</strong>，也就是视觉上的效果。<code>WXSS</code>与<code>Web</code>开发中的<code>CSS</code>类似。</p>
+<p><code>app.wxss</code>为项目的公共样式，它会被注入到小程序的每个页面。页面样式，是与<code>app.json</code>注册过的页面同名且位置同级的<code>.wxss</code>文件。其他样式，可以被项目公共样式和页面样式引用。</p>
+<p>在小程序开发中，开发者不需要像<code>Web</code>开发那样去优化样式文件的请求数量，只需要考虑<strong>代码的组织</strong>即可，样式文件最终会被编译优化。</p>
+<p>在<code>WXSS</code>中，引入了<code>rpx</code>(<code>responsive pixel</code>)尺寸单位，以适配不同宽度的屏幕。小程序编译后，<code>rpx</code>会做一次<code>px</code>换算。换算是以<code>375</code>个物理像素为基准，也就是在一个宽度为<code>375</code>物理像素的屏幕下，<code>1rpx = 1px</code>。</p>
+<p>常用机型<code>rpx</code>尺寸换算表：</p>
+<p><img src="/2019/02/07/微信小程序/常用机型rpx尺寸换算表.png" alt="常用机型rpx尺寸换算表"></p>
+<p>由于<code>WXSS</code>最终会被<strong>编译打包</strong>到目标文件中，用户只需要下载一次，在使用过程中不会因为样式的引用而产生多余的文件请求。小程序中样式文件的引用格式为：<code>@import &#39;.wxss文件路径&#39;</code>。</p>
+<p>小程序中<code>WXSS</code>内联样式与<code>Web</code>一样。即通过样式属性<code>style</code>进行设置。小程序支持动态更新内联样式。</p>
+<p>小程序<code>WXSS</code>现阶段支持的选择器：</p>
+<p><img src="/2019/02/07/微信小程序/小程序WSXX现阶段支持的选择器.png" alt="小程序WSXX现阶段支持的选择器"></p>
+<p><code>WXSS</code>选择器优先级：</p>
+<p><img src="/2019/02/07/微信小程序/WXSS选择器优先级.png" alt="WXSS选择器优先级"></p>
+<p><strong>权重越高越优先。在优先级相同的情况下，后设置的样式优先级高于先设置的样式。</strong></p>
+<h5 id="js后缀的JS脚本逻辑文件"><a href="#js后缀的JS脚本逻辑文件" class="headerlink" title=".js后缀的JS脚本逻辑文件"></a><code>.js</code>后缀的<code>JS</code>脚本逻辑文件</h5><p>小程序的主要开发语言是<code>JavaScript</code>，开发者使用<code>JavaScript</code>来<strong>开发业务逻辑</strong>以及调用小程序的<code>API</code>来完成业务需求。</p>
+<p>小程序中的<code>JavaScript</code>与浏览器中的<code>JavaScript</code>和<code>NodeJS</code>中的<code>JavaScript</code>的区别：</p>
+<ul>
+<li><p>浏览器中的<code>JavaScript</code></p>
+<ul>
+<li>浏览器中的<code>JavaScript</code>是由<strong><code>ECMAScript</code></strong>和<strong><code>BOM</code>(浏览器对象模型)</strong>以及<strong><code>DOM</code>(文档对象模型)</strong>组成的，<code>Web</code>前端开发者会很熟悉这两个对象模型，它使得开发者可以去操作浏览器的一些表现，比如修改<code>URL</code>、修改页面呈现、记录数据等等。</li>
+</ul>
+</li>
+<li><p><code>NodeJS</code>中<code>JavaScript</code></p>
+<ul>
+<li><code>NodeJS</code>中的<code>JavaScript</code>是由<strong><code>ECMAScript</code></strong>和<strong><code>NPM</code></strong>以及<strong><code>Native</code>模块</strong>组成，<code>NodeJS</code>的开发者会非常熟悉<code>NPM</code>的包管理系统，通过各种拓展包来快速的实现一些功能，同时通过使用一些原生的模块例如<code>FS</code>、<code>HTTP</code>、<code>OS</code>等等来拥有一些语言本身所不具有的能力。</li>
+</ul>
+</li>
+<li><p>小程序中的<code>JavaScript</code></p>
+<ul>
+<li>小程序中的<code>JavaScript</code>是由<strong><code>ECMAScript</code></strong>以及<strong>小程序框架</strong>和<strong>小程序<code>API</code></strong>来实现的。同浏览器中的<code>JavaScript</code>相比没有<code>BOM</code>以及<code>DOM</code>对象，所以类似<code>JQuery</code>、<code>Zepto</code>这种浏览器类库是无法在小程序中运行起来的，同样的缺少<code>Native</code>模块和<code>NPM</code>包管理的机制，小程序中无法加载原生库，也无法直接使用大部分的<code>NPM</code>包。</li>
+</ul>
+</li>
+</ul>
+<p>除<code>JavaScript</code>不同外，不同的平台的小程序的脚本执行环境也是有所区别的。目前小程序可以运行在三大平台，<code>iOS平台</code>、<code>Android平台</code>、<code>小程序IDE</code>，这种区别主要是体现三大平台实现的<code>ECMAScript</code>的标准有所不同。</p>
+<p>浏览器中，所有<code>JavaScript</code>是运行在同一个作用域下的，定义的参数或者方法可以被后续加载的脚本访问或者改写。与浏览器不同，小程序中可以将任何一个<code>JavaScript</code>文件作为一个模块，通过<code>module.exports</code>或者<code>exports</code>对外暴露接口。</p>
+<p>使用<code>require(path)</code>将模块引入。</p>
+<ul>
+<li>脚本的执行顺序</li>
+</ul>
+<p>浏览器中，脚本严格按照加载的顺序执行。在小程序中脚本的执行顺序与浏览器中的有所不同，小程序的执行入口文件是<code>app.js</code>，会根据其中<code>require</code>的模块顺序决定文件的运行顺序。当<code>app.js</code>执行结束后，小程序会按照开发者在<code>app.json</code>中定义的<code>pages</code>的顺序，逐一执行。</p>
+<ul>
+<li>作用域</li>
+</ul>
+<p>小程序脚本的作用域，在文件中声明的变量和函数只在该文件中有效，不同的文件中可以声明相同名字的变量和函数，不会互相影响。</p>
+<p>当需要使用全局变量的时候，通过使用全局函数<code>getApp()</code>获取全局的实例，并设置相关属性值，来达到设置全局变量的目的。</p>
+<p>注，脚本中全局变量的访问，对全局变量声明所在的脚本和变量所使用的脚本有顺序上的依赖关系，只有变量声明所在的脚本先执行了，变量使用的脚本才能有效的使用变量。</p>
+<p>当需要保证全局的数据可以在任何文件中安全的被使用到，那么可以在<code>App()</code>中进行设置(即在<code>app.js</code>中的<code>App()</code>中进行设置)。</p>
+<h3 id="小程序的宿主环境"><a href="#小程序的宿主环境" class="headerlink" title="小程序的宿主环境"></a>小程序的宿主环境</h3><p>微信客户端给小程序提供了宿主环境，小程序可以调用宿主环境提供的微信客户端的能力，这使得小程序比普通网页拥有更多的能力。</p>
+<p>小程序的运行环境分成<strong>渲染层</strong>和<strong>逻辑层</strong>。<code>WXML</code>模板和<code>WXSS</code>样式工作在渲染层，<code>JS</code>脚本工作在逻辑层。在小程序中渲染层和逻辑层是分离的。</p>
+<ul>
+<li>通信模型</li>
+</ul>
+<p>小程序的渲染层和逻辑层分别由<code>2</code>个线程管理：渲染层的界面使用了<code>WebView</code>进行渲染；逻辑层采用<code>JsCore</code>线程运行<code>JS</code>脚本。一个小程序存在多个界面，所以渲染层存在多个<code>WebView</code>线程，这两个线程的通信会经由微信客户端(可用<code>Native</code>来代指微信客户端)做中转，逻辑层发送网络请求也经由<code>Native</code>转发。</p>
+<ul>
+<li>数据驱动</li>
+</ul>
+<p>通常界面视图和变量状态是相关联的，通过<strong>数据驱动</strong>可省去手动修改视图的工作。</p>
+<p>小程序数据驱动的基本原理：<code>WXML</code>结构实际上等价于一棵<code>Dom</code>树，通过一个<code>JS</code>对象也可以来表达<code>Dom</code>树的结构。<code>WXML</code>可以先转成<code>JS</code>对象，然后再渲染出真正的<code>Dom</code>树。数据状态变化后，产生的<code>JS</code>对象对应的节点就会发生变化，此时可以对比前后两个<code>JS</code>对象得到变化的部分，然后把这个差异应用到原来的<code>Dom</code>树上，从而达到更新<code>UI</code>的目的。(即：状态更新的时候，通过对比前后<code>JS</code>对象变化，进而改变视图层的<code>Dom</code>树)</p>
+<ul>
+<li>双线程下的界面渲染</li>
+</ul>
+<p>小程序的逻辑层和渲染层是分开的两个线程。在渲染层，宿主环境会把<code>WXML</code>转化成对应的<code>JS</code>对象，在逻辑层发生数据变更的时候，通过宿主环境提供的<code>setData</code>方法把数据从逻辑层传递到渲染层，再经过对比前后差异，把差异应用在原来的<code>Dom</code>树上，渲染出正确的<code>UI</code>界面。</p>
+<p>大致流程如下：</p>
+<ol>
+<li>描述界面</li>
+<li>传递页面数据</li>
+<li>对比应用差异重新渲染界面</li>
+</ol>
+<ul>
+<li>小程序界面渲染的基本原理<ul>
+<li>小程序的页面结构由<code>WXML</code>进行描述，<code>WXML</code>可以通过<strong>数据绑定</strong>的语法绑定从逻辑层传递过来的数据字段，这里所说的数据其实就是来自于页面<code>Page</code>构造器的<code>data</code>字段，<code>data</code>参数是页面第一次渲染时从逻辑层传递到渲染层的数据</li>
+</ul>
+</li>
+</ul>
+<h5 id="程序与页面"><a href="#程序与页面" class="headerlink" title="程序与页面"></a>程序与页面</h5><p>从逻辑组成来说，一个小程序是由多个“页面”组成的“程序”。</p>
+<p>小程序与程序的区别：<strong>小程序</strong>指的是产品层面的程序；<strong>程序</strong>指的是代码层面的程序实例。</p>
+<ul>
+<li>程序构造器<code>App()</code></li>
+</ul>
+<p>宿主环境提供了<code>App()</code>构造器用来注册一个程序<code>App</code>，需要留意的是<code>App()</code>构造器必须写在项目根目录的<code>app.js</code>里，<strong><code>App</code>实例是单例对象</strong>，在其他<code>JS</code>脚本中可以使用宿主环境提供的<code>getApp()</code>来获取<strong>程序实例</strong>。</p>
+<p><code>App</code>构造器接受一个<code>Object</code>参数，其中<code>onLaunch</code>/<code>onShow</code>/<code>onHide</code>三个回调是<code>App</code>实例的生命周期函数。</p>
+<p><code>App</code>构造器的参数</p>
+<p><img src="/2019/02/07/微信小程序/App构造器的参数.png" alt="App构造器的参数"></p>
+<ul>
+<li><p>程序的生命周期和打开场景</p>
+<ul>
+<li>程序生命周期<ul>
+<li>初次进入小程序的时候，微信客户端初始化好宿主环境，同时从网络下载或者从本地缓存中拿到小程序的代码包，把它注入到宿主环境，初始化完毕后，微信客户端就会给<code>App</code>实例派发<code>onLaunch</code>事件，<code>App</code>构造器参数所定义的<code>onLaunch</code>方法会被调用</li>
+<li>进入小程序之后，用户可以点击右上角的关闭，或者按手机设备的<code>Home</code>键离开小程序，此时小程序并没有被直接销毁，把这种情况称为“小程序进入后台状态”，App构造器参数所定义的<code>onHide</code>方法会被调用</li>
+<li>当再次回到微信或者再次打开小程序时，微信客户端会把“后台”的小程序唤醒，把这种情况称为“小程序进入前台状态”，<code>App</code>构造器参数所定义的<code>onShow</code>方法会被调用</li>
+</ul>
+</li>
+<li><code>App</code>的生命周期是由微信客户端根据用户操作主动触发的。为了避免程序上的混乱，不应该从其他代码里主动调用<code>App</code>实例的生命周期函数</li>
+<li><p>在微信客户端中打开小程序的途径</p>
+<ul>
+<li>从群聊会话里打开</li>
+<li>从小程序列表中打开</li>
+<li>通过微信扫一扫二维码打开</li>
+<li>从另外一个小程序打开当前小程序</li>
+<li><p>针对不同途径的打开方式，小程序有时需要做不同的业务处理，所以微信客户端会把打开方式带给<code>onLaunch</code>和<code>onShow</code>的调用参数<code>options</code></p>
+<p><img src="/2019/02/07/微信小程序/onLaunch_onShow的参数.png" alt="onLaunch_onShow的参数"></p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>小程序全局数据</p>
+</li>
+</ul>
+<p>小程序的<code>JS</code>脚本是运行在<code>JsCore</code>的线程里，小程序的每个页面各自有一个<code>WebView</code>线程进行渲染，所以小程序切换页面时，小程序逻辑层的<code>JS</code>脚本运行上下文依旧在同一个<code>JsCore</code>线程中。<code>App</code>实例是单例的，因此不同页面直接可以通过<code>App</code>实例下的属性来共享数据，<code>App</code>构造器可以传递其他参数作为全局属性以达到全局共享数据的目的。</p>
+<p>要特别留意一点，所有页面的脚本逻辑都跑在同一个<code>JsCore</code>线程，页面使用<code>setTimeout</code>或者<code>setInterval</code>的定时器，然后跳转到其他页面时，这些定时器并没有被清除，需要开发者自己在页面离开的时候进行清理。</p>
+<ul>
+<li>页面</li>
+</ul>
+<p>一个页面是分三部分组成：界面、配置和逻辑。<strong>界面</strong>由<code>WXML</code>文件和<code>WXSS</code>文件来负责描述，<strong>配置</strong>由<code>JSON</code>文件进行描述，<strong>页面逻辑</strong>则是由<code>JS</code>脚本文件负责。</p>
+<p>一个页面的文件需要放置在同一个目录下，其中<code>WXML</code>文件和<code>JS</code>文件是必须存在的，<code>JSON</code>和<code>WXSS</code>文件是可选的。</p>
+<p>页面路径需要在小程序代码根目录<code>app.json</code>中的<code>pages</code>字段声明，否则这个页面不会被注册到宿主环境中。</p>
+<p>默认<code>pages</code>字段的第一个页面路径为小程序的首页。</p>
+<ul>
+<li>页面构造器<code>Page()</code></li>
+</ul>
+<p>宿主环境提供了<code>Page()</code>构造器用来注册一个小程序页面，<code>Page()</code>在页面对应的脚本<code>.js</code>中调用。<code>Page()</code>构造器接受一个<code>Object</code>参数，其中<code>data</code>属性是当前页面<code>WXML</code>模板中可以用来做数据绑定的初始数据。</p>
+<p><code>Page</code>实例的生命周期函数：<code>onLoad</code>/<code>onReady</code>/<code>onShow</code>/<code>onHide</code>/<code>onUnload</code></p>
+<p>页面的用户行为：<code>onPullDownRefresh</code>/<code>onReachBottom</code>/<code>onShareAppMessage</code>/<code>onPageScroll</code></p>
+<p><code>Page</code>构造器的参数</p>
+<p><img src="/2019/02/07/微信小程序/Page构造器的参数01.png" alt="Page构造器的参数01"><br><img src="/2019/02/07/微信小程序/Page构造器的参数02.png" alt="Page构造器的参数02"></p>
+<ul>
+<li><p>页面的生命周期和打开参数</p>
+<ul>
+<li>页面初次加载的时候，微信客户端就会给<code>Page</code>实例派发<code>onLoad</code>事件，<code>Page</code>构造器参数所定义的<code>onLoad</code>方法会被调用，<code>onLoad</code>在页面没被销毁之前只会触发<code>1</code>次，在<code>onLoad</code>的回调中，可以获取当前页面所调用的打开参数<code>option</code></li>
+<li>页面显示之后，<code>Page</code>构造器参数所定义的<code>onShow</code>方法会被调用，一般从别的页面返回到当前页面时，当前页的<code>onShow</code>方法都会被调用</li>
+<li>在页面初次渲染完成时，<code>Page</code>构造器参数所定义的<code>onReady</code>方法会被调用，<code>onReady</code>在页面没被销毁前只会触发<code>1</code>次，<code>onReady</code>触发时，表示页面已经准备妥当，在逻辑层就可以和视图层进行交互了</li>
+<li>事件触发的时机是<code>onLoad</code>早于<code>onShow</code>，<code>onShow</code>早于<code>onReady</code></li>
+<li>页面不可见时，<code>Page</code>构造器参数所定义的<code>onHide</code>方法会被调用，这种情况会在使用<code>wx.navigateTo</code>切换到其他页面、底部<code>tab</code>切换时触发</li>
+<li>当前页面使用<code>wx.redirectTo</code>或<code>wx.navigateBack</code>返回到其他页时，当前页面会被微信客户端销毁回收，此时<code>Page</code>构造器参数所定义的<code>onUnload</code>方法会被调用</li>
+<li><code>Page</code>的生命周期是由微信客户端根据用户操作主动触发的。为了避免程序上的混乱，我们不应该在其他代码中主动调用<code>Page</code>实例的生命周期函数</li>
+<li>打开参数<ul>
+<li>小程序把页面的<strong>打开路径</strong>定义成<strong>页面<code>URL</code></strong>，其组成格式和网页的<code>URL</code>类似，在页面路径后使用英文<code>?</code>分隔<code>path</code>和<code>query</code>部分，<code>query</code>部分的多个参数使用<code>&amp;</code>进行分隔，参数的名字和值使用<code>key=value</code>的形式声明</li>
+<li>在页面<code>Page</code>构造器里<code>onLoad</code>的<code>option</code>可以拿到当前页面的<strong>打开参数</strong>，其类型是一个<code>Object</code>，其键值对与页面<code>URL</code>上<code>query</code>键值对一一对应</li>
+<li>和网页<code>URL</code>一样，页面<code>URL</code>上的<code>value</code>如果涉及特殊字符（例如：<code>&amp;</code>字符、<code>?</code>字符、中文字符等，详情参考<code>URI</code>的<code>RFC3986</code>说明 ），需要采用<code>UrlEncode</code>后再拼接到页面<code>URL</code>上</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>页面的数据</p>
+</li>
+</ul>
+<p>宿主环境所提供的<code>Page</code>实例的原型中有<code>setData</code>函数，可以在<code>Page</code>实例下的方法调用<code>this.setData</code>把数据传递给渲染层，从而达到更新界面的目的。</p>
+<p>由于小程序的渲染层和逻辑层分别在两个线程中运行，所以<code>setData</code>传递数据实际是一个异步的过程。<code>setData</code>的第二个参数是一个<code>callback</code>回调，在这次<code>setData</code>对界面渲染完毕后触发。</p>
+<p><code>setData</code>其一般调用格式是<code>setData(data, callback)</code>，其中<code>data</code>是由多个<code>key: value</code>构成的<code>Object</code>对象。<code>data</code>中的<code>key</code>还可以非常灵活，以数据路径的形式给出。</p>
+<p>设置修改页面数据时需要注意的点：</p>
+<ol>
+<li>直接修改<code>Page</code>实例的<code>this.data</code>而不调用<code>this.setData</code>是无法改变页面的状态的，还会造成数据不一致</li>
+<li>由于<code>setData</code>是需要两个线程的一些通信消耗，<strong>为了提高性能，每次设置的数据不应超过<code>1024kB</code></strong></li>
+<li>不要把<code>data</code>中的任意一项的<code>value</code>设为<code>undefined</code>，否则可能会引起一些不可预料的<code>bug</code></li>
+</ol>
+<p><strong>提高小程序渲染性能遵循的原则：每次只设置需要改变的最小单位数据。</strong></p>
+<ul>
+<li>页面的用户行为</li>
+</ul>
+<p>小程序宿主环境提供了四个和页面相关的用户行为回调：</p>
+<ol>
+<li>下拉刷新<code>onPullDownRefresh</code><ul>
+<li>监听用户下拉刷新事件，需要在<code>app.json</code>的<code>window</code>选项中或页面配置<code>page.json</code>中设置<code>enablePullDownRefresh</code>为<code>true</code>。当处理完数据刷新后，<code>wx.stopPullDownRefresh</code>可以停止当前页面的下拉刷新</li>
+</ul>
+</li>
+<li>上拉触底<code>onReachBottom</code><ul>
+<li>监听用户上拉触底事件。可以在<code>app.json</code>的<code>window</code>选项中或页面配置<code>page.json</code>中设置触发距离<code>onReachBottomDistance</code>。在触发距离内滑动期间，本事件只会被触发一次</li>
+</ul>
+</li>
+<li>页面滚动<code>onPageScroll</code><ul>
+<li>监听用户滑动页面事件，参数为<code>Object</code>，包含<code>scrollTop</code>字段，表示页面在垂直方向已滚动的距离(单位<code>px</code>)</li>
+</ul>
+</li>
+<li>用户转发<code>onShareAppMessage</code><ul>
+<li>只有定义了此事件处理函数，右上角菜单才会显示“转发”按钮，在用户点击转发按钮的时候会调用，此事件需要<code>return</code>一个<code>Object</code>，包含<code>title</code>和<code>path</code>两个字段，用于自定义转发内容</li>
+</ul>
+</li>
+</ol>
+<ul>
+<li>页面跳转和路由</li>
+</ul>
+<p>小程序通过<strong>页面栈</strong>来管理页面。(页面栈即是页面层级)</p>
+<p>一个小程序拥有多个页面，可以通过<code>wx.navigateTo</code>推入一个新的页面，新的页面会进入页面栈内。</p>
+<p>小程序宿主环境限制了页面栈的最大层级为<code>10</code>层，也就是当页面栈到达<code>10</code>层之后就没有办法再推入新的页面了。</p>
+<p>和导航相关的<code>API</code>：(基于已有的页面栈<code>[pageA,pageB,pageC]</code>进行描述)</p>
+<ol>
+<li>使用<code>wx.navigateTo({url: &#39;pageD&#39;})</code>可以往当前页面栈多推入一个<code>pageD</code>，此时页面栈变成<code>[pageA, pageB, pageC, pageD]</code></li>
+<li>使用<code>wx.navigateBack()</code>可以退出当前页面栈的最顶上页面，此时页面栈变成<code>[pageA, pageB, pageC]</code></li>
+<li>使用<code>wx.redirectTo({url: &#39;pageE&#39;})</code>是替换当前页变成<code>pageE</code>，此时页面栈变成<code>[pageA, pageB, pageE]</code>，当页面栈到达<code>10</code>层没法再新增的时候，往往就是使用<code>redirectTo</code>这个<code>API</code>进行页面跳转</li>
+<li>小程序提供了原生的<code>Tabbar</code>支持，我们可以在<code>app.json</code>声明<code>tabBar</code>字段来定义<code>Tabbar</code>页<ul>
+<li>可以在有<code>Tabbar</code>页的页面栈中，使用<code>wx.switchTab({url: &#39;pageF&#39;})</code>，此时原来的页面栈会被清空(除了已经声明为<code>Tabbar</code>页<code>pageA</code>外其他页面会被销毁)，然后会切到<code>pageF</code>所在的<code>tab</code>页面，页面栈变成<code>[pageF]</code>，此时点击<code>Tab_PageA</code>切回到<code>pageA</code>时，<code>pageA</code>不会再触发<code>onLoad</code>，因为<code>pageA</code>没有被销毁</li>
+<li><code>Tabbar</code>页面初始化之后不会被销毁</li>
+</ul>
+</li>
+<li>可以使用<code>wx.reLaunch({url: &#39;pageH&#39;})</code>重启小程序，并且打开<code>pageH</code>，此时页面栈为<code>[pageH]</code></li>
+</ol>
+<p><strong>注：<code>wx.navigateTo</code>和<code>wx.redirectTo</code>只能打开非<code>TabBar</code>页面，<code>wx.switchTab</code>只能打开<code>Tabbar</code>页面</strong></p>
+<p><a href="https://developers.weixin.qq.com/ebook?action=get_post_info&amp;docid=0004eec99acc808b00861a5bd5280a" target="_blank" rel="noopener">页面路由及对应的页面生命周期函数详情</a>见文档底部</p>
+<h5 id="组件"><a href="#组件" class="headerlink" title="组件"></a>组件</h5><p>组件是小程序页面的基本组成单元。组件是在<code>WXML</code>模板文件声明中使用的。小程序使用标签名来引用一个组件，通常包含开始标签和结束标签，该标签的属性用来描述该组件。组件由小程序的宿主环境提供。</p>
+<p>所有组件名和属性都是小写，多个单词会以英文横杠<code>-</code>进行连接。</p>
+<p>组件共有属性(主要涉及样式和事件绑定)</p>
+<p><img src="/2019/02/07/微信小程序/组件共有属性.png" alt="组件共有属性"></p>
+<p>事件绑定(<code>bind/catch</code>)详情，见下文<strong>事件</strong>。</p>
+<p>各组件详细属性<a href="https://developers.weixin.qq.com/miniprogram/dev/component/" target="_blank" rel="noopener">见文档</a></p>
+<h5 id="API"><a href="#API" class="headerlink" title="API"></a>API</h5><p>宿主环境提供了丰富的<code>API</code>，可以很方便调起微信提供的能力。调用宿主环境<code>API</code>的<code>wx</code>对象是小程序的宿主环境所提供的全局对象。几乎所有小程序的<code>API</code>都挂载在<code>wx</code>对象底下。</p>
+<ul>
+<li><code>API</code>调用的一般约定<ol>
+<li><code>wx.on*</code>开头的<code>API</code>是监听某个事件发生的<code>API</code>接口，接受一个<code>Callback</code>函数作为参数。当该事件触发时，会调用<code>Callback</code>函数</li>
+<li>如未特殊约定，多数<code>API</code>接口为异步接口，都接受一个<code>Object</code>(通常是<code>{}</code>)作为参数</li>
+<li><code>API</code>的<code>Object</code>参数一般由<code>success</code>、<code>fail</code>、<code>complete</code>三个回调来接收接口调用结果</li>
+<li><code>wx.get*</code>开头的<code>API</code>是获取宿主环境数据的接口</li>
+<li><code>wx.set*</code>开头的<code>API</code>是写入数据到宿主环境的接口</li>
+</ol>
+</li>
+</ul>
+<p>各<code>API</code>详情<a href="https://developers.weixin.qq.com/miniprogram/dev/api/" target="_blank" rel="noopener">见文档</a></p>
+<h5 id="事件"><a href="#事件" class="headerlink" title="事件"></a>事件</h5><p>事件的定义：在小程序里，把“用户在渲染层(<code>UI</code>界面)的行为反馈”以及“组件的部分状态反馈”抽象为渲染层传递给逻辑层的“事件”。</p>
+<ul>
+<li><p>事件绑定及对应处理函数的调用流程</p>
+<ul>
+<li>事件一般是通过<code>bindtap</code>这个属性绑定在组件上的，同时在当前页面的<code>Page</code>构造器中定义对应的事件处理函数<code>tapHandleFunction</code>，当用户点击已绑定事件处理的区域时，达到触发条件生成事件<code>tap</code>，该事件处理函数<code>tapHandleFunction</code>会被执行，同时还会收到一个事件对象<code>event</code></li>
+</ul>
+</li>
+<li><p>事件类型和事件对象</p>
+</li>
+</ul>
+<p>当事件回调触发的时候，会收到一个事件对象。</p>
+<p>常见事件类型和事件对象<a href="https://developers.weixin.qq.com/ebook?action=get_post_info&amp;docid=000846df9a03909b0086a50025180a" target="_blank" rel="noopener">见文档</a></p>
+<ul>
+<li>事件绑定与冒泡捕获</li>
+</ul>
+<p>事件绑定的写法和组件属性一致，以<code>key=&quot;value&quot;</code>的形式，其中：</p>
+<ol>
+<li><code>key</code>以<code>bind</code>或者<code>catch</code>开头，然后跟上事件的类型，如<code>bindtap</code>、<code>catchtouchstart</code>。<code>bind</code>和<code>catch</code>后可以紧跟一个冒号，其含义不变，如<code>bind:tap</code>、<code>catch:touchstart</code>。同时<code>bind</code>和<code>catch</code>前还可以加上<code>capture-</code>来表示捕获阶段</li>
+<li><code>value</code>是一个字符串，需要在对应的页面<code>Page</code>构造器中定义同名的函数，否则触发事件时在控制台会有报错信息</li>
+</ol>
+<p><code>bind</code>和<code>capture-bind</code>的含义分别代表事件的<strong>冒泡阶段</strong>和<strong>捕获阶段</strong>。先是事件捕获，再是事件冒泡阶段。</p>
+<p><code>bind</code>事件绑定不会阻止冒泡事件向上冒泡，<code>catch</code>事件绑定可以阻止冒泡事件向上冒泡。<code>capture-catch</code>将中断捕获阶段和取消冒泡阶段。可以使用<code>catch</code>阻止事件的传递。</p>
+<ul>
+<li>兼容</li>
+</ul>
+<p>可以使用<code>wx.getSystemInfo</code>或者<code>wx.getSystemInfoSync</code>来获取手机品牌、操作系统版本号、微信版本号以及小程序基础库版本号等，通过这些信息，可以针对不同平台做差异化的服务，进而实现兼容。</p>
+<p>随着宿主环境的更新，新版本的宿主环境会提供一些新的<code>API</code>，你可以通过判断此<code>API</code>是否存在来做程序上的兼容。</p>
+<p>小程序还提供了<code>wx.canIUse</code>这个<code>API</code>，用于判断接口或者组件在当前宿主环境是否可用，其参数格式为: <code>${API}.${method}.${param}.${options}</code>或者<code>${component}.${attribute}.${option}</code>。</p>
+<h3 id="场景应用"><a href="#场景应用" class="headerlink" title="场景应用"></a>场景应用</h3><h5 id="基本的布局方法-–-Flex布局"><a href="#基本的布局方法-–-Flex布局" class="headerlink" title="基本的布局方法 – Flex布局"></a>基本的布局方法 – <code>Flex</code>布局</h5><p><code>Flex</code>布局中约定的术语：采用<code>flex</code>布局的元素，简称为“容器”，以<code>container</code>表示容器的类名。容器内的元素简称为“项目”，以<code>item</code>表示项目的类名。</p>
+<p><code>Flex</code>，目的是提供一种更加灵活的布局模型，使容器能通过改变里面项目的高宽、顺序，来对可用空间实现最佳的填充，方便适配不同大小的内容区域。</p>
+<p><code>Flex</code>不单是一个属性，它包含了一套新的属性集。属性集包括用于设置容器，和用于设置项目两部分。</p>
+<p>属性集中设置容器的属性：</p>
+<p><img src="/2019/02/07/微信小程序/属性集中设置容器的属性.png" alt="属性集中设置容器的属性"></p>
+<p>属性集中设置项目的属性：</p>
+<p><img src="/2019/02/07/微信小程序/属性集中设置项目的属性.png" alt="属性集中设置项目的属性"></p>
+<p>坐标轴：默认的情况下，水平方向的是<strong>主轴(<code>main axis</code>)</strong>，垂直方向的是<strong>交叉轴(<code>cross axis</code>)</strong>。项目是在主轴上排列，排满后在交叉轴方向换行。需要注意的是，交叉轴垂直于主轴，它的方向取决于主轴方向。</p>
+<h5 id="常见的交互反馈"><a href="#常见的交互反馈" class="headerlink" title="常见的交互反馈"></a>常见的交互反馈</h5><p><code>Toast</code>提示默认<code>1.5</code>秒后自动消失。</p>
+<p>需注意，不应该把<code>Toast</code>用于错误提示，因为错误提示需要明确告知用户具体原因，因此不适合用这种一闪而过的<code>Toast</code>弹出式提示。一般需要用户明确知晓操作结果状态的话，会使用模态对话框来提示，同时附带下一步操作的指引。</p>
+<h5 id="发起HTTPS网络通信"><a href="#发起HTTPS网络通信" class="headerlink" title="发起HTTPS网络通信"></a>发起HTTPS网络通信</h5><p>小程序宿主环境要求<code>request</code>发起的网络请求必须是<code>https</code>协议请求，因此开发者服务器必须提供<code>HTTPS</code>服务的接口，同时为了保证小程序不乱用任意域名的服务，<code>wx.request</code>请求的域名需要在小程序管理平台进行配置，如果小程序正式版使用<code>wx.request</code>请求未配置的域名，在控制台会有相应的报错。</p>
+<p><code>wx.request</code>的<code>method</code>参数需大写，有效值有：<code>OPTIONS</code>,<code>GET</code>,<code>HEAD</code>,<code>POST</code>,<code>PUT</code>,<code>DELETE</code>,<code>TRACE</code>,<code>CONNECT</code></p>
+<p>接口的兼容：要兼容旧版本接口的数据格式，对于新版本的接口所提供的新特性，是在旧版本接口的基础上进行新特性字段的添加。</p>
+<p>通过<code>wx.request</code>这个<code>API</code>，有两种方法把数据传递到服务器：通过<code>url</code>上的参数以及通过<code>data</code>参数。注，<code>url</code>是有长度限制的，其最大长度是<code>1024</code>字节，同时<code>url</code>上的参数需要拼接到字符串里，参数的值还需要做一次<code>urlEncode</code>。向服务端发送的数据超过<code>1024</code>字节时，就要采用<code>HTTP POST</code>的形式，此时传递的数据就必须要使用<code>data</code>参数。因此，需要传递数据时，使用<code>data</code>参数来传递。</p>
+<p><code>success</code>回调的参数<code>data</code>字段类型是根据<code>header[&#39;content-type&#39;]</code>决定的，默认<code>header[&#39;content-type&#39;]</code>是<code>application/json</code>，在触发<code>success</code>回调前，小程序宿主环境会对<code>data</code>字段的值做<code>JSON</code>解析，如果解析成功，那么<code>data</code>字段的值会被设置成解析后的<code>Object</code>对象，其他情况<code>data</code>字段都是<code>String</code>类型，其值为<code>HTTP</code>回包包体。</p>
+<p>小程序<code>request</code>默认的请求超时时间是<code>60</code>秒。通常的交互体验下，请求等待超过<code>3</code>秒，就需要给用户明确的服务不可用提示。小程序中的时间单位是毫秒。</p>
+<h5 id="本地数据缓存"><a href="#本地数据缓存" class="headerlink" title="本地数据缓存"></a>本地数据缓存</h5><ul>
+<li>缓存限制和隔离</li>
+</ul>
+<p>小程序宿主环境会管理不同小程序的数据缓存，不同小程序的本地缓存空间是分开的，每个小程序的缓存空间上限为<code>10MB</code>，如果当前缓存已经达到<code>10MB</code>，再通过<code>wx.setStorage</code>写入缓存会触发<code>fail</code>回调。</p>
+<p>由于本地缓存是存放在当前设备，用户换设备之后无法从另一个设备读取到当前设备数据，因此用户的关键信息不建议只存在本地缓存，应该把数据放到服务器端进行持久化存储。</p>
+<h3 id="小程序的发布"><a href="#小程序的发布" class="headerlink" title="小程序的发布"></a>小程序的发布</h3><p>对用户体验进行评估，可依据以下<code>9</code>点基础设计原则进行参考：</p>
+<ol>
+<li>导航清晰<ul>
+<li>导航是确保用户在网页中浏览跳转时不迷路的最关键因素</li>
+<li>导航需要告诉用户，当前在哪，可以去哪，如何回去等问题</li>
+</ul>
+</li>
+<li>流程明确<ul>
+<li>当前页面只设置了单一任务，且不出现目标流程之外的内容</li>
+<li>完成任务的操作简单</li>
+</ul>
+</li>
+<li>重点突出<ul>
+<li>页面有明确的重点，便于用户进入页面时能快速理解页面的内容</li>
+</ul>
+</li>
+<li>符合预期<ul>
+<li>在产品设计阶段便将自身信息架构和模型与用户的心理模型匹配</li>
+<li>便于用户能够依据以往的使用经验或其他生活经验，降低使用的理解和学习成本</li>
+</ul>
+</li>
+<li>等待与反馈<ul>
+<li>因页面过长时间的等待会引起不良情绪，在需要加载等待时，需要用明确的等待状态告知用户，以舒缓用户在等待时期的不良情绪</li>
+</ul>
+</li>
+<li>异常处理<ul>
+<li>在出现异常的时候需要给予用户清晰的状态提示，并告知解决方案，使其有路可退</li>
+</ul>
+</li>
+<li>内容和文案准确友好<ul>
+<li>使用的语言应当简洁，礼貌并容易被用户理解</li>
+</ul>
+</li>
+<li>和谐统一<ul>
+<li>设计风格应该是统一、和谐且具有延续性的</li>
+</ul>
+</li>
+<li>平台适配</li>
+</ol>
+<ul>
+<li>发布</li>
+</ul>
+<p>发布有两种模式：全量发布和分阶段发布。全量发布是指当点击发布之后，所有用户访问小程序时都会使用当前最新的发布版本。分阶段发布是指分不同时间段来控制部分用户使用最新的发布版本，分阶段发布我们也称为灰度发布。由于微信客户端存有旧版本小程序包缓存，微信客户端会在某些特定的时机异步去更新最新的小程序包，所以一般是全量发布的<code>24</code>小时后，所有用户才会真正使用到最新版的小程序。</p>
+<h3 id="底层框架"><a href="#底层框架" class="headerlink" title="底层框架"></a>底层框架</h3><p>小程序界面主要由成熟的<code>Web</code>技术渲染，辅之以大量的接口提供丰富的客户端原生能力。每个小程序页面都是用不同的<code>WebView</code>去渲染，这样可以提供更好的交互体验，更贴近原生体验，也避免了单个<code>WebView</code>的任务过于繁重。</p>
+<ul>
+<li>管控与安全</li>
+</ul>
+<p>基于<code>Web</code>技术来渲染小程序是存在一些不可控因素和安全风险的。这是因为<code>Web</code>技术是非常开放灵活的，可以利用<code>JavaScript</code>脚本随意地跳转网页或者改变界面上的任意内容。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">小程序是一个多WebView的架构，每一个小程序页面都是不同的WebView渲染后显示的。</span><br></pre></td></tr></table></figure>
+<ul>
+<li>天生的延时</li>
+</ul>
+<p>由于小程序是基于双线程模型的，意味着任何数据传递都是线程间的通信，因此会有一定的延时。在小程序架构里，逻辑层和渲染层间数据传递的通信是异步的。异步会使得各部分的运行时序变得复杂一些，小程序框架中已处理好，开发者只需要理解生命周期，以及控制合适的时机更新<code>UI</code>即可。</p>
+<p>除了逻辑层与渲染层之间的通信有延时，各层(逻辑层、渲染层)与客户端原生交互同样是有延时的。以逻辑层为例，开发者的代码是跑在逻辑层这个线程之上，而客户端原生是跑在微信主线程之上，所以注册给逻辑层有关客户端能力的接口，实际上也是跟微信主线程之间的通信，同样意味着有延时。这也是大部分提供的接口都是异步的原因。</p>
+<h5 id="组件系统"><a href="#组件系统" class="headerlink" title="组件系统"></a>组件系统</h5><ul>
+<li><code>Exparser</code>框架<ul>
+<li><code>Exparser</code>是微信小程序的组件组织框架，内置在小程序基础库中，为小程序的各种组件提供基础的支持。小程序内的所有组件，包括内置组件和自定义组件，都由<code>Exparser</code>组织管理</li>
+<li><code>Exparser</code>会维护整个页面的<strong>节点树</strong>相关信息，包括节点的属性、事件绑定等</li>
+<li>小程序中，所有节点树相关的操作都依赖于<code>Exparser</code>，包括<code>WXML</code>到页面最终节点树的构建、<code>createSelectorQuery</code>调用和自定义组件特性等</li>
+</ul>
+</li>
+</ul>
+<p>各个组件也将具有各自独立的逻辑空间。每个组件都分别拥有自己的独立的数据、<code>setData</code>调用，<code>createSelectorQuery</code>也将运行在<code>ShadowTree</code>(组件节点树)的层面上。</p>
+<p>小程序中组件的使用，需要经过注册和实例化。</p>
+<ul>
+<li>组件间通信</li>
+</ul>
+<p>不同组件实例间的通信有<code>WXML</code>属性值传递、事件系统、<code>selectComponent</code>和<code>relations</code>等方式。其中，<strong><code>WXML</code>属性值传递</strong>是从<strong>父组件向子组件</strong>的基本通信方式，而<strong>事件系统</strong>是从<strong>子组件向父组件</strong>的基本通信方式。(<code>WXML</code>属性值传递是父到子；事件系统是子到父)。事件可以分为冒泡事件和非冒泡事件。冒泡事件还可以划分为在<code>ShadowTree</code>(组件节点树)上冒泡的事件和在<code>ComposedTree</code>(页面节点数)上冒泡的事件。如果在<code>ShadowTree</code>上冒泡，则冒泡只会经过这个组件<code>ShadowTree</code>上的节点，这样可以有效控制事件冒泡经过的范围。</p>
+<p>在自定义组件中使用<code>triggerEvent</code>触发事件时，可以指定事件的<code>bubbles</code>、<code>composed</code>和<code>capturePhase</code>属性，用于标注事件的冒泡性质。</p>
+<ul>
+<li>原生组件</li>
+</ul>
+<p>在内置组件中，有一些组件较为特殊，它们并不完全在<code>Exparser</code>的渲染体系下，而是由客户端原生参与组件的渲染，这类组件我们称为“原生组件”,这也是小程序<code>Hybrid</code>技术的一个应用。</p>
+<p>原生组件的层级会比所有在<code>WebView</code>层渲染的普通组件要高，原生组件之间的层级就可以按照一定的规则控制。</p>
+<p>原生组件渲染限制：原生组件脱离在<code>WebView</code>渲染流程外，这带来了一些限制。最主要的限制是一些<code>CSS</code>样式无法应用于原生组件，例如，不能在父级节点使用<code>overflow:hidden</code>来裁剪原生组件的显示区域；不能使用<code>transformrotate</code>让原生组件产生旋转等。</p>
+<h3 id="性能优化"><a href="#性能优化" class="headerlink" title="性能优化"></a>性能优化</h3><p>小程序的启动流程如下</p>
+<p><img src="/2019/02/07/微信小程序/小程序的启动流程.png" alt="小程序的启动流程"></p>
+<p>在小程序启动时，微信会为小程序展示一个固定的启动界面，界面内包含小程序的图标、名称和加载提示图标。此时，微信会在背后完成几项工作：下载小程序代码包、加载小程序代码包、初始化小程序首页。</p>
+<ul>
+<li><p>下载到的小程序代码包不是小程序的源代码，而是编译、压缩、打包之后的代码包</p>
+<ul>
+<li>从开发者的角度看，控制代码包大小有助于减少小程序的启动时间</li>
+<li>常规控制代码包大小的方法有以下几种<ul>
+<li>精简代码，去掉不必要的<code>WXML</code>结构和未使用的<code>WXSS</code>定义</li>
+<li>减少在代码包中直接嵌入的资源文件</li>
+<li>压缩图片，使用适当的图片格式</li>
+<li>如果小程序比较复杂，优化后的代码总量可能仍然比较大，此时可以采用<strong>分包加载</strong>的方式进行优化</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>页面层级准备</p>
+</li>
+</ul>
+<p>在视图层内，小程序的每一个页面都独立运行在一个页面层级上。小程序启动时仅有一个页面层级，每次调用<code>wx.navigateTo</code>都会创建一个新的页面层级；相对地，<code>wx.navigateBack</code>会销毁一个页面层级。对于<code>wx.redirectTo</code>，这个调用不会打开一个新的页面层级，而是将当前页面层级重新初始化：重新传入页面的初始数据、路径等，视图层清空当前页面层级的渲染结果然后重新渲染页面。</p>
+<p>页面层级的准备工作分为三个阶段：第一阶段是启动一个<code>WebView</code>，在<code>iOS</code>和<code>Android</code>系统上，操作系统启动<code>WebView</code>都需要一小段时间；第二阶段是在<code>WebView</code>中初始化基础库，此时还会进行一些基础库内部优化，以提升页面渲染性能；第三阶段是注入小程序<code>WXML</code>结构和<code>WXSS</code>样式，使小程序能在接收到页面初始数据之后马上开始渲染页面(这一阶段无法在小程序启动前执行)。</p>
+<p>页面层级准备过程如下图：</p>
+<p><img src="/2019/02/07/微信小程序/页面层级准备过程图.png" alt="页面层级准备过程图"></p>
+<ul>
+<li>数据通信</li>
+</ul>
+<p>小程序中，页面的数据通信，体现在逻辑层向视图层发送页面数据(<code>data</code>和<code>setData</code>的内容)，视图层向逻辑层反馈用户事件。</p>
+<p>页面初始数据通信时序图：</p>
+<p><img src="/2019/02/07/微信小程序/页面初始数据通信时序图.png" alt="页面初始数据通信时序图"></p>
+<p>页面初始化的时间大致由<strong>页面初始数据通信时间</strong>和<strong>初始渲染时间</strong>两部分构成。传输时间与数据量大体上呈现正相关关系，传输过大的数据将使这一时间显著增加。因而减少传输数据量是降低数据传输时间的有效方式。</p>
+<p>为了提升数据更新的性能，开发者在执行<code>setData</code>调用时，最好遵循以下原则：</p>
+<ol>
+<li>不要过于频繁调用<code>setData</code>，应考虑将多次<code>setData</code>合并成一次<code>setData</code>调用</li>
+<li>数据通信的性能与数据量正相关，因而如果有一些数据字段不在界面中展示且数据结构比较复杂或包含长字符串，则不应使用<code>setData</code>来设置这些数据</li>
+<li>与界面渲染无关的数据最好不要设置在<code>data</code>中，可以考虑设置在<code>page</code>对象的其他字段下</li>
+</ol>
+<p>事件通信有延迟，降低延迟时间的方法主要有以下两个：</p>
+<ol>
+<li>去掉不必要的事件绑定(<code>WXML</code>中的<code>bind</code>和<code>catch</code>)，从而减少通信的数据量和次数</li>
+<li>事件绑定时需要传输<code>target</code>和<code>currentTarget</code>的<code>dataset</code>，因而不要在节点的<code>data</code>前缀属性中放置过大的数据</li>
+</ol>
+<ul>
+<li>视图层渲染</li>
+</ul>
+<p>视图层在接收到初始数据(<code>data</code>)和更新数据(<code>setData</code>数据)时，需要进行视图层渲染。在一个页面的生命周期中，视图层会收到一份初始数据和多份更新数据。收到初始数据时需要执行初始渲染，每次收到更新数据时需要执行重渲染。</p>
+<p>渲染流程中，时间开销大体上与节点树中节点的总量成正比例关系。因而减少<code>WXML</code>中节点的数量可以有效降低初始渲染和重渲染的时间开销，提升渲染性能。</p>
+<p>重渲染的机制：初始渲染中得到的<code>data</code>和当前节点树会保留下来用于重渲染。每次重渲染时，将<code>data</code>和<code>setData</code>数据套用在<code>WXML</code>片段上，得到一个新节点树。然后将新节点树与当前节点树进行比较，这样可以得到哪些节点的哪些属性需要更新、哪些节点需要添加或移除。最后，将<code>setData</code>数据合并到<code>data</code>中，并用新节点树替换旧节点树，用于下一次重渲染。</p>
+<p>重渲染流程图如下：</p>
+<p><img src="/2019/02/07/微信小程序/视图层重渲染流程图.png" alt="视图层重渲染流程图"></p>
+<p>小程序优化策略可分为以下三点：</p>
+<ol>
+<li>精简代码，降低<code>WXML</code>结构和<code>JS</code>代码的复杂性</li>
+<li>合理使用<code>setData</code>调用，减少<code>setData</code>次数和数据量</li>
+<li>必要时使用分包优化</li>
+</ol>
+<h3 id="小程序基础库"><a href="#小程序基础库" class="headerlink" title="小程序基础库"></a>小程序基础库</h3><p>由于小程序的渲染层和逻辑层是两个线程管理，渲染层<code>WebView</code>层注入的称为<code>WebView</code>基础库，逻辑层注入的称为<code>AppService</code>基础库。</p>
+<p>小程序基础库分为：<code>WebView</code>基础库、<code>AppService</code>基础库</p>
+<p>小程序的基础库，会被提前内置在微信客户端。这样做有以下两点好处：</p>
+<ol>
+<li>降低业务小程序的代码包大小</li>
+<li>可以单独修复基础库中的<code>Bug</code>，无需修改到业务小程序的代码包</li>
+</ol>
+<ul>
+<li>异常</li>
+</ul>
+<p>小程序基础库在<code>WebView</code>侧使用<code>window.onerror</code>方案进行捕捉异常，在逻辑层<code>AppService</code>侧通过把<code>App</code>实例和<code>Page</code>实例的各个生命周期等方法包裹在<code>try-catch</code>里进行捕捉异常。同时在<code>App</code>构造器里提供了<code>onError</code>的回调，当业务代码运行产生异常时，这个回调被触发，同时能够拿到异常的具体信息，开发者自己根据业务情况处理对应的容错逻辑。</p>
+<h3 id="微信开发者工具"><a href="#微信开发者工具" class="headerlink" title="微信开发者工具"></a>微信开发者工具</h3><p>微信开发者工具和微信客户端都无法直接运行小程序的源码，因此我们需要对小程序的源码进行编译。<strong>代码编译过程包括本地预处理、本地编译和服务器编译。</strong>为了快速预览，微信开发者工具模拟器运行的代码只经过本地预处理、本地编译，没有服务器编译过程，而微信客户端运行的代码是额外经过服务器编译的。</p>
+<ul>
+<li>编译<code>WXML</code></li>
+</ul>
+<p>小程序的渲染层的运行环境是一个<code>WebView</code>，而<code>WebView</code>无法直接理解<code>WXML</code>标签，所以需要经过编译。微信开发者工具内置了一个二进制的<code>WXML</code>编译器，这个编译器接受<strong><code>WXML</code>代码文件列表</strong>，处理完成之后输出<code>JavaScript</code>代码，这段代码是各个页面的结构生成函数。</p>
+<h3 id="拾遗"><a href="#拾遗" class="headerlink" title="拾遗"></a>拾遗</h3><ul>
+<li><p><code>wxs</code></p>
+<ul>
+<li><code>wxs</code>是对<code>JavaScript</code>做了一些封装和限制</li>
+<li><code>wxs</code>修饰的变量对外是不可见的，可以通过<code>exports</code>对外暴露对应的变量</li>
+<li><code>wxs</code>的注释<ul>
+<li>单行注释 - <code>//</code></li>
+<li>多行注释 - <code>/**/</code></li>
+<li>结尾注释 - <code>/*</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>小程序的开发框架，称为<code>MINA</code>框架</p>
+<ul>
+<li>有三层：<code>View</code>(视图层)、<code>App Service</code>(逻辑层)、<code>Native</code>(系统层)</li>
+</ul>
+</li>
+<li><p>小程序的启动</p>
+<ul>
+<li>冷启动<ul>
+<li>小程序首次被打开</li>
+<li>打开后长期置于后台状态(该时间一般维持<code>5</code>分钟)被系统给销毁后再次被打开</li>
+<li>短时间内连续收到系统的两次告警(这个时间间隔是<code>5</code>秒)微信就会主动销毁小程序</li>
+</ul>
+</li>
+<li>热启动，小程序已经被打开过，从后台状态切换到前台状态的启动</li>
+</ul>
+</li>
+<li><p>小程序的加载</p>
+<ul>
+<li><code>CDN</code><ul>
+<li>内容分发网络</li>
+<li>作用：把请求的内容，分发到距离用户最近的网路节点服务器，提高用户访问的响应速度以及成功率，解决带宽及服务器带来的一些延迟问题</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>小程序的生命周期</p>
+<ul>
+<li>小程序应用生命周期<ul>
+<li>四个回调方法<ul>
+<li>onLaunch</li>
+<li>onShow</li>
+<li>onHide</li>
+<li>onError</li>
+</ul>
+</li>
+<li>globalData是小程序应用的全局数据</li>
+</ul>
+</li>
+<li>小程序页面生命周期<ul>
+<li>五个回调方法<ul>
+<li>onLoad - 在页面没被销毁之前只会被调用一次</li>
+<li>onShow</li>
+<li>onReady - 在页面没被销毁之前只会被调用一次</li>
+<li>onHide</li>
+<li>onUnload</li>
+</ul>
+</li>
+<li>data是小程序当前页面的数据</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>页面路由</p>
+<ul>
+<li>多页面小程序，页面间的路由通过框架来管理，框架以栈的形式，维护了小程序的所有页面</li>
+<li>六种路由方式<ul>
+<li>初始化</li>
+<li>打开新页面</li>
+<li>页面重定向</li>
+<li>页面返回</li>
+<li><code>Tab</code>切换</li>
+<li>重加载</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>事件</p>
+<ul>
+<li>通过事件来让视图层和逻辑层进行通讯</li>
+<li>事件是视图层到逻辑层的通讯方式</li>
+<li>事件可以将用户的行为反馈到逻辑层进行处理</li>
+<li>事件可以绑定在组件上，触发事件后，就会执行逻辑层中对应的事件处理函数</li>
+<li>事件对象可以携带额外信息</li>
+<li>小程序中有事件模型的概念<ul>
+<li>事件捕获阶段<ul>
+<li>可捕获事件</li>
+<li><code>tap</code> &lt; 350毫秒</li>
+<li><code>touchstart</code></li>
+<li><code>touchmove</code></li>
+<li><code>touchcancel</code></li>
+<li><code>touchend</code></li>
+<li><code>longpress</code> &gt; 350毫秒 - 推荐使用</li>
+<li><code>longtap</code> &gt; 350毫秒</li>
+</ul>
+</li>
+<li>事件处理阶段</li>
+<li>事件冒泡阶段<ul>
+<li>可冒泡事件</li>
+<li><code>touchstart</code></li>
+<li><code>longtap</code></li>
+<li><code>touchmove</code></li>
+<li><code>transitionend</code></li>
+<li><code>touchcancel</code></li>
+<li><code>animationstart</code></li>
+<li><code>touchend</code></li>
+<li><code>animationiteration</code></li>
+<li><code>tap</code></li>
+<li><code>animationend</code></li>
+<li><code>longpress</code></li>
+<li><code>touchforcechange</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>富文本组件(<code>rich-text</code>)，可以用来绘制表格</p>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/前端/" rel="tag"># 前端</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/02/07/iOS崩溃调试/" rel="prev" title="iOS崩溃调试">
+      <i class="fa fa-chevron-left"></i> iOS崩溃调试
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/03/04/CocoaPods/" rel="next" title="CocoaPods">
+      CocoaPods <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#背景"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#小程序与普通网页开发的区别"><span class="nav-number">2.</span> <span class="nav-text">小程序与普通网页开发的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#小程序代码组成"><span class="nav-number">3.</span> <span class="nav-text">小程序代码组成</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#JSON配置"><span class="nav-number">3.0.1.</span> <span class="nav-text">JSON配置</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#wxml后缀的WXML模板文件"><span class="nav-number">3.0.2.</span> <span class="nav-text">.wxml后缀的WXML模板文件</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#wxss后缀的WXSS样式文件"><span class="nav-number">3.0.3.</span> <span class="nav-text">.wxss后缀的WXSS样式文件</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#js后缀的JS脚本逻辑文件"><span class="nav-number">3.0.4.</span> <span class="nav-text">.js后缀的JS脚本逻辑文件</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#小程序的宿主环境"><span class="nav-number">4.</span> <span class="nav-text">小程序的宿主环境</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#程序与页面"><span class="nav-number">4.0.1.</span> <span class="nav-text">程序与页面</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#组件"><span class="nav-number">4.0.2.</span> <span class="nav-text">组件</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#API"><span class="nav-number">4.0.3.</span> <span class="nav-text">API</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#事件"><span class="nav-number">4.0.4.</span> <span class="nav-text">事件</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#场景应用"><span class="nav-number">5.</span> <span class="nav-text">场景应用</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#基本的布局方法-–-Flex布局"><span class="nav-number">5.0.1.</span> <span class="nav-text">基本的布局方法 – Flex布局</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#常见的交互反馈"><span class="nav-number">5.0.2.</span> <span class="nav-text">常见的交互反馈</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#发起HTTPS网络通信"><span class="nav-number">5.0.3.</span> <span class="nav-text">发起HTTPS网络通信</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#本地数据缓存"><span class="nav-number">5.0.4.</span> <span class="nav-text">本地数据缓存</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#小程序的发布"><span class="nav-number">6.</span> <span class="nav-text">小程序的发布</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#底层框架"><span class="nav-number">7.</span> <span class="nav-text">底层框架</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#组件系统"><span class="nav-number">7.0.1.</span> <span class="nav-text">组件系统</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#性能优化"><span class="nav-number">8.</span> <span class="nav-text">性能优化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#小程序基础库"><span class="nav-number">9.</span> <span class="nav-text">小程序基础库</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#微信开发者工具"><span class="nav-number">10.</span> <span class="nav-text">微信开发者工具</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#拾遗"><span class="nav-number">11.</span> <span class="nav-text">拾遗</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Ben</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">51</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">categories</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ben</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

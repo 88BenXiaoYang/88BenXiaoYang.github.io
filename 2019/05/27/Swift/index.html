@@ -1,0 +1,1207 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="简介Swift 是支持多编程范式和编译式的语言 Swift 的特点：  结合C和OC的优点 和OC使用相同的运行环境 用于开发OS X和iOS应用程序 将OC中的.h和.m文件合并成了一个文件.swift文件 有类型检查的能力，即可以根据值推出变量的类型 - “类型意识强”  学习swift时，可利用利器Playground，因其能实时显示结果 Tips: 12345编程范式：编程的模式、方法，编">
+<meta name="keywords" content="iOS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Swift">
+<meta property="og:url" content="http://yoursite.com/2019/05/27/Swift/index.html">
+<meta property="og:site_name" content="Ben&#39;Blog">
+<meta property="og:description" content="简介Swift 是支持多编程范式和编译式的语言 Swift 的特点：  结合C和OC的优点 和OC使用相同的运行环境 用于开发OS X和iOS应用程序 将OC中的.h和.m文件合并成了一个文件.swift文件 有类型检查的能力，即可以根据值推出变量的类型 - “类型意识强”  学习swift时，可利用利器Playground，因其能实时显示结果 Tips: 12345编程范式：编程的模式、方法，编">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-11-23T03:54:31.135Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Swift">
+<meta name="twitter:description" content="简介Swift 是支持多编程范式和编译式的语言 Swift 的特点：  结合C和OC的优点 和OC使用相同的运行环境 用于开发OS X和iOS应用程序 将OC中的.h和.m文件合并成了一个文件.swift文件 有类型检查的能力，即可以根据值推出变量的类型 - “类型意识强”  学习swift时，可利用利器Playground，因其能实时显示结果 Tips: 12345编程范式：编程的模式、方法，编">
+
+<link rel="canonical" href="http://yoursite.com/2019/05/27/Swift/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>Swift | Ben'Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Ben'Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">工欲善其事，必先利其器</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/05/27/Swift/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Ben">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ben'Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Swift
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-05-27 11:08:36" itemprop="dateCreated datePublished" datetime="2019-05-27T11:08:36+08:00">2019-05-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-11-23 11:54:31" itemprop="dateModified" datetime="2020-11-23T11:54:31+08:00">2020-11-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/iOS/" itemprop="url" rel="index"><span itemprop="name">iOS</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p><code>Swift</code> 是支持多编程范式和编译式的语言</p>
+<p><code>Swift</code> 的特点：</p>
+<ul>
+<li>结合<code>C</code>和<code>OC</code>的优点</li>
+<li>和<code>OC</code>使用相同的运行环境</li>
+<li>用于开发<code>OS X</code>和<code>iOS</code>应用程序</li>
+<li>将<code>OC</code>中的<code>.h</code>和<code>.m</code>文件合并成了一个文件<code>.swift</code>文件</li>
+<li>有类型检查的能力，即可以根据值推出变量的类型 - “类型意识强”</li>
+</ul>
+<p>学习<code>swift</code>时，可利用利器<code>Playground</code>，因其能实时显示结果</p>
+<p>Tips:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">编程范式：编程的模式、方法，编程风格。每种语言根据其特性，有对应的</span><br><span class="line">编程模式、方法，有对应的技术禁止和技术允许。</span><br><span class="line"></span><br><span class="line">一种语言，因其语言所具有的特性，可有多种编程范型（编程模式）。如</span><br><span class="line"> c++ 可有过程化编程、面向对象编程、泛型编程。范型元素，即模式元素。</span><br></pre></td></tr></table></figure>
+<h3 id="基本语法"><a href="#基本语法" class="headerlink" title="基本语法"></a>基本语法</h3><ul>
+<li>使用<code>import</code>语句引入任何<code>OC</code>框架（或<code>C</code>库）</li>
+<li>程序由多种标记组成，标记包括单词、标识符、常量、字符串、符号</li>
+<li><p>注释</p>
+<ol>
+<li>单行注释：<code>//注释内容</code></li>
+<li>多行注释：<code>/*注释内容*/</code></li>
+</ol>
+</li>
+<li><p>分号</p>
+<ol>
+<li>不要求在每行语句的结尾使用分号(;)</li>
+<li>在同一行书写多条语句时，必须用分号隔开，最后一条语句可不用分号结尾</li>
+</ol>
+</li>
+<li><p>标识符</p>
+<ul>
+<li>是给变量、常量、方法、函数、枚举、结构体、类、协议等指定的名字</li>
+<li>命名规则<ol>
+<li>区分大小写</li>
+<li>首字符可以以下划线(_)或者字母开始，但不能是数字</li>
+<li>标识符中其他字符可以是下划线(_)、字母或数字</li>
+<li>如果一定要使用关键字作为标识符，可以在关键字前后添加重音符号(‘)。注，通常不用关键字作为标识符</li>
+</ol>
+</li>
+</ul>
+</li>
+<li><p>关键字</p>
+<ul>
+<li>是类似于标识符的保留字符序列</li>
+<li>关键字是对编译器具有特殊意义的预定义保留标识符</li>
+<li>常见的关键字<ol>
+<li>与声明有关</li>
+<li>与语句有关，如条件/判断/循环等语句</li>
+<li>表达式和类型</li>
+<li>在特定上下文中使用的关键字</li>
+</ol>
+</li>
+</ul>
+</li>
+<li><p>空格</p>
+<ul>
+<li>对空格的使用有一定的要求，但不像<code>Python</code>对缩进的要求那么严格</li>
+<li>运算符不能直接跟在变量或常量的后面</li>
+<li>运算表达式中空格有断句的作用，在这种情况下使用分号<code>(;)</code>来表示一句完整的运算表达式</li>
+</ul>
+</li>
+<li><p>打印输出</p>
+<ul>
+<li>使用<code>print</code>函数打印输出</li>
+</ul>
+</li>
+</ul>
+<h3 id="数据类型"><a href="#数据类型" class="headerlink" title="数据类型"></a>数据类型</h3><ul>
+<li><p>有符号浮点数类型</p>
+<ul>
+<li><p><code>Double</code></p>
+<ol>
+<li><code>64</code>位浮点数，需要存储很大或很高精度的浮点数时使用此类型</li>
+<li>精确度高，至少有<code>15</code>位数字</li>
+</ol>
+</li>
+<li><p><code>Float</code></p>
+<ol>
+<li><code>32</code>位浮点数，对精度要求不高时使用此类型</li>
+<li>最少只有<code>6</code>位数字</li>
+</ol>
+</li>
+<li><p>当使用浮点数时，<code>swift</code>默认为<code>Double</code>类型</p>
+</li>
+</ul>
+</li>
+<li><p>布尔值，<code>true/false</code></p>
+</li>
+<li><p>字符串，字符的序列集合</p>
+</li>
+<li><p>可选类型<code>(Optional)</code>，使用可选类型来处理值可能缺失的情况。可选类型表示有值或没有值</p>
+</li>
+<li><p>类型别名</p>
+<ul>
+<li>对当前的类型定义了另一个名字，通过使用<code>typealias</code>关键字来定义</li>
+<li>语法格式：<code>typealias newname = type</code></li>
+</ul>
+</li>
+<li><p>类型安全</p>
+<ul>
+<li><code>swift</code>是一种类型安全<code>(type safe)</code>的语言</li>
+<li>在编译时进行类型检查<code>(type checks)</code>，在这期间把不匹配的类型标记为错误</li>
+</ul>
+</li>
+<li><p>类型推断</p>
+<ul>
+<li>在没有显示指定类型时，<code>swift</code>会使用类型推断<code>(type inference)</code>来选择合适的类型</li>
+<li><code>OC</code>中声明变量时需要指明类型</li>
+<li>当推断浮点数的类型时，<code>swift</code>总是会选择<code>Double</code>而不是<code>Float</code></li>
+<li>如果表达式中同时出现了整数和浮点数，会被推断为<code>Double</code>类型</li>
+</ul>
+</li>
+<li><p>类型转换</p>
+<ul>
+<li>变量类型不同时，若要进行相互赋值时，需要进行显示转换，将数据类型统一为其中的一种类型</li>
+</ul>
+</li>
+<li><p>整数</p>
+<ul>
+<li>可正可负的整数，称为有符号整数</li>
+<li>只能为正的整数，称为无符号整数</li>
+</ul>
+</li>
+</ul>
+<h3 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h3><h5 id="变量"><a href="#变量" class="headerlink" title="变量"></a>变量</h5><ul>
+<li>变量是占位符，用于引用计算机内存地址</li>
+<li>类型决定了变量占用内存的大小</li>
+<li>变量声明<ul>
+<li>告诉编译器在内存中的哪个位置上为变量创建多大的存储空间</li>
+<li>在使用前，用关键字<code>var</code>声明它</li>
+</ul>
+</li>
+<li>变量命名，规则见“基本语法/标识符/命名规则”</li>
+<li>变量输出<ul>
+<li>变量和常量可以使用<code>print</code>函数来输出</li>
+<li>在字符串中可以使用括号与反斜线来插入变量</li>
+</ul>
+</li>
+</ul>
+<h5 id="常量"><a href="#常量" class="headerlink" title="常量"></a>常量</h5><ul>
+<li>使用关键字<code>let</code>来声明</li>
+<li>类型标注<ul>
+<li>说明常量或变量中要存储的值的类型</li>
+<li>添加类型标注，需要在常量或变量名后面加上一个冒号和空格，然后加上类型名称，如：<code>let/var variablename: Type</code></li>
+</ul>
+</li>
+<li>变量命名，规则见“基本语法/标识符/命名规则”</li>
+<li>常量需要的开销比变量小</li>
+<li>常量的值，在编译的时候可以不立即指定，但是只能给它赋值一次</li>
+</ul>
+<h5 id="字面量"><a href="#字面量" class="headerlink" title="字面量"></a>字面量</h5><ul>
+<li><p>整型字面量</p>
+<ul>
+<li>二进制前缀<code>0b</code></li>
+<li>八进制前缀<code>0o</code></li>
+<li>十六进制前缀<code>0x</code></li>
+</ul>
+</li>
+<li><p>浮点型字面量</p>
+<ul>
+<li>用指数表示的小数<ol>
+<li>十进制表示，指数部分由大写或小写字母<code>e</code>为前缀后跟十进制数字串组成，这串数字表示<code>e</code>之前的数量乘以<code>10</code>的几次方，如：<code>1.25e2表示1.25*10^2也就是125.0</code></li>
+<li>十六进制表示，指数部分由大写或小写字母<code>p</code>为前缀后跟十进制数字串组成，这串数字表示<code>p</code>之前的数量乘以<code>2</code>的几次方，如：<code>0xFp2表示15*2^2也就是60</code></li>
+</ol>
+</li>
+</ul>
+</li>
+<li><p>布尔型字面量</p>
+<ul>
+<li><code>true 表示真</code></li>
+<li><code>false 表示假</code></li>
+<li><code>nil 表示没有值</code></li>
+</ul>
+</li>
+</ul>
+<h5 id="可选类型-Optionals"><a href="#可选类型-Optionals" class="headerlink" title="可选类型(Optionals)"></a>可选类型<code>(Optionals)</code></h5><ul>
+<li>用于处理值缺失的情况</li>
+<li><code>swift</code>定义后缀<code>?</code>作为命名为可选类型<code>(Optional)</code>的缩写</li>
+<li><code>var optionalInteger: Int? 等价于 var optionalInteger: Optional&lt;Int&gt;</code>，注：类型和<code>?</code>之间没有空格</li>
+<li>可选类型是一个含有两种情况的枚举，<code>None</code>和<code>Some(T)</code></li>
+<li>任何类型都可以明确声明为可选类型</li>
+<li><p>可以使用后缀操作符<code>!</code>来访问可选类型的实例变量值</p>
+<ul>
+<li>使用操作符<code>!</code>去获取值为<code>nil</code>的可选变量会有运行时错误</li>
+<li>可以用可选链接和可选绑定选择性执行可选表达式上的操作，这种情况下，如果值为<code>nil</code>，任何操作都不会执行，也不会有运行报错</li>
+</ul>
+</li>
+<li><p>可选类型类似于<code>OC</code>中指针的<code>nil</code>值，但是<code>nil</code>只对类<code>(class)</code>有用，而可选类型对所有类型都可用，并且更安全</p>
+</li>
+<li><p>可选值的强制解析</p>
+<ul>
+<li>在确定可选类型确实包含值之后，可在可选的名字后面加一个感叹号<code>(!)</code>来获取值</li>
+<li>使用<code>!</code>来获取一个不存在的可选值会导致运行时错误，因此，使用<code>!</code>来强制解析值之前，一定要确定可选包含一个非<code>nil</code>的值</li>
+</ul>
+</li>
+<li><p>自动解析，在声明可选变量时使用<code>!</code>替换<code>?</code>，这样可选变量在使用时就不需要再加<code>!</code>来获取值，它会自动解析</p>
+</li>
+<li>可选绑定，用来判断可选类型是否包含值，如果包含就把值赋给一个临时常量或变量</li>
+</ul>
+<h5 id="运算符"><a href="#运算符" class="headerlink" title="运算符"></a>运算符</h5><ul>
+<li><p>算术运算符</p>
+<ul>
+<li>除号<code>(/)</code></li>
+<li>求余<code>(%)</code></li>
+<li><code>swift3</code>中已经取消了<code>++</code>、<code>--</code>，对应的操作符为，<code>++</code>对应<code>+=</code>，<code>--</code>对应<code>-=</code></li>
+</ul>
+</li>
+<li><p>比较运算符</p>
+</li>
+<li>逻辑运算符</li>
+<li><p>位运算符</p>
+<ul>
+<li>用来对二进制位进行操作</li>
+<li>取反<code>(~)</code>，对操作数的每一位取反</li>
+<li>按位与与<code>(&amp;)</code>，每个位设为<code>1</code>的条件是两个输入数的同一位相同且为<code>1</code>时，就设为<code>1</code>，反之则为<code>0</code></li>
+<li>按位与或<code>(|)</code>，每个位设为<code>1</code>的条件是只要两个输入数的一位中有一个为<code>1</code>时，就设为<code>1</code></li>
+<li>按位异或<code>(^)</code>，每个位设为<code>1</code>的条件是两个输入数的同一位不同，如果相同就设为<code>0</code></li>
+<li>按位左移<code>(&lt;&lt;)</code>，移动指定位数，空位用<code>0</code>填充</li>
+<li>按位右移<code>(&gt;&gt;)</code>，移动指定位数，空位用<code>0</code>填充</li>
+</ul>
+</li>
+<li><p>赋值运算符</p>
+</li>
+<li><p>区间运算符</p>
+<ul>
+<li>闭区间运算符<code>((a...b))</code>，在迭代一个区间的所有值时是非常有用的，如在<code>for-in</code>循环中</li>
+<li>半开区间运算符<code>((a...)</code></li>
+</ul>
+</li>
+<li><p>其他运算符</p>
+<ul>
+<li>一元运算符。如<code>!</code>，在<code>swift</code>中用在<code>Optional</code>类型取值</li>
+<li>二元运算符</li>
+<li>三元运算符。如，<code>a ? b : c</code></li>
+</ul>
+</li>
+<li><p>运算符优先级</p>
+<ul>
+<li>指针最优，单目运算优于双目运算</li>
+<li>先乘除(模)，后加减</li>
+<li>先算术，后移位，最后位运算。如，<code>1 &lt;&lt; 3 + 2 &amp; 7 等价于 (1 &lt;&lt; (3 + 2)) &amp; 7</code></li>
+<li>逻辑运算最后计算</li>
+</ul>
+</li>
+</ul>
+<h5 id="循环控制语句"><a href="#循环控制语句" class="headerlink" title="循环控制语句"></a>循环控制语句</h5><ul>
+<li><code>continue</code>语句，告诉一个循环体立刻停止本次循环迭代，重新开始下次循环迭代</li>
+<li><code>break</code>语句，中断当前循环</li>
+<li><code>fallthrough</code>语句，如果在一个<code>case</code>执行完后，想要继续执行下面的<code>case</code>，需要<code>fallthrough</code>(贯穿)关键字</li>
+</ul>
+<h5 id="字符串"><a href="#字符串" class="headerlink" title="字符串"></a>字符串</h5><ul>
+<li>可以使用空的字符串字面量赋值给变量或初始化一个<code>String</code>类的实例来初始化一个空的字符串</li>
+<li>使用字符串属性<code>isEmpty</code>来判断字符串是否为空</li>
+<li>字符串中插入值，可以在其中包含常量、变量、字面量或表达式，插入的字符串字面量的每一项都在以反斜线为前缀的圆括号中，字符串插值是一种构建新字符串的方式</li>
+<li>字符串可以通过<code>+</code>号来连接</li>
+<li>字符串长度使用<code>String.count</code>属性来计算</li>
+<li>字符串比较，使用<code>==</code>来比较两个字符串是否相等</li>
+<li><code>Unicode</code>是一个国际标准，用于文本的编码，<code>Swift</code>的<code>String</code>类型是基于<code>Unicode</code>建立的</li>
+<li>常用函数<ul>
+<li><code>isEmpty</code> 判空</li>
+<li><code>hasPrefix</code> 检查是否拥有指定前缀</li>
+<li><code>hasSuffix</code> 检查是否拥有指定后缀</li>
+<li><code>Int(String)</code> 转换字符串数字为整型</li>
+<li><code>String.count</code> 计算字符串长度</li>
+<li><code>+</code> 连接两个字符串，并返回一个新的字符串</li>
+<li><code>==</code> 判断两个字符串是否相等</li>
+<li><code>&lt;</code> 比较两个字符串，对两个字符串的字母逐一比较</li>
+<li><code>utf8、utf16、unicodeScalars、+=、!=</code></li>
+</ul>
+</li>
+</ul>
+<h5 id="字符"><a href="#字符" class="headerlink" title="字符"></a>字符</h5><ul>
+<li><code>swift</code>的字符是一个单一的字符字符串字面量，类型为<code>Character</code></li>
+<li>不能在<code>Character</code>类型中存储更多的字符，如：<code>let/var char: Character = &quot;ABC&quot;</code>，这样会报错，这种情况下<code>&quot;ABC&quot;</code>被当作<code>String</code>类型</li>
+<li>不能创建空的<code>Character</code>类型变量或常量，这种情况下，<code>&quot;&quot;</code>被当作<code>String</code>类型</li>
+<li>可以对字符串进行字符遍历，使用<code>for-in</code>遍历字符串中的<code>character</code>属性</li>
+<li>可以对字符串进行字符连接，使用<code>String</code>的<code>append()</code>方法来实现</li>
+</ul>
+<h5 id="数组"><a href="#数组" class="headerlink" title="数组"></a>数组</h5><ul>
+<li>数组是有序列表，同一类型的多个值</li>
+<li>相同的值可以多次出现在一个数组的不同位置中</li>
+<li><code>Swift</code>数组会强制检测元素的类型，如类型不同则会报错</li>
+<li>常量数组的大小和内容都不可以修改</li>
+<li>数组的索引从<code>0</code>开始</li>
+<li><p>初始化方式构建的数组中，每个元素的值都是指定的初始值</p>
+<ul>
+<li>初始化方式构建数组的语法如下：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">var someArray = [SomeType](repeating: InitialValue, </span><br><span class="line">count: NumberOfElements)//InitialValue是初始值，</span><br><span class="line">NumberOfElements是数组大小</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>可以使用<code>append()</code>方法或赋值运算符<code>+=</code>在数组末尾添加元素</p>
+</li>
+<li><p>遍历数组</p>
+<ul>
+<li>使用<code>for-in</code>循环来遍历数组中的数据项</li>
+<li>如需要每个数据项的值和索引值，可以使用<code>String</code>的<code>enumerate()</code>方法来进行数组遍历</li>
+</ul>
+</li>
+<li><p>可以使用加法操作符<code>+</code>来合并两种已存在的相同类型的数组</p>
+</li>
+<li>使用<code>count</code>属性，计算数组元素个数</li>
+<li>使用<code>isEmpty</code>属性，来判断数组是否为空</li>
+</ul>
+<h5 id="字典"><a href="#字典" class="headerlink" title="字典"></a>字典</h5><ul>
+<li><code>swift</code>字典会强制检测元素的类型</li>
+<li><code>swift</code>字典的<code>key</code>没有类型限制可以是整型或字符串，但必须是唯一的</li>
+<li>常量字典的大小和内容都不可以修改</li>
+<li>使用<code>updateValue(forKey:)</code>增加或更新字典的内容。如果<code>key</code>不存在，则添加值，如果<code>key</code>存在则修改<code>key</code>对应的值，使用<code>updateValue(forKey:)</code>时，会返回旧值</li>
+<li>使用<code>removeValue(forKey:)</code>移除<code>key-value</code>对，如果<code>key</code>存在，该方法返回移除的值，如果不存在返回<code>nil</code>。可以通过指定键的值为<code>nil</code>来移除<code>key-value</code>对</li>
+<li>使用<code>enumerate()</code>方法遍历字典时，获取的<code>value</code>是对应的<code>key-value</code>对</li>
+<li>可以对字典的键和值，分别取对应的元素构成的数组</li>
+<li>使用<code>count</code>属性来获知字典有多少个键值对</li>
+<li>使用<code>isEmpty</code>属性来对字典进行判空</li>
+</ul>
+<h5 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h5><ul>
+<li>函数是用来完成特定任务的独立代码块</li>
+<li><p>函数的声明和定义</p>
+<ul>
+<li>声明，告诉编译器函数的名字、返回类型及参数</li>
+<li>定义，提供了函数的实体</li>
+</ul>
+</li>
+<li><p><code>swift</code>函数包含了参数类型及返回值类型</p>
+</li>
+<li>使用关键字<code>func</code>来定义函数</li>
+<li>函数的实参传递的顺序必须与形参列表相同</li>
+<li><code>-&gt;</code>后定义函数的返回值类型</li>
+<li><p>元组作为函数返回值</p>
+<ul>
+<li>元组与数组类似，不同的是，元组中的元素可以是任意类型，使用的是圆括号</li>
+<li>可以用元组<code>(tuple)</code>类型让多个值作为一个复合值从函数中返回</li>
+</ul>
+</li>
+<li><p>可以在局部参数名前指定外部参数名，中间以空格分隔，外部参数名用于在函数调用时传递给函数的参数。注，如提供了外部参数名，那么函数在被调用时，必须使用外部参数名</p>
+</li>
+<li><p>可变参数，可变参数通过在变量类型名后面加入<code>(...)</code>的方式来定义，如<code>func vari&lt;N&gt;(members: N...){}</code></p>
+</li>
+<li><p>一般默认在函数中定义的参数都是常量参数，即参数只能查询使用，不能改变它的值。若想要改变参数的值，可以在参数定义前加<code>inout</code>关键字，这样就可以改变这个参数的值了</p>
+</li>
+<li><p>一般默认的参数传递都是传值调用的，而不是传引用。所以传入的参数在函数内改变，并不影响原来的那个参数，传入的只是这个参数的副本。当传入的参数作为输入输出参数时，需要在参数名前加<code>&amp;</code>符，表示这个值可以被函数修改。如，函数调用的时候：<code>swapTwoInts(&amp;x, &amp;y)</code></p>
+</li>
+<li><p>每个函数都有特定的函数类型，由函数的参数类型和返回类型组成</p>
+</li>
+</ul>
+<h5 id="闭包"><a href="#闭包" class="headerlink" title="闭包"></a>闭包</h5><ul>
+<li>闭包，是自包含的功能代码块，可以在代码中使用或者用来作为参数传值</li>
+<li>函数和闭包都是引用类型</li>
+</ul>
+<h5 id="枚举"><a href="#枚举" class="headerlink" title="枚举"></a>枚举</h5><ul>
+<li>枚举是一组有共同特性的数据的集合</li>
+</ul>
+<h5 id="结构体"><a href="#结构体" class="headerlink" title="结构体"></a>结构体</h5><ul>
+<li>结构体是一种构造体</li>
+<li>可以为结构体定义属性(常量、变量)和添加方法，从而扩展结构体的功能</li>
+<li>结构体总是通过被复制的方式在代码中传递，因此它的值是不可修改的</li>
+<li>通过关键字<code>struct</code>来定义结构体</li>
+<li>通过结构体名来访问结构体成员</li>
+<li>结构体实例化使用<code>let</code>关键字</li>
+<li>结构体实例总是通过值传递来定义你的自定义数据类型</li>
+<li><p>存在以下条件时，考虑构建结构体</p>
+<ul>
+<li>结构体的主要目的是用来封装少量相关简单数据值</li>
+<li>有理由预计一个结构体实例在赋值或传递时，封装的数据将会被拷贝而不是被引用</li>
+<li>任何在结构体中存储的值类型属性，也将会被拷贝，而不是被引用</li>
+<li>结构体不需要去继承另一个已存在类型的属性或行为</li>
+</ul>
+</li>
+<li><p>结构体实例是通过值传递而不是通过引用传递</p>
+</li>
+<li>结构体内使用成员属性时，使用<code>self</code>关键字</li>
+</ul>
+<h5 id="类"><a href="#类" class="headerlink" title="类"></a>类</h5><ul>
+<li>类是一种构造体</li>
+<li>可以为类定义属性(常量、变量)和方法</li>
+<li><code>swift</code>的类不需要为自定义类去创建独立的接口(<code>.h</code>文件)和实现文件(<code>.m</code>文件)</li>
+<li><p><code>swift</code>中创建类，在一个单一文件中定义一个类，系统会自动生成面向其他代码的外部接口</p>
+</li>
+<li><p>类和结构体的对比：</p>
+<ul>
+<li><p>共同点</p>
+<ol>
+<li>定义属性用于存储值</li>
+<li>定义方法用于提供功能</li>
+<li>定义附属脚本用于访问值</li>
+<li>定义构造器用于生成初始化值</li>
+<li>通过扩展以增加默认实现的功能</li>
+<li>符合协议以对某类提供标准功能</li>
+</ol>
+<ul>
+<li>类特有的<ol>
+<li>继承，允许一个类继承另一个类的特征</li>
+<li>类型转换，允许在运行时检查和解释一个类实例的类型</li>
+<li>解构器，允许一个类实例释放任何其所被分配的资源</li>
+<li>引用计数，允许对一个类的多次引用</li>
+</ol>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>类的属性通过<code>“.”</code>来访问，格式：<code>实例化类名.属性名</code></p>
+</li>
+<li>恒等运算符<ul>
+<li>因类是引用类型，有可能有多个常量或变量同时引用某一个类实例，为了能够判定两个常量或变量是否引用同一个类实例，<code>swift</code>提供了两个恒等运算符：<code>===</code>(判断是否引用相同的类实例)、<code>!==</code>(判断是否引用不相同的类实例)</li>
+</ul>
+</li>
+</ul>
+<h5 id="属性"><a href="#属性" class="headerlink" title="属性"></a>属性</h5><ul>
+<li><p>属性将值跟特定的类、结构体或枚举关联</p>
+</li>
+<li><p>存储属性、计算属性</p>
+<ul>
+<li>存储属性<ol>
+<li>存储常量或变量作为实例的一部分，用于类和结构体</li>
+<li>一个存储属性就是存储在特定类或结构体的实例里的一个常量(用<code>let</code>定义)或变量(用<code>var</code>定义)</li>
+<li>可以在定义存储属性的时候指定默认值</li>
+<li>可以在构造过程中设置或修改存储属性的值，甚至修改常量存储属性的值</li>
+<li>常量属性在构造过程完成之前必须要有初始值</li>
+</ol>
+</li>
+<li>计算属性<ol>
+<li>计算一个值，用于类、结构体和枚举</li>
+<li>计算属性不直接存储值，而是提供一个<code>getter</code>来获取值，一个可选的<code>setter</code>来间接设置其他属性或变量的值。如果计算属性的<code>setter</code>没有定义表示新值的参数名，则可以使用默认名称<code>newValue</code></li>
+<li>只读计算属性，只有<code>getter</code>没有<code>setter</code>的计算属性，只读计算属性总是返回一个值，可以通过点(<code>.</code>)运算符访问，但不能设置新的值</li>
+</ol>
+</li>
+</ul>
+</li>
+<li><p>可以定义属性观察器来监控属性的变化，以此来触发一个自定义的操作。属性观察器可以添加到自己写的存储属性上，也可以添加到从父类继承的属性上</p>
+</li>
+<li><p>延迟存储属性</p>
+<ul>
+<li>当第一次被调用的时候才会计算其初始值的属性</li>
+<li>在属性声明前使用<code>lazy</code>来标示一个延迟存储属性</li>
+<li>延迟存储属性，必须声明为变量(使用<code>var</code>关键字)</li>
+<li>使用场景：延迟对象的创建、当属性的值依赖于其他未知类</li>
+</ul>
+</li>
+<li><p>属性观察器</p>
+<ul>
+<li><code>willSet、didSet</code></li>
+<li>属性观察器监控和响应属性值的变化，每次属性被设置值的时候都会调用属性观察器</li>
+<li>可以为除了延迟存储属性之外的其他存储属性添加属性观察器，也可以通过重载属性的方式为继承的属性(包括存储属性和计算属性)添加属性观察器</li>
+<li><code>willSet</code>和<code>didSet</code>观察器在属性初始化过程中不会被调用</li>
+</ul>
+</li>
+<li><p>类型属性，使用关键字<code>static</code>来定义值类型的类型属性，用关键字<code>class</code>来为类定义类型属性</p>
+</li>
+</ul>
+<h5 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h5><ul>
+<li><code>swift</code>方法是与某些特定类型相关联的函数</li>
+<li><p>在<code>OC</code>中，类是唯一能定义方法的类型。在<code>swift</code>中，不仅能选择是否要定义一个类/结构体/枚举，还能灵活的在创建的类型(类/结构体/枚举)上定义方法</p>
+</li>
+<li><p>实例方法</p>
+<ul>
+<li>是属于某个特定类、结构体或枚举类型实例的方法</li>
+<li>可以访问和修改实例属性，提供与实例目的相关的功能</li>
+<li>不能脱离于现存的实例而被调用</li>
+</ul>
+</li>
+<li><p><code>swift</code>函数参数可以同时有一个局部名称(在函数体内部使用)和一个外部名称(在调用函数时使用)</p>
+</li>
+<li><p>常用规则</p>
+<ul>
+<li>需要参数时，函数名末尾常用一个介词(with、for、by)指向方法的第一个参数</li>
+</ul>
+</li>
+<li><p><code>self</code>属性</p>
+<ul>
+<li>类型的每一个实例都有一个隐含属性叫做<code>self</code>，<code>self</code>完全等同于该实例本身</li>
+<li>可以在一个实例的实例方法中使用这个隐含的<code>self</code>属性来引用当前实例</li>
+</ul>
+</li>
+<li><p><code>swift</code>语言中结构体和枚举是值类型。一般情况下，值类型的属性不能在它的实例方法中被修改，但可以通过选择变异(关键字为<code>mutating</code>)这个方法进行值类型的修改</p>
+</li>
+<li><p>可变方法能够赋给隐含属性<code>self</code>一个全新的实例</p>
+</li>
+<li>类型方法<ul>
+<li>声明结构体和枚举的类型方法，在方法的<code>func</code>关键字之前加上关键字<code>static</code></li>
+<li>类可能会用关键字<code>class</code>来允许子类重写父类的实现方法</li>
+</ul>
+</li>
+</ul>
+<h5 id="下标脚本"><a href="#下标脚本" class="headerlink" title="下标脚本"></a>下标脚本</h5><ul>
+<li>可以定义在类、结构体和枚举这些目标中</li>
+<li>是访问对象、集合或序列的快捷方式，不需要再调用实例的特定的赋值和访问方法</li>
+<li>定义下标脚本使用subscript关键字，显示声明入参和返回类型</li>
+<li>下标脚本允许任意数量的入参索引，并且每个入参类型也没有限制</li>
+<li>下标脚本的返回值也可以是任何类型</li>
+<li>下标脚本可以使用变量参数和可变参数</li>
+<li>下标脚本的重载<ul>
+<li>一个类或结构体可以根据自身需要提供多个下标脚本实现，在定义下标脚本时通过传入参数的类型进行区分，使用下标脚本时会自动匹配合适的下标脚本实现运行</li>
+</ul>
+</li>
+</ul>
+<h5 id="继承"><a href="#继承" class="headerlink" title="继承"></a>继承</h5><ul>
+<li>类可以调用和访问超类的方法、属性和下标脚本，并且可以重写它们</li>
+<li><p>重写属性</p>
+<ul>
+<li>子类并不知道继承来的属性是存储型的还是计算型的，它只知道继承来的属性会有一个名字和类型。所以在重写一个属性时，必须将它的名字和类型都写出来</li>
+<li>注意<ol>
+<li>如果在重写属性中提供了<code>setter</code>，那么也一定要提供<code>getter</code></li>
+<li>如果不想在重写版本中的<code>getter</code>里修改继承来的属性值，可以直接通过<code>super.someProperty</code>来返回继承来的值，其中<code>someProperty</code>是要重写的属性的名字</li>
+<li>可以使用<code>final</code>关键字防止被重写</li>
+</ol>
+</li>
+</ul>
+</li>
+<li><p>在<code>class</code>前添加<code>final</code>关键字，这样的类是不可被继承的</p>
+</li>
+</ul>
+<h5 id="构造过程"><a href="#构造过程" class="headerlink" title="构造过程"></a>构造过程</h5><ul>
+<li>构造过程是为了使用某个类、结构体或枚举类型的实例而进行的准备过程</li>
+<li>这个过程包含了为实例中的每个属性设置初始值和为实例执行必要的准备和初始化任务</li>
+<li><code>swift</code>构造函数使用<code>init()</code>方法</li>
+<li>类和结构体在实例创建时，必须为所有存储型属性设置合适的初始值</li>
+<li>可以在构造器中为存储属性设置初始值，同样，也可以在属性声明时为其设置默认值</li>
+<li>不同参数构造器的调用，主要通过构造器中的参数名和类型来确定需要调用的构造器</li>
+<li>如果在定义构造器时没有提供参数的外部名字，<code>swift</code>会为每个构造器的参数自动生成一个跟内部名字相同的外部名</li>
+<li>如不希望为构造器的某个参数提供外部名字，可以使用下划线<code>&quot;_&quot;</code>来显示描述它的外部名</li>
+<li><p>可选类型</p>
+<ul>
+<li>如定制的类型包含一个逻辑上允许取值为空的存储型属性，需要将它定义为可选类型<code>optional type</code>(可选属性类型)</li>
+<li>当存储属性声明为可选时，将自动初始化为空<code>nil</code></li>
+</ul>
+</li>
+<li><p>构造过程中修改常量属性</p>
+<ul>
+<li>只要在构造过程结束前常量的值能确定，可以在构造过程中的任意时间点修改常量属性的值</li>
+<li>对某个类实例来说，它的常量属性只能在定义它的类的构造过程中修改，不能在子类中修改</li>
+</ul>
+</li>
+<li><p>结构体的逐一成员构造器</p>
+<ul>
+<li>如果结构体对所有存储型属性提供了默认值，且自身没有提供定制的构造器，它们能自动获得一个逐一成员构造器</li>
+<li>在调用逐一成员构造器时，通过与成员属性名相同的参数名进行传值来完成对成员属性的初始赋值</li>
+</ul>
+</li>
+<li><p>值类型的构造器代理</p>
+<ul>
+<li>构造器可以通过调用其他构造器来完成实例的部分构造过程，这一过程称为构造器代理，它能减少多个构造器间的代码重复</li>
+<li>构造器代理的规则<ol>
+<li>值类型，不支持继承</li>
+<li>类类型，可以继承自其他类</li>
+</ol>
+</li>
+</ul>
+</li>
+<li><p>构造器的继承和重载</p>
+<ul>
+<li>子类不会默认继承父类的构造器</li>
+<li>父类的构造器仅在确定和安全的情况下被继承</li>
+<li>重写一个父类指定构造器时，需要写<code>override</code>修饰符</li>
+</ul>
+</li>
+<li><p>可失败构造器</p>
+<ul>
+<li>如果一个类、结构体或枚举类型的对象，在构造自身的过程中有可能失败，则为其定义一个可失败构造器</li>
+<li>变量初始化失败可能的原因有：<ol>
+<li>传入无效的参数值</li>
+<li>缺少某种所需的外部资源</li>
+<li>没有满足特定条件</li>
+</ol>
+</li>
+<li>可用一个非可失败构造器覆盖一个可失败构造器，但反过来却行不通</li>
+<li>一个非可失败的构造器永远也不能代理调用一个可失败构造器</li>
+<li>语法：在<code>init</code>关键字后面添加问号<code>(init?)</code></li>
+</ul>
+</li>
+</ul>
+<h5 id="析构过程"><a href="#析构过程" class="headerlink" title="析构过程"></a>析构过程</h5><ul>
+<li>在一个类的实例被释放之前，析构函数被立即调用</li>
+<li>用关键字deinit来标示析构函数</li>
+<li>析构函数只适用于类型</li>
+<li>在类的定义中，每个类最多只能有一个析构函数</li>
+<li>释放资源<ul>
+<li><code>swift</code>会自动释放不再需要的实例以释放资源</li>
+<li><code>swift</code>通过自动引用计数<code>(ARC)</code>处理实例的内存管理</li>
+</ul>
+</li>
+</ul>
+<h5 id="可选链"><a href="#可选链" class="headerlink" title="可选链"></a>可选链</h5><ul>
+<li>可选链是一种可以请求和调用属性、方法和子脚本的过程，用于请求或调用的目标可能为<code>nil</code></li>
+<li><p>返回值</p>
+<ul>
+<li>如果目标有值，调用就会成功，返回该值</li>
+<li>如果目标为<code>nil</code>，调用将返回<code>nil</code></li>
+</ul>
+</li>
+<li><p>多次请求或调用可以被链接成一个链，如果任意一个节点为<code>nil</code>将导致整条链失效</p>
+</li>
+<li>通过在属性、方法或下标脚本的可选值后面放一个问号(?)，即可定义一个可选链</li>
+<li>可以使用可选链来尝试从下标脚本获取值并检查下标脚本的调用是否成功，不能通过可选链来设置下标脚本</li>
+</ul>
+<h5 id="自动引用计数-ARC"><a href="#自动引用计数-ARC" class="headerlink" title="自动引用计数(ARC)"></a>自动引用计数<code>(ARC)</code></h5><ul>
+<li><code>swift</code>使用自动引用计数<code>(ARC)</code>这一机制来跟踪和管理应用程序的内存</li>
+<li>为了确保使用中的实例不会被销毁，<code>ARC</code>会跟踪和计算每一个实例正在被多少属性、常量或变量所引用</li>
+<li>实例赋值给属性、常量或变量，它们都会创建此实例的强引用，只要强引用还在，实例是不允许被销毁的</li>
+<li><p>解决实例之间的循环强引用</p>
+<ul>
+<li>弱引用<ol>
+<li>对于生命周期中会变为<code>nil</code>的实例使用弱引用</li>
+<li>使用<code>weak</code>关键字进行标示，通常与<code>var</code>搭配使用</li>
+</ol>
+</li>
+<li>无主引用<ol>
+<li>对于初始化赋值后再也不会被赋值为<code>nil</code>的实例，使用无主引用</li>
+<li>使用<code>unowned</code>关键字进行标示，通常与<code>let</code>搭配使用</li>
+</ol>
+</li>
+<li>弱引用和无主引用允许循环引用中的一个实例用另外一个实例而不保持强引用</li>
+</ul>
+</li>
+<li><p>闭包引起的循环强引用</p>
+<ul>
+<li>会发生在当你将一个闭包赋值给类实例的某个属性，并且这个闭包体中又使用了实例。如闭包体中访问了实例的某个属性，或者调用了某个方法，这两种情况都导致了闭包“捕获”<code>self</code>，从而产生了循环强引用</li>
+<li><p>解决闭包引起的循环强引用</p>
+<ul>
+<li>在定义闭包时同时定义捕获列表作为闭包的一部分，通过这种方式可以解决闭包和类实例之间的循环强引用</li>
+<li><p>方法：</p>
+<ol>
+<li>当闭包和捕获的实例总是互相引用时并且总是同时销毁时，将闭包内的捕获定义为无主引用</li>
+<li>当捕获引用有时可能会是<code>nil</code>时，将闭包内的捕获定义为弱引用</li>
+<li>如果捕获的引用绝对不会置为<code>nil</code>，应该用无主引用</li>
+<li><p>闭包中无主引用的语法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#123; [unowned self] in</span><br><span class="line">  // todo</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h5 id="类型转换"><a href="#类型转换" class="headerlink" title="类型转换"></a>类型转换</h5><ul>
+<li>作用<ul>
+<li>可以判断实例的类型</li>
+<li>可用于检测实例类型是否属于父类或者子类的实例</li>
+<li>可用来检查一个类是否实现了某个协议</li>
+</ul>
+</li>
+<li>使用 <code>is</code> 和 <code>as</code> 操作符实现<ul>
+<li><code>is</code> 用于检测值的类型</li>
+<li><code>as</code> 用于转换类型</li>
+</ul>
+</li>
+<li><p>向下转型</p>
+<ul>
+<li>用类型转换操作符：<code>as?</code> 或 <code>as!</code></li>
+<li>不确定向下转型是否成功时，用类型转换的条件形式<code>(as?)</code>。条件形式的类型转换总是返回一个可选值，若不成功，可选值将是<code>nil</code></li>
+<li>确定向下转型成功时，使用强制形式(as!)。如转型不成功，会触发一个运行时错误</li>
+</ul>
+</li>
+<li><p>不确定类型</p>
+<ul>
+<li><code>AnyObject</code>，代表任何<code>class</code>类型的实例</li>
+<li><code>Any</code>，表示任何类型，包括方法类型</li>
+</ul>
+</li>
+<li><p>在一个<code>switch</code>语句的<code>case</code>中使用强制形式的类型转换操作符(<code>as</code>，而不是<code>as?</code>)来检查和转换到一个明确的类型</p>
+</li>
+</ul>
+<h5 id="扩展"><a href="#扩展" class="headerlink" title="扩展"></a>扩展</h5><ul>
+<li>向一个已有的类、结构体或枚举类型添加新功能</li>
+<li>可以对一个类型添加新的功能，但是不能重写已有的功能</li>
+<li><p>应用场景</p>
+<ul>
+<li>添加计算型属性和计算型静态属性</li>
+<li>定义实例方法和类型方法</li>
+<li>提供新的构造器</li>
+<li>定义下标</li>
+<li>定义和使用新的嵌套类型</li>
+<li>使一个已有类型符合某个协议</li>
+</ul>
+</li>
+<li><p>语法，使用关键字 <code>extension</code></p>
+</li>
+<li>一个扩展可以扩展一个已有类型，使其能够适配一个或多个协议</li>
+<li>扩展可以向类中添加新的便利构造器<code>init()</code>，但是不能向类中添加新的指定构造器或析构函数</li>
+<li>结构体和枚举类型中修改<code>self</code>或其属性的方法必须将该实例方法标注为<code>mutating</code></li>
+</ul>
+<h5 id="协议"><a href="#协议" class="headerlink" title="协议"></a>协议</h5><ul>
+<li>协议规定了用来实现某一特定功能所必需的方法和属性</li>
+<li>类、结构体或枚举类型都可以遵循协议，并提供具体实现来完成协议定义的方法和功能</li>
+<li>如果类在遵循协议的同时拥有父类，应该将父类名放在协议名之前，以逗号分隔</li>
+<li>对属性的规定<ul>
+<li>协议用于指定特定的实例属性或类属性，而不用指定是存储属性或计算属性，必须指明是只读的还是可读可写的</li>
+<li>协议中通常用<code>var</code>来声明变量属性，在类型声明后加上<code>{set get}</code>来表示属性是可读可写的，只读属性则用<code>{get}</code>来表示</li>
+</ul>
+</li>
+<li>协议可以要求它的遵循者实现指定的构造器</li>
+<li>尽管协议本身并不实现任何功能，但是协议可以被当作类型来使用<ul>
+<li>使用场景<ol>
+<li>作为函数、方法或构造器中的参数类型或返回值类型</li>
+<li>作为常量、变量或属性的类型</li>
+<li>作为数组、字典或其他容器中的元素类型</li>
+</ol>
+</li>
+</ul>
+</li>
+<li>扩展可以为已存在的类型添加属性、方法、下标脚本、协议等成员</li>
+<li>检验协议的一致性<ul>
+<li>可以使用<code>is</code>和<code>as</code>操作符来检查是否遵循某一协议或强制转化为某一类型</li>
+<li><code>is</code>操作符用来检查实例是否遵循了某个协议</li>
+<li><code>as?</code>返回一个可选值，当实例遵循协议时，返回该协议类型，否则返回<code>nil</code></li>
+<li><code>as</code>用以强制向下转型，如果强转失败，会引起运行时错误</li>
+</ul>
+</li>
+</ul>
+<h5 id="泛型"><a href="#泛型" class="headerlink" title="泛型"></a>泛型</h5><ul>
+<li><code>swift</code>标准库是通过泛型代码构建出来的</li>
+<li><code>swift</code>的数组和字典类型都是泛型集</li>
+<li>泛型使用了占位类型名(通常用字母<code>T</code>来表示)来代替实际类型名</li>
+<li>函数名后面跟着占位类型名<code>(T)</code>，并用尖括号括起来<code>&lt;T&gt;</code>。尖括号告诉<code>swift</code>那个<code>T</code>是函数定义内的一个占位类型名，因此<code>swift</code>不会去查找名为<code>T</code>的实际类型</li>
+<li>类型约束能够确保类型符合泛型函数或类的定义约束</li>
+<li>可以在参数列表中通过<code>where</code>语句定义参数的约束</li>
+</ul>
+<h5 id="访问控制"><a href="#访问控制" class="headerlink" title="访问控制"></a>访问控制</h5><ul>
+<li>访问控制可以限定其他源文件或模块中代码对你代码的访问级别</li>
+<li>访问控制基于模块与源文件</li>
+<li>访问级别<ul>
+<li><code>public</code> - 模块级别，别人能访问、自己能访问，最高级访问级别</li>
+<li><code>internal</code> - 模块级别，别人不能访问、自己能访问</li>
+<li><code>fileprivate</code> - 文件级别，文件内私有，只能在当前源文件中使用</li>
+<li><code>private</code> - 类级别，只能在类中访问，只在作用域内有效，离开作用域就无法访问，最低级访问级别</li>
+</ul>
+</li>
+<li>除非有特殊说明，否则实体都使用默认的访问级别<code>internal</code></li>
+<li>函数的访问级别需要根据该函数的参数类型和返回类型的访问级别得出</li>
+<li>如一个类型内有不同访问级别的成员，根据元组访问级别的原则，得出该类型的访问级别<ul>
+<li>元组访问级别的原则，元组的访问级别与元组中访问级别最低的类型一致</li>
+</ul>
+</li>
+<li>枚举中成员的访问级别继承自该枚举，不能为枚举中的成员单独声明不同的访问级别</li>
+<li>子类的访问级别不得高于父类的访问级别</li>
+<li>常量、变量、属性不能拥有比它们的类型更高的访问级别</li>
+<li>下标也不能拥有比索引类型或返回类型更高的访问级别</li>
+<li>常量、变量、属性、下标索引的<code>getter</code>和<code>setter</code>的访问级别继承自它们所属成员的访问级别，<code>setter</code>的访问级别可以低于对应的<code>getter</code>的访问级别，这样就可以控制变量、属性或下标索引的读写权限</li>
+</ul>
+<h3 id="常见知识点总结"><a href="#常见知识点总结" class="headerlink" title="常见知识点总结"></a>常见知识点总结</h3><ul>
+<li><code>swift</code>中的头文件是全局共享的</li>
+<li>声明为<code>Optional</code>的变量/常量不能直接参与运算，必须解包后才能参与运算</li>
+<li>可对一个可选类型使用后缀操作符<code>!</code>来强制拆包访问这个值<ul>
+<li>注：使用<code>!</code>来获取一个不存在的可选值会导致<code>crash</code>，因此在使用<code>!</code>强制展开之前必须确保可选项中包含一个非<code>nil</code>的值</li>
+</ul>
+</li>
+<li><p>可以使用可选项绑定来判断可选项是否包含值，如果包含就把值赋给一个临时常量/变量</p>
+<ul>
+<li>可选项绑定，将可选项赋值给一个常量，然后判断常量的值是否为<code>nil</code>来进行处理 </li>
+<li>语法：<code>if let/var newValue = 待解包的可选项值 {}</code></li>
+</ul>
+</li>
+<li><p>隐式展开可选项</p>
+<ul>
+<li>背景<ul>
+<li>有时在一些程序结构中可选项一旦被设定值之后，就会一直拥有值。这种情况下不必每次访问的时候都进行展开，因为它可以安全的确认每次访问的时候都有一个值</li>
+</ul>
+</li>
+<li>声明方式<ul>
+<li>通过在类型后面添加一个叹号<code>(!)</code>而非问号<code>(?)</code>来声明一个隐式展开可选项</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>合并空值运算符</p>
+<ul>
+<li><code>??</code></li>
+<li>语法：<code>a ?? b</code>，理解：如果可选项<code>a</code>有值则展开，如果没有值，是<code>nil</code>，则返回默认值<code>b</code>。表达式<code>a</code>必须是一个可选类型，表达式<code>b</code>必须与<code>a</code>的存储类型相同</li>
+<li>合并空值运算符是如下代码的缩写：<code>a != nil ? a! : b</code></li>
+</ul>
+</li>
+<li><p>类型转换</p>
+<ul>
+<li><code>as</code><ol>
+<li>向上转型，从派生类转换为基类</li>
+<li>数值类型转换，消除二义性。如：<code>let num1 = 42 as CGFloat</code></li>
+<li><code>switch</code>语句中进行模式匹配</li>
+</ol>
+</li>
+<li><code>as!</code>，向下转型，是强制类型转换，如果转换失败会报<code>runtime</code>运行错误</li>
+<li><code>as?</code>，向下转型，但<code>as?</code>如果转换不成功时会返回一个<code>nil</code>对象，成功时返回可选类型值<code>(Optional)</code>，需要拆包使用</li>
+<li>在确保会转换成功时使用<code>as!</code>，否则使用<code>as?</code></li>
+</ul>
+</li>
+<li><p>代码逻辑组织说明</p>
+<ul>
+<li><code>MARK</code><ul>
+<li>有分隔线 <code>//MARK: - 说明文字</code></li>
+<li>无分隔线 <code>//MARK: 说明文字</code></li>
+<li>注：<code>MARK</code>要大写，<code>MARK</code>后有冒号<code>(:)</code></li>
+</ul>
+</li>
+<li><code>TODO</code><ul>
+<li>标记提醒</li>
+<li>用法，<code>//TODO:需要提醒的文字</code></li>
+</ul>
+</li>
+<li><code>FIXME</code><ul>
+<li><code>bug</code>待修改提示</li>
+<li>用法，<code>//FIXME:需要修改bug的相关说明</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>类型比较</p>
+<ul>
+<li><code>is</code> 判断对象的类型是否一致</li>
+<li><code>===</code> 判断对象所引用的内存地址是否相同</li>
+</ul>
+</li>
+<li>字符串<ul>
+<li><code>==</code> 判断内容是否相等</li>
+</ul>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/iOS/" rel="tag"># iOS</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/03/07/Objective-C/" rel="prev" title="Objective-C">
+      <i class="fa fa-chevron-left"></i> Objective-C
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/05/30/GCD/" rel="next" title="GCD">
+      GCD <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#简介"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#基本语法"><span class="nav-number">2.</span> <span class="nav-text">基本语法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据类型"><span class="nav-number">3.</span> <span class="nav-text">数据类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#知识点"><span class="nav-number">4.</span> <span class="nav-text">知识点</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#变量"><span class="nav-number">4.0.1.</span> <span class="nav-text">变量</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#常量"><span class="nav-number">4.0.2.</span> <span class="nav-text">常量</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#字面量"><span class="nav-number">4.0.3.</span> <span class="nav-text">字面量</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#可选类型-Optionals"><span class="nav-number">4.0.4.</span> <span class="nav-text">可选类型(Optionals)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#运算符"><span class="nav-number">4.0.5.</span> <span class="nav-text">运算符</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#循环控制语句"><span class="nav-number">4.0.6.</span> <span class="nav-text">循环控制语句</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#字符串"><span class="nav-number">4.0.7.</span> <span class="nav-text">字符串</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#字符"><span class="nav-number">4.0.8.</span> <span class="nav-text">字符</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#数组"><span class="nav-number">4.0.9.</span> <span class="nav-text">数组</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#字典"><span class="nav-number">4.0.10.</span> <span class="nav-text">字典</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#函数"><span class="nav-number">4.0.11.</span> <span class="nav-text">函数</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#闭包"><span class="nav-number">4.0.12.</span> <span class="nav-text">闭包</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#枚举"><span class="nav-number">4.0.13.</span> <span class="nav-text">枚举</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#结构体"><span class="nav-number">4.0.14.</span> <span class="nav-text">结构体</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#类"><span class="nav-number">4.0.15.</span> <span class="nav-text">类</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#属性"><span class="nav-number">4.0.16.</span> <span class="nav-text">属性</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#方法"><span class="nav-number">4.0.17.</span> <span class="nav-text">方法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#下标脚本"><span class="nav-number">4.0.18.</span> <span class="nav-text">下标脚本</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#继承"><span class="nav-number">4.0.19.</span> <span class="nav-text">继承</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#构造过程"><span class="nav-number">4.0.20.</span> <span class="nav-text">构造过程</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#析构过程"><span class="nav-number">4.0.21.</span> <span class="nav-text">析构过程</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#可选链"><span class="nav-number">4.0.22.</span> <span class="nav-text">可选链</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#自动引用计数-ARC"><span class="nav-number">4.0.23.</span> <span class="nav-text">自动引用计数(ARC)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#类型转换"><span class="nav-number">4.0.24.</span> <span class="nav-text">类型转换</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#扩展"><span class="nav-number">4.0.25.</span> <span class="nav-text">扩展</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#协议"><span class="nav-number">4.0.26.</span> <span class="nav-text">协议</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#泛型"><span class="nav-number">4.0.27.</span> <span class="nav-text">泛型</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#访问控制"><span class="nav-number">4.0.28.</span> <span class="nav-text">访问控制</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#常见知识点总结"><span class="nav-number">5.</span> <span class="nav-text">常见知识点总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Ben</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">51</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">categories</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ben</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="对象生命周期对象的生命周期包括诞生(通过alloc或new方法实现)、生存(接收消息并执行操作)、交友(通过复合以及向方法传递参数)以及最终死去(被释放掉)。当生命周期结束时，对象的原材料(内存)将被回收以供新的对象使用。 引用计数引用计数是用于供系统感知对象生命周期是否结束，以便于系统对对象所占用的内存进行管理(主要用于对对象占用的内存何时回收进行管理)的技术。  iOS内存管理的方式是“引用计">
+<meta property="og:type" content="article">
+<meta property="og:title" content="内存管理">
+<meta property="og:url" content="http://yoursite.com/2019/06/05/内存管理/index.html">
+<meta property="og:site_name" content="Ben&#39;Blog">
+<meta property="og:description" content="对象生命周期对象的生命周期包括诞生(通过alloc或new方法实现)、生存(接收消息并执行操作)、交友(通过复合以及向方法传递参数)以及最终死去(被释放掉)。当生命周期结束时，对象的原材料(内存)将被回收以供新的对象使用。 引用计数引用计数是用于供系统感知对象生命周期是否结束，以便于系统对对象所占用的内存进行管理(主要用于对对象占用的内存何时回收进行管理)的技术。  iOS内存管理的方式是“引用计">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-11-23T03:54:31.337Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="内存管理">
+<meta name="twitter:description" content="对象生命周期对象的生命周期包括诞生(通过alloc或new方法实现)、生存(接收消息并执行操作)、交友(通过复合以及向方法传递参数)以及最终死去(被释放掉)。当生命周期结束时，对象的原材料(内存)将被回收以供新的对象使用。 引用计数引用计数是用于供系统感知对象生命周期是否结束，以便于系统对对象所占用的内存进行管理(主要用于对对象占用的内存何时回收进行管理)的技术。  iOS内存管理的方式是“引用计">
+
+<link rel="canonical" href="http://yoursite.com/2019/06/05/内存管理/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>内存管理 | Ben'Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Ben'Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">工欲善其事，必先利其器</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/06/05/内存管理/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Ben">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ben'Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          内存管理
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-06-05 18:44:17" itemprop="dateCreated datePublished" datetime="2019-06-05T18:44:17+08:00">2019-06-05</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-11-23 11:54:31" itemprop="dateModified" datetime="2020-11-23T11:54:31+08:00">2020-11-23</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h5 id="对象生命周期"><a href="#对象生命周期" class="headerlink" title="对象生命周期"></a>对象生命周期</h5><p>对象的生命周期包括诞生(通过<code>alloc</code>或<code>new</code>方法实现)、生存(接收消息并执行操作)、交友(通过复合以及向方法传递参数)以及最终死去(被释放掉)。当生命周期结束时，对象的原材料(内存)将被回收以供新的对象使用。</p>
+<h5 id="引用计数"><a href="#引用计数" class="headerlink" title="引用计数"></a>引用计数</h5><p>引用计数是用于供系统感知对象生命周期是否结束，以便于系统对对象所占用的内存进行管理(主要用于对对象占用的内存何时回收进行管理)的技术。</p>
+<ul>
+<li><p><code>iOS</code>内存管理的方式是“引用计数”，一般内存管理的方式是“谁申请谁释放”</p>
+</li>
+<li><p>引用计数工作原理</p>
+<ul>
+<li>每个对象都有一个与之相关联的整数，被称作对象的<strong>引用计数器</strong>或<strong>保留计数器</strong>。</li>
+<li>对象创建出来时，其保留计数(引用计数)至少为<code>1</code>。</li>
+<li>当某段代码需要访问一个对象时，该代码就将该对象的保留计数器值加<code>1</code>，表示“我要访问该对象”，调用<code>retain</code>方法。当这段代码结束对象访问时，将对象的保留计数器减<code>1</code>，表示代码不再访问该对象，调用<code>release</code>或<code>autorelease</code>方法。当对象的保留计数器的值为<code>0</code>时，表示不再有代码访问该对象了，因此对象将被销毁，其占用的内存被系统回收以便重用。此时，所有指向该对象的引用也都变得无效了。</li>
+</ul>
+</li>
+</ul>
+<h5 id="内存管理规则"><a href="#内存管理规则" class="headerlink" title="内存管理规则"></a>内存管理规则</h5><ul>
+<li>当使用new、alloc或copy方法创建一个对象时，该对象的保留计数器的值为1。当不再使用该对象时，应该向该对象发送一条release或autorelease消息。这样，该对象将在其使用寿命结束时被销毁</li>
+<li>当通过其他方法获得一个对象时，假设该对象的保留计数器的值为1，而且已经被设置为自动释放，那么不需要执行任何操作来确保该对象得到清理。如果打算在一段时间内拥有该对象，则需要保留它并确保在操作完成时释放它</li>
+<li>如果保留了某个对象，就需要(最终)释放或自动释放该对象。必须保持retain方法和release方法的使用次数相等</li>
+</ul>
+<h5 id="引用计数式内存管理的思考方式"><a href="#引用计数式内存管理的思考方式" class="headerlink" title="引用计数式内存管理的思考方式"></a>引用计数式内存管理的思考方式</h5><ul>
+<li>自己生成的对象，自己所持有<ul>
+<li>使用<code>alloc/new/copy/mutableCopy</code>名称开头的方法名意味着自己生成的对象只有自己持有</li>
+</ul>
+</li>
+<li>非自己生成的对象，自己也能持有<ul>
+<li>通过<code>retain</code>方法，非自己生成的对象跟用<code>alloc/new/copy/mutableCopy</code>方法生成并持有的对象一样，成为了自己所持有的</li>
+</ul>
+</li>
+<li>不再需要自己持有的对象时释放<ul>
+<li>自己持有的对象，一旦不再需要，持有者有义务释放该对象。释放使用<code>release</code>方法。</li>
+<li>自己生成而非自己所持有的对象，若用<code>retain</code>方法变为自己持有，也同样可以用<code>release</code>方法释放。</li>
+<li>用<code>alloc/new/copy/mutableCopy</code>方法生成并持有的对象，或者用<code>retain</code>方法持有的对象，一旦不再需要，务必要用<code>release</code>方法进行释放。</li>
+</ul>
+</li>
+<li><p>非自己持有的对象无法释放</p>
+<ul>
+<li>对于用<code>alloc/new/copy/mutableCopy</code>方法生成并持有的对象，或是用retain方法持有的对象，由于持有者是自己，所以在不需要该对象时需要将其释放。而由此以外所得到的对象绝对不能释放，倘若在应用程序中释放了非自己所持有的对象就会造成崩溃。</li>
+</ul>
+</li>
+<li><p><code>Objective-C</code>方法与对象操作的对应</p>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Objective-C方法</th>
+<th>对象操作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>alloc/new/copy/mutableCopy等方法</td>
+<td>生成并持有对象</td>
+</tr>
+<tr>
+<td>retain方法</td>
+<td>持有对象</td>
+</tr>
+<tr>
+<td>release方法</td>
+<td>释放对象</td>
+</tr>
+<tr>
+<td>dealloc方法</td>
+<td>废弃对象</td>
+</tr>
+</tbody>
+</table>
+<p>Tips</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">对象的生成和持有是不同的功能</span><br><span class="line"></span><br><span class="line">引用计数式内存管理的思考方式是理解操作 retain 和 release 的依据</span><br></pre></td></tr></table></figure>
+<h5 id="引用计数的类型"><a href="#引用计数的类型" class="headerlink" title="引用计数的类型"></a>引用计数的类型</h5><ul>
+<li><code>MRC</code>手动引用计数</li>
+<li><code>ARC</code>自动引用计数<ul>
+<li><code>ARC</code>几乎把所有内存管理事宜都交由编译器来决定，开发者只需专注于业务逻辑。引用计数式内存管理的本质没变</li>
+<li>内存管理的思考方式在<code>ARC</code>环境下是可行的，只是在<strong>源代码的记述方法上有所不同</strong>。不同体现在，<code>ARC</code>中追加所有权声明，引入了所有权修饰符</li>
+<li><code>ARC</code>有效时，<code>id</code>类型和对象类型同<code>C</code>语言其他类型不同，其类型上必须附加所有权修饰符(指明对象为谁所持有)<ul>
+<li>所有权修饰符(从对象的所有者和对象的生命周期理解所有权修饰符的作用)<ol>
+<li><code>__strong</code>修饰符<ul>
+<li><code>__strong</code>修饰符是<code>id</code>类型和对象类型默认的所有权修饰符。<code>id</code>类型和对象类型在没有明确指定所有权修饰符时，默认为<code>__strong</code>修饰符</li>
+<li><code>__strong</code>修饰符表示对对象的“强引用”。持有强引用的变量在超出其作用域时被废弃，随着强引用的失效，引用的对象会随之释放</li>
+<li>附有<code>__strong</code>修饰符的变量之间可以相互赋值</li>
+<li><code>__strong</code>修饰符的变量，不仅只在变量作用域中，在赋值上也能够正确地管理其对象的所有者</li>
+<li>对象的所有者不存在时，对象会被废弃</li>
+<li>通过<code>__strong</code>修饰符，不必再次键入<code>retain</code>或者<code>release</code>，完美地满足了“引用计数式内存管理的思考方式”</li>
+</ul>
+</li>
+<li><code>__weak</code>修饰符<ul>
+<li>用以解决循环引用。循环引用容易发生内存泄漏，内存泄漏就是应当废弃的对象在超出其生命周期后继续存在</li>
+<li><code>__weak</code>提供弱引用，弱引用不能持有对象实例</li>
+<li>在持有某对象的弱引用时，若该对象被废弃，则此弱引用将自动失效且处于<code>nil</code></li>
+<li>通过检查附有<code>__weak</code>修饰符的变量是否为<code>nil</code>，可以判断被赋值的对象是否已废弃</li>
+</ul>
+</li>
+<li><code>__unsafe_unretained</code>修饰符<ul>
+<li>是不安全的所有权修饰符</li>
+<li>附有<code>__unsafe_unretained</code>修饰符的变量不属于编译器的内存管理对象</li>
+<li><code>__unsafe_unretained</code>的使用，是为了兼容，<code>iOS4</code>之前版本中不存在<code>__weak</code>的解决方案</li>
+</ul>
+</li>
+<li><code>__autoreleasing</code>修饰符<ul>
+<li><code>ARC</code>有效时，要通过将对象赋值给附加了<code>__autoreleasing</code>修饰符的变量来替代调用<code>autorelease</code>方法。对象赋值给附有<code>__autoreleasing</code>修饰符的变量等价于在<code>ARC</code>无效时调用对象的<code>autorelease</code>方法，即对象被注册到<code>autoreleasepool</code>。可理解为，在<code>ARC</code>有效时，用<code>@autoreleasepool</code>块替代<code>NSAutoreleasePool</code>类，用附有<code>__autoreleasing</code>修饰符的变量替代<code>autorelease</code>方法<ul>
+<li><code>__strong</code>、<code>__weak</code>、<code>__autoreleasing</code>这些修饰符，可以保证将附有这些修饰符的自动变量初始化为<code>nil</code></li>
+<li>所有权修饰符的引入，隐藏了<code>retain</code>、<code>release</code>的添加，交由编译器去实现</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h5 id="ARC的规则"><a href="#ARC的规则" class="headerlink" title="ARC的规则"></a><code>ARC</code>的规则</h5><p>在<code>ARC</code>有效的情况下编译源代码，必须遵守一定的规则</p>
+<ul>
+<li>不能使用<code>retain/release/retainCount/autorelease</code><ul>
+<li>设置<code>ARC</code>有效时，禁止再次键入<code>retain</code>或<code>release</code>代码</li>
+</ul>
+</li>
+<li>不能使用<code>NSAllocateObject/NSDeallocateObject</code></li>
+<li>须遵守内存管理的方法命名规则<ul>
+<li>在<code>ARC</code>有效或无效的情况下，以<code>alloc/new/copy/mutableCopy</code>名称开始的方法在返回对象时，必须返回给调用方所应当持有的对象</li>
+<li>在<code>ARC</code>有效的情况下，以<code>init</code>开始的方法的规则要比<code>alloc/new/copy/mutableCopy</code>更严格。<code>init</code>方法必须是实例方法，并且必须要返回对象，返回的对象应为<code>id</code>类型或该方法声明类的对象类型，抑或是该类的超类型或子类型，该返回对象并不注册到<code>autoreleasepool</code>上，基本上只是对<code>alloc</code>方法返回值的对象进行初始化处理并返回该对象</li>
+</ul>
+</li>
+<li>不要显示调用<code>dealloc</code><ul>
+<li>即不显示调用如<code>[super dealloc]</code></li>
+</ul>
+</li>
+<li>使用<code>@autoreleasepool</code>块替代<code>NSAutoreleasePool</code><ul>
+<li><code>ARC</code>有效时，使用<code>@autoreleasepool</code>块替代<code>NSAutoreleasePool</code></li>
+</ul>
+</li>
+<li>不能使用区域<code>(NSZone)</code><ul>
+<li>区域在现在的运行时系统中已单纯地被忽略</li>
+</ul>
+</li>
+<li>对象型变量不能作为<code>C</code>语言结构体<code>(struct/union)</code>的成员<ul>
+<li><code>C</code>语言的规约上没有方法来管理结构体成员的生命周期。因<code>ARC</code>把内存管理的工作分配给编译器，所以编译器必须能够知道并管理对象的生命周期。</li>
+<li>要把对象型变量加入到结构体成员中时，可强制转换为<code>void *</code>或是附加<code>__unsafe_unretained</code>修饰符。因附有<code>__unsafe_unretained</code>修饰符的变量不属于编译器的内存管理对象</li>
+</ul>
+</li>
+<li><p>显示转换<code>id</code>和<code>void *</code></p>
+<ul>
+<li>在<code>ARC</code>无效时，<code>id</code>和<code>void *</code>相互强制转换时，不会出问题</li>
+<li><p>但在<code>ARC</code>有效时，<code>id</code>和<code>void *</code>直接相互强制转换会有问题。此时<code>id</code>型或对象型变量赋值给<code>void *</code>或者逆向赋值时都需要进行特定的转换。有如下几种转换</p>
+<ul>
+<li><p><code>__bridge</code>转换 ，安全性与赋值给<code>__unsafe_unretained</code>修饰符相近，用法如</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">id obj = [[NSObject alloc] init];</span><br><span class="line">void *p = (__bridge void *)obj;</span><br><span class="line">id o = (__bridge id)p;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>__bridge_retained</code>转换，可使要转换赋值的变量也持有所赋值的对象，<code>__bridge_retained</code>转换变为了<code>retain</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">id obj = [[NSObject alloc] init];</span><br><span class="line">void *p = (__bridge_retained void *)obj; //p持有对象obj</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>__bridge_transfer</code>转换，被转换的变量所持有的对象在该变量被赋值给转换目标变量后随之释放。同<code>__bridge_retained</code>转换与<code>retain</code>类似，<code>__bridge_transfer</code>转换与<code>release</code>相似</p>
+</li>
+<li>使用<code>__bridge_retained</code>、<code>__bridge_transfer</code>转换，不使用id型或对象型变量也可以生成、持有以及释放对象，但不推荐这样做</li>
+<li>这些转换多数使用在<code>Objective-C</code>对象与<code>Core Foundation</code>对象之间的相互变换中</li>
+<li><code>Foundation</code>框架的<code>API</code>生成并持有的对象可以用<code>Core Foundation</code>框架的<code>API</code>释放，反之亦然</li>
+<li>函数<code>CFBridgeRetain()</code>和<code>CFBridgeRelease()</code>，可用于<code>Objective-C</code>对象与<code>Core Foundation</code>对象之间的相互变换</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h5 id="ARC有效的情况下，属性的使用"><a href="#ARC有效的情况下，属性的使用" class="headerlink" title="ARC有效的情况下，属性的使用"></a>ARC有效的情况下，属性的使用</h5><ul>
+<li>属性声明的属性与所有权修饰符的对应关系</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>属性声明的属性</th>
+<th>所有权修饰符</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>assign</td>
+<td>__unsafe_unretained修饰符</td>
+</tr>
+<tr>
+<td>copy</td>
+<td>__strong修饰符(但是赋值的是被复制的对象)</td>
+</tr>
+<tr>
+<td>retain</td>
+<td>__strong修饰符</td>
+</tr>
+<tr>
+<td>strong</td>
+<td>__strong修饰符</td>
+</tr>
+<tr>
+<td>unsafe_unretained</td>
+<td>__unsafe_unretained修饰符</td>
+</tr>
+<tr>
+<td>weak</td>
+<td>__weak修饰符</td>
+</tr>
+</tbody>
+</table>
+<p>以上各种属性赋值给指定的属性中就相当于赋值给附加各属性对应的所有权修饰符的变量中。只有<code>copy</code>属性不是简单的赋值，它赋值的是通过<code>NSCoping</code>接口的<code>copyWithZone:</code>方法复制赋值源所生成的对象</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/05/30/GCD/" rel="prev" title="GCD">
+      <i class="fa fa-chevron-left"></i> GCD
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/06/18/网络编程/" rel="next" title="网络编程">
+      网络编程 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-5"><a class="nav-link" href="#对象生命周期"><span class="nav-number">1.</span> <span class="nav-text">对象生命周期</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#引用计数"><span class="nav-number">2.</span> <span class="nav-text">引用计数</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#内存管理规则"><span class="nav-number">3.</span> <span class="nav-text">内存管理规则</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#引用计数式内存管理的思考方式"><span class="nav-number">4.</span> <span class="nav-text">引用计数式内存管理的思考方式</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#引用计数的类型"><span class="nav-number">5.</span> <span class="nav-text">引用计数的类型</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#ARC的规则"><span class="nav-number">6.</span> <span class="nav-text">ARC的规则</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#ARC有效的情况下，属性的使用"><span class="nav-number">7.</span> <span class="nav-text">ARC有效的情况下，属性的使用</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Ben</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">51</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">categories</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ben</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

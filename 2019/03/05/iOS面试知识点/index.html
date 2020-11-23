@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Apple源码 Apple Github、Apple OpenSource  weakweak关键字的作用弱引用，所引用对象的计数器不会加一，并在引用对象被释放的时候，weak修饰的对象会自动被设置为nil。 weak底层原理： 12345678910111213weak 的功能实现通过runtime初始化并维护的。weak是由Runtime维护的weak表。weak表是一个hash表，用于存储">
+<meta name="keywords" content="iOS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS面试知识点">
+<meta property="og:url" content="http://yoursite.com/2019/03/05/iOS面试知识点/index.html">
+<meta property="og:site_name" content="Ben&#39;Blog">
+<meta property="og:description" content="Apple源码 Apple Github、Apple OpenSource  weakweak关键字的作用弱引用，所引用对象的计数器不会加一，并在引用对象被释放的时候，weak修饰的对象会自动被设置为nil。 weak底层原理： 12345678910111213weak 的功能实现通过runtime初始化并维护的。weak是由Runtime维护的weak表。weak表是一个hash表，用于存储">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-11-23T03:54:31.337Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="iOS面试知识点">
+<meta name="twitter:description" content="Apple源码 Apple Github、Apple OpenSource  weakweak关键字的作用弱引用，所引用对象的计数器不会加一，并在引用对象被释放的时候，weak修饰的对象会自动被设置为nil。 weak底层原理： 12345678910111213weak 的功能实现通过runtime初始化并维护的。weak是由Runtime维护的weak表。weak表是一个hash表，用于存储">
+
+<link rel="canonical" href="http://yoursite.com/2019/03/05/iOS面试知识点/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>iOS面试知识点 | Ben'Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Ben'Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">工欲善其事，必先利其器</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/05/iOS面试知识点/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Ben">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ben'Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          iOS面试知识点
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-03-05 11:14:24" itemprop="dateCreated datePublished" datetime="2019-03-05T11:14:24+08:00">2019-03-05</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-11-23 11:54:31" itemprop="dateModified" datetime="2020-11-23T11:54:31+08:00">2020-11-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/iOS/" itemprop="url" rel="index"><span itemprop="name">iOS</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <ul>
+<li><code>Apple</code>源码 <a href="https://github.com/opensource-apple?tab=overview&amp;from=2018-12-01&amp;to=2018-12-31" target="_blank" rel="noopener">Apple Github</a>、<a href="https://opensource.apple.com/source/" target="_blank" rel="noopener">Apple OpenSource</a></li>
+</ul>
+<h5 id="weak"><a href="#weak" class="headerlink" title="weak"></a><code>weak</code></h5><p><code>weak</code>关键字的作用弱引用，所引用对象的计数器不会加一，并在引用对象被释放的时候，<code>weak</code>修饰的对象会自动被设置为<code>nil</code>。</p>
+<p><code>weak</code>底层原理：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">weak 的功能实现通过runtime初始化并维护的。weak是由Runtime维护</span><br><span class="line">的weak表。weak表是一个hash表，用于存储指向某个对象的所有weak指</span><br><span class="line">针，key是指向对象的地址，value是weak指针的地址&lt;这个地址的值是所</span><br><span class="line">指对象指针的地址&gt;数组。</span><br><span class="line"></span><br><span class="line">具体步骤：</span><br><span class="line">1，初始化时：runtime会调用objc_initWeak函数，初始化一个新的</span><br><span class="line">weak指针指向对象的地址。</span><br><span class="line">2， 添加引用时：objc_initWeak函数会调用 storeWeak() 函数，</span><br><span class="line"> storeWeak() 的作用是更新指针指向，创建对应的弱引用表。</span><br><span class="line">3，释放时,调用clearDeallocating函数。clearDeallocating函数</span><br><span class="line">首先根据对象地址获取所有weak指针地址的数组，然后遍历这个数组把其中</span><br><span class="line">的数据设为nil，最后把这个entry从weak表中删除，最后清理对象的记录。</span><br></pre></td></tr></table></figure>
+<p><code>runtime</code>源码中对应的<code>weak</code>文件，见<a href="https://opensource.apple.com/source/objc4/objc4-750/runtime/" target="_blank" rel="noopener">objc4-750</a>。</p>
+<p>补充：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hash表是链表数组的数据结构，操作存储的数据时会用到对应的hash函数和 equals函数。</span><br></pre></td></tr></table></figure>
+<p>扩展题：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">两个对象 Person p1 p2</span><br><span class="line">问题：如果两个对象的哈希值相同，p1.hashCode()==p2.hashCode()</span><br><span class="line">两个对象的equals一定返回true吗？p1.equals(p2)一定是true吗？</span><br><span class="line">答案：不一定</span><br><span class="line"></span><br><span class="line">如果两个对象的equals方法返回true,p1.equals(p2)==true</span><br><span class="line">两个对象的哈希值一定相同吗？</span><br><span class="line">答案：一定</span><br></pre></td></tr></table></figure>
+<hr>
+<h5 id="KVO"><a href="#KVO" class="headerlink" title="KVO"></a><code>KVO</code></h5><p><code>KVO</code>即是<code>NSKeyValueObserving</code>，是对象(如：a)用来通知其他对象(如：b)指定的属性(如：name)发生了改变的一种非正式协议。其中：a是被监听的对象，b是监听的对象。</p>
+<p>Tips:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">非正式协议，是NSObject的一个分类Category，非正式协议的方法</span><br><span class="line">是可选的。分类是OC的语言特性，能够给类对象添加方法而不需要创建子类。</span><br><span class="line"></span><br><span class="line">正式协议，正式协议有自己的声明、类型检查语法。一个正式协议声明了类</span><br><span class="line">需要实现的方法列表，可以使用required或者optional关键字指定方法</span><br><span class="line">是否必须实现。正式协议也可以遵守其他协议。子类继承父类遵守的协议。</span><br></pre></td></tr></table></figure>
+<p>实现<code>KVO</code>的过程：</p>
+<p>1.添加监听，监听指定的属性：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- (void)addObserver:(NSObject *)observer forKeyPath:(NSString *)keyPath options:(NSKeyValueObservingOptions)options context:(nullable void *)context;</span><br></pre></td></tr></table></figure>
+<p>2.实现监听，收到监听反馈后，实现具体的逻辑处理。在监听的对象里，要实现非正式协议的方法，以对收到的监听反馈进行处理：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- (void)observeValueForKeyPath:(nullable NSString *)keyPath ofObject:(nullable id)object change:(nullable NSDictionary&lt;NSKeyValueChangeKey, id&gt; *)change context:(nullable void *)context;</span><br></pre></td></tr></table></figure>
+<p>3.移除监听：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- (void)removeObserver:(NSObject *)observer forKeyPath:(NSString *)keyPath;</span><br></pre></td></tr></table></figure>
+<p><code>KVO</code>的底层实现：</p>
+<p>在添加监听(<code>addObserver</code>)之后，实例对象的类对象发生了变化，系统动态添加了一个<code>NSKVONotifying_被监听的类名</code>的类(中间类)，如<code>NSKVONotifying_Animal</code>，<code>Animal</code>是被监听的类。因为改变对象属性的值是通过<code>setter</code>方法实现的，所以很明显是系统动态生成的中间类重写了<code>setter</code>方法。系统重写<code>setter</code>方法的过程中调用了<code>willChangeValueForKey</code>和<code>didChangeValueForKey</code>方法，<code>didChangeValueForKey</code>方法中调用了<code>observeValueForKeyPath</code>。</p>
+<hr>
+<h5 id="Runtime"><a href="#Runtime" class="headerlink" title="Runtime"></a><code>Runtime</code></h5><p><code>Runtime</code>运行时，是<code>OC</code>动态性的基础。<code>OC</code>的动态性体现在动态类型、动态绑定、动态加载。基于<code>Runtime</code>，<code>OC</code>语言将数据类型的确定由编译时推迟到了运行时。基于<code>Runtime</code>，在编译时确定的方法推迟到了运行时，所以能动态产生、修改、删除类、成员变量、方法。<code>Runtime</code>是一个<code>C</code>语言<code>API</code>的库。</p>
+<p>常用的<code>Runtime</code>接口：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">对应文件：#import &lt;objc/runtime.h&gt; </span><br><span class="line"></span><br><span class="line">操作成员变量、类、方法：</span><br><span class="line">Ivar * class_copyIvarList : 获得某个类内部的所有成员变量</span><br><span class="line">Method * class_copyMethodList : 获得某个类内部的所有方法</span><br><span class="line">Method class_getInstanceMethod : 获得某个实例方法（对象方法，减号-开头）</span><br><span class="line">Method class_getClassMethod : 获得某个类方法（加号+开头）</span><br><span class="line">method_exchangeImplementations : 交换2个方法的具体实现</span><br></pre></td></tr></table></figure>
+<p>Tips:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">消息传递，属于动态调用过程，即在编译阶段不能确定真正所要调用的函</span><br><span class="line">数，只有在真正运行的时候才会根据函数的名称找到对应的函数来调用。</span><br></pre></td></tr></table></figure>
+<hr>
+<h5 id="从源代码到运行的APP"><a href="#从源代码到运行的APP" class="headerlink" title="从源代码到运行的APP"></a>从源代码到运行的<code>APP</code></h5><p>当点击了<code>build</code>之后，发生的事：<strong>预处理(生成.i文件) - 编译(生成.s文件) - 汇编(生成.o文件) - 链接</strong></p>
+<ul>
+<li>预处理<code>(Pre-process)</code>：把宏替换，删除注释，展开头文件，产生<code>.i</code>文件</li>
+<li>编译<code>(Compliling)</code>：把之前的<code>.i</code>文件转换成汇编语言，产生<code>.s</code>文件</li>
+<li>汇编<code>(Asembly)</code>：把汇编语言文件转换为机器码文件，产生<code>.o</code>文件</li>
+<li>链接<code>(Link)</code>：对<code>.o</code>文件中的对于其他的库的引用的地方进行引用，生成最后的可执行文件(同时也包括多个<code>.o</code>文件进行<code>link</code>)</li>
+</ul>
+<hr>
+<h5 id="self-navigationItem-title与self-title有什么区别"><a href="#self-navigationItem-title与self-title有什么区别" class="headerlink" title="self.navigationItem.title与self.title有什么区别"></a><code>self.navigationItem.title</code>与<code>self.title</code>有什么区别</h5><ul>
+<li>联系<ul>
+<li><code>self.title</code>是控制器默认<code>view</code>的<code>title</code></li>
+<li><code>self.navigationItem.title</code>是显示在<code>navigationBar</code>中间的<code>title</code></li>
+<li>修改<code>self.title</code>或者<code>self.navigationItem.title</code>都可以修改标题</li>
+</ul>
+</li>
+<li>区别<ul>
+<li>标题始终显示<code>self.navigationItem.title</code>的值</li>
+<li>当<code>self.navigationItem.title</code>为空<code>(null)</code>时，则显示空白</li>
+<li>当<code>self.title</code>的值被修改时，<code>self.navigationItem.title</code>的值也会跟着修改为<code>self.title</code>的值</li>
+<li>当<code>self.navigationItem.title</code>的值被修改时，<code>self.title</code>的值不变，标题也会跟着修改为<code>self.navigationItem.title</code>的值</li>
+<li><code>self.title</code>作用于<code>tabbar</code>标题上和<code>self.navigationItem.title上</code>；<code>self.navigationItem.title</code>作用于<code>navigationBar</code>的标题上</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h5 id="UINavigationController的title不显示问题"><a href="#UINavigationController的title不显示问题" class="headerlink" title="UINavigationController的title不显示问题"></a><code>UINavigationController</code>的<code>title</code>不显示问题</h5><p><code>title</code>这个属性实际上是属于<code>UIViewController</code>而不属于<code>UINavigationController</code>。所以，这个属性是从<code>UIViewController</code>上面继承过来的。而不是<code>UINavigationController</code>上面的名字。由于<code>UINavigationController</code>属于容器，所以最少需要一个<code>RootController</code>。然后在<code>RootController</code>的<code>viewDidLoad</code>设置<code>title</code>而不是在<code>UINavigationController</code>的<code>subclass</code>中设置。而且<code>viewDidLoad</code>设置的<code>title</code>是统一显示的，导航视图控制的<code>UIViewController</code>的<code>title</code>都是一样的。</p>
+<hr>
+<h5 id="category和extension的区别"><a href="#category和extension的区别" class="headerlink" title="category和extension的区别"></a><code>category</code>和<code>extension</code>的区别</h5><ul>
+<li><p><code>extension</code>(扩展)</p>
+<ul>
+<li>在编译期决定，是类的一部分。在编译期和头文件(<code>.h</code>)里的<code>@interface</code>以及实现文件(<code>.m</code>)里的<code>@implement</code>一起形成一个完整的类。<code>extension</code>伴随类的产生而产生，亦随类的消亡而消亡</li>
+<li>一般用来隐藏类的私有信息。必须有类的源码才能为一个类添加<code>extension</code>，所以无法为系统的类，如<code>NSString</code>添加<code>extension</code></li>
+</ul>
+</li>
+<li><p><code>category</code>(分类)</p>
+<ul>
+<li>是在运行期决定的</li>
+</ul>
+</li>
+</ul>
+<p>从上面<code>category</code>和<code>extension</code>的区别来看，<code>extension</code>可以添加实例变量，而<code>category</code>是无法添加实例变量的，因在运行期，对象的内存布局已经确定，如果添加实例变量就会破坏类的内存布局，这对编译型语言来说是灾难性的。</p>
+<ul>
+<li><p><code>category</code>的加载过程</p>
+<ul>
+<li>把<code>category</code>的实例方法、协议以及属性添加到类上</li>
+<li>把<code>category</code>的类方法添加到类的<code>metaclass</code>上</li>
+</ul>
+</li>
+<li><p>在类和<code>category</code>中都有<code>+load</code>方法时</p>
+<ul>
+<li>在类的<code>+load</code>方法调用的时候，可以调用<code>category</code>中声明的方法，因为附加<code>category</code>到类的操作会先于<code>+load</code>方法的执行</li>
+<li>类和<code>category</code>中的<code>+load</code>方法，调用顺序为，<code>+load</code>的执行顺序是先类，后<code>category</code>，而<code>category</code>的<code>+load</code>执行顺序是根据编译顺序决定的。对于<code>+load</code>的执行顺序是这样，但是对于<strong>覆盖</strong>掉的方法，则会先找到最后一个编译的<code>category</code>里对应的方法</li>
+</ul>
+</li>
+<li><p>关于使用<code>category</code>时，出现类中的方法被<code>category</code>中同名的方法<strong>覆盖</strong>掉的理解</p>
+<ul>
+<li><code>category</code>的方法<strong>没有完全替换掉</strong>原来类已经有的方法，即<code>category</code>和原来类都有同名方法<code>methodA</code>，那么<code>category</code>附加完成之后，类的方法列表里会有两个<code>methodA</code></li>
+<li><code>category</code>的方法被放到了新方法列表的前面，而原来类的方法被放到了新方法列表的后面，这也就是平常所说的<code>category</code>中的方法会<strong>覆盖</strong>掉原来类的同名方法，因为运行时在查找方法的时候是顺着方法列表的顺序查找的，只有找到对应名字的方法，就会返回，不管后面会不会还有一样名字的方法</li>
+</ul>
+</li>
+<li><p>如何调用到原来类中被<code>category</code><strong>覆盖</strong>掉的方法</p>
+<ul>
+<li><code>category</code>并不是完全替换掉原来类中的同名方法，只是<code>category</code>中的方法在方法列表的前面，优先命中了而已，所以只要顺着方法列表找到最后一个对应名字的方法，就可以调用原来类中的方法</li>
+<li>实现代码如下</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">// 假设被覆盖的方法名叫 methodA。</span><br><span class="line">Class currentClass = [OriginalClass class];</span><br><span class="line">OriginalClass *my = [[OriginalClass alloc] init];</span><br><span class="line"></span><br><span class="line">if (currentClass) &#123;</span><br><span class="line">    unsigned int methodCount;</span><br><span class="line">    Method *methodList = class_copyMethodList(currentClass, &amp;methodCount);</span><br><span class="line">    IMP lastImp = NULL;</span><br><span class="line">    SEL lastSel = NULL;</span><br><span class="line">    for (NSInteger i = 0; i &lt; methodCount; i++) &#123;</span><br><span class="line">        Method method = methodList[i];</span><br><span class="line">        NSString *methodName = [NSString stringWithCString:sel_getName(method_getName(method)) encoding:NSUTF8StringEncoding];</span><br><span class="line">        if ([@&quot;methodA&quot; isEqualToString:methodName]) &#123;</span><br><span class="line">            lastImp = method_getImplementation(method);</span><br><span class="line">            lastSel = method_getName(method);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    typedef void (*fn)(id,SEL);</span><br><span class="line"></span><br><span class="line">    if (lastImp != NULL) &#123;</span><br><span class="line">        fn f = (fn) lastImp;</span><br><span class="line">        f(my, lastSel);</span><br><span class="line">    &#125;</span><br><span class="line">    free(methodList);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/iOS/" rel="tag"># iOS</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/03/04/CocoaPods/" rel="prev" title="CocoaPods">
+      <i class="fa fa-chevron-left"></i> CocoaPods
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/03/07/Objective-C/" rel="next" title="Objective-C">
+      Objective-C <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-5"><a class="nav-link" href="#weak"><span class="nav-number">1.</span> <span class="nav-text">weak</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#KVO"><span class="nav-number">2.</span> <span class="nav-text">KVO</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Runtime"><span class="nav-number">3.</span> <span class="nav-text">Runtime</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#从源代码到运行的APP"><span class="nav-number">4.</span> <span class="nav-text">从源代码到运行的APP</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#self-navigationItem-title与self-title有什么区别"><span class="nav-number">5.</span> <span class="nav-text">self.navigationItem.title与self.title有什么区别</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#UINavigationController的title不显示问题"><span class="nav-number">6.</span> <span class="nav-text">UINavigationController的title不显示问题</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#category和extension的区别"><span class="nav-number">7.</span> <span class="nav-text">category和extension的区别</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Ben</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">51</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">categories</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ben</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

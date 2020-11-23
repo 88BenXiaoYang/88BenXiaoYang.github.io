@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Block简介Block作为C语言的扩展，和其他语言的闭包或lambda表达式是一回事。由于OC在iOS中不支持GC机制，使用Block必须自己管理内存。内存管理正是使用Block坑最多的地方，错误的内存管理要么导致return cycle内存泄漏，要么内存被提前释放导致crash。 lambda表达式是一个匿名函数，即没有函数名的函数，lambda表达式可以表示闭包。 Block包含的两个部分：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Block">
+<meta property="og:url" content="http://yoursite.com/2019/09/27/Block/index.html">
+<meta property="og:site_name" content="Ben&#39;Blog">
+<meta property="og:description" content="Block简介Block作为C语言的扩展，和其他语言的闭包或lambda表达式是一回事。由于OC在iOS中不支持GC机制，使用Block必须自己管理内存。内存管理正是使用Block坑最多的地方，错误的内存管理要么导致return cycle内存泄漏，要么内存被提前释放导致crash。 lambda表达式是一个匿名函数，即没有函数名的函数，lambda表达式可以表示闭包。 Block包含的两个部分：">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2019/09/27/Block/block语法结构图.png">
+<meta property="og:updated_time" content="2020-11-23T03:54:31.112Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Block">
+<meta name="twitter:description" content="Block简介Block作为C语言的扩展，和其他语言的闭包或lambda表达式是一回事。由于OC在iOS中不支持GC机制，使用Block必须自己管理内存。内存管理正是使用Block坑最多的地方，错误的内存管理要么导致return cycle内存泄漏，要么内存被提前释放导致crash。 lambda表达式是一个匿名函数，即没有函数名的函数，lambda表达式可以表示闭包。 Block包含的两个部分：">
+<meta name="twitter:image" content="http://yoursite.com/2019/09/27/Block/block语法结构图.png">
+
+<link rel="canonical" href="http://yoursite.com/2019/09/27/Block/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>Block | Ben'Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Ben'Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">工欲善其事，必先利其器</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/27/Block/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Ben">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ben'Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Block
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-09-27 15:53:28" itemprop="dateCreated datePublished" datetime="2019-09-27T15:53:28+08:00">2019-09-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-11-23 11:54:31" itemprop="dateModified" datetime="2020-11-23T11:54:31+08:00">2020-11-23</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="Block简介"><a href="#Block简介" class="headerlink" title="Block简介"></a><code>Block</code>简介</h3><p><code>Block</code>作为<code>C</code>语言的扩展，和其他语言的闭包或<code>lambda</code>表达式是一回事。由于<code>OC</code>在<code>iOS</code>中不支持<code>GC</code>机制，使用<code>Block</code>必须自己管理内存。内存管理正是使用<code>Block</code>坑最多的地方，错误的内存管理要么导致<code>return cycle</code>内存泄漏，要么内存被提前释放导致<code>crash</code>。</p>
+<p><code>lambda</code>表达式是一个匿名函数，即没有函数名的函数，<code>lambda</code>表达式可以表示闭包。</p>
+<p><code>Block</code>包含的两个部分：</p>
+<ol>
+<li><code>Block</code>执行的代码，这是在编译的时候已经生成好的</li>
+<li>一个包含<code>Block</code>执行时需要的所有外部变量值的数据结构。<code>Block</code>将使用到的、作用域捕获到的变量的值建立一份快照拷贝到栈上。</li>
+</ol>
+<ul>
+<li><code>block</code>与函数的区别<ol>
+<li><code>Block</code>的使用很像函数指针，不过与函数最大的不同是：<code>Block</code>可以访问函数以外、词法作用域以内的外部变量的值。即，<code>Block</code>不仅实现函数的功能，还能携带函数的执行环境。</li>
+<li><code>Block</code>与函数另一个不同是，<code>Block</code>类似<code>OC</code>的对象，可以使用自动释放池管理内存(但<code>Block</code>并不完全等同于<code>OC</code>对象)</li>
+</ol>
+</li>
+</ul>
+<h3 id="Block基本语法"><a href="#Block基本语法" class="headerlink" title="Block基本语法"></a><code>Block</code>基本语法</h3><p><code>Block</code>语法结构如下图</p>
+<p><img src="/2019/09/27/Block/block语法结构图.png" alt="block语法结构图"></p>
+<h3 id="Block在内存中的位置"><a href="#Block在内存中的位置" class="headerlink" title="Block在内存中的位置"></a><code>Block</code>在内存中的位置</h3><p>根据<code>Block</code>在内存中的位置分为三种类型<code>NSGlobalBlock</code>，<code>NSStackBlock</code>, <code>NSMallocBlock</code></p>
+<ul>
+<li><code>NSGlobalBlock</code>：类似函数，位于<code>text</code>段<ul>
+<li>当使用<code>Block</code>时，没有使用<code>Block</code>以外的任何外部变量，<code>Block</code>不需要建立局部变量值的快照。这种情况下，使用的<code>Block</code>与函数没有任何区别，此时编译器把使用的<code>Block</code>放到了<code>text</code>代码段。</li>
+</ul>
+</li>
+<li><code>NSStackBlock</code>：位于栈内存，函数返回后<code>Block</code>将无效<ul>
+<li>当使用的<code>Block</code>内部捕获了外部局部变量，此时在定义(注：是定义，不是运行)所使用的<code>Block</code>时，所捕获到的局部变量的当前值被<code>copy</code>到栈上，作为常量供当前的<code>Block</code>使用。此时在<code>Block</code>内，被捕获的变量是只读的，如果想在<code>Block</code>内改变被捕获的变量的值，在定义局部变量时要用<code>__block</code>修饰。</li>
+<li><code>Block</code>中使用<code>__block</code>修饰的变量时，将取变量此刻运行时的值，而不是定义时的快照。</li>
+</ul>
+</li>
+<li><code>NSMallocBlock</code>：位于堆内存</li>
+</ul>
+<h3 id="Block的copy、retain、release操作"><a href="#Block的copy、retain、release操作" class="headerlink" title="Block的copy、retain、release操作"></a><code>Block</code>的<code>copy</code>、<code>retain</code>、<code>release</code>操作</h3><p>不同于<code>NSObject</code>的<code>copy</code>、<code>retain</code>、<code>release</code>操作，对<code>Block</code>进行<code>copy</code>、<code>retain</code>、<code>release</code>有以下特性：</p>
+<ul>
+<li><code>Block_copy</code>与<code>copy</code>等效，<code>Block_release</code>与<code>release</code>等效</li>
+<li>对<code>Block</code>不管是<code>retain</code>、<code>copy</code>、<code>release</code>都不会改变引用计数<code>retainCount</code>，<code>retainCount</code>始终是<code>1</code></li>
+<li><strong><code>NSGlobalBlock</code>：<code>retain</code>、<code>copy</code>、<code>release</code>操作都无效</strong></li>
+<li><code>NSStackBlock</code><ul>
+<li><code>retain</code>、<code>release</code>操作无效。必须注意的是，<code>NSStackBlock</code>在函数返回后，<code>Block</code>内存将被回收，即使<code>retain</code>也没用</li>
+<li>容易犯的错误是<code>[[mutableArray addObject:stackBlock]</code>，在函数出栈后，从<code>mutableArray</code>中取到的<code>stackBlock</code>已经被回收，变成了野指针。正确的做法是先将<code>stackBlock`</code>copy<code>到堆上，然后加入数组：</code>[mutableArray addObject:[[stackBlock copy] autorelease]]`</li>
+<li>支持<code>copy</code>，<code>copy</code>之后生成新的<code>NSMallocBlock</code>类型对象</li>
+</ul>
+</li>
+<li><strong><code>NSMallocBlock</code>支持<code>retain</code>、<code>release</code>，虽然<code>retainCount</code>始终是<code>1</code>，但内存管理器中仍然会增加、减少计数。<code>copy</code>之后不会生成新的对象，只是增加了一次引用，类似<code>retain</code></strong></li>
+<li>尽量不要对<code>Block</code>使用<code>retain</code>操作</li>
+</ul>
+<h3 id="Block对不同类型的变量的存取"><a href="#Block对不同类型的变量的存取" class="headerlink" title="Block对不同类型的变量的存取"></a><code>Block</code>对不同类型的变量的存取</h3><ul>
+<li><strong>局部自动变量</strong>，在<code>Block</code>中只读。<code>Block</code>定义时<code>copy</code>变量的值，在<code>Block</code>中作为常量使用，所以即使变量的值在<code>Block</code>外改变，也不影响它在<code>Block</code>中的值</li>
+<li><strong><code>static</code>变量、全局变量</strong>。如果把变量定义成全局的、或<code>static</code>类型的变量，<code>Block</code>就可以对它进行读写了。因为全局变量或静态变量在内存中的地址是固定的，<code>Block</code>在读取该变量值的时候是直接从其所在内存读出，获取到的是最新值，而不是在定义时<code>copy</code>的常量。这种情况下，<code>Block</code>外部对变量的更新会影响<code>Block</code>中已被捕获的变量的取值，同样在<code>Block</code>内对捕获到的变量的更新也会影响到<code>Block</code>外部对应的变量的值</li>
+<li><code>Block</code>变量，被<code>__block</code>修饰的变量称作<code>Block</code>变量。基本类型的<code>Block</code>变量等效于全局变量或静态变量</li>
+</ul>
+<p><code>Block</code>被另一个<code>Block</code>使用时，另一个<code>Block</code>被<code>copy</code>到堆上时，被使用的<code>Block</code>也会被<code>copy</code>。但<strong>作为参数的<code>Block</code>是不会发生<code>copy</code>的</strong>。无论<code>Block</code>在堆上还是在栈上，作为参数的<code>Block</code>不会发生<code>copy</code>。</p>
+<ul>
+<li><p><code>OC</code>对象，不同于基本类型，<code>Block</code>会引起对象的引用计数变化</p>
+<ul>
+<li>全局对象、静态对象，在内存中的位置是确定的，所以<code>Block copy</code>时不会<code>retain</code>对象</li>
+<li>实例对象，在<code>Block copy</code>时也没有直接<code>retain</code>实例对象本身，但会<code>retain self</code>，所以在<code>Block</code>中可以直接读写实例对象变量</li>
+<li>局部对象，在<code>Block copy</code>时，系统自动<code>retain</code>对象，增加其引用计数</li>
+<li><code>block</code>对象，在<code>Block copy</code>时，不会<code>retain</code></li>
+</ul>
+</li>
+<li><p>非<code>OC</code>对象，如<code>GCD</code>队列<code>dispatch_queue_t</code>，<code>Block copy</code>时并不会自动增加其引用计数，这点要非常小心</p>
+</li>
+</ul>
+<h3 id="retain-cycle"><a href="#retain-cycle" class="headerlink" title="retain cycle"></a><code>retain cycle</code></h3><ul>
+<li><p>产生原因：<code>retain cycle</code>问题的根源在于<code>Block</code>和<code>obj</code>可能会互相强引用，互相<code>retain</code>对方，这样就导致了<code>retain cycle</code>，最后这个<code>Block</code>和<code>obj</code>就变成了孤岛，谁也释放不了谁</p>
+</li>
+<li><p>解决办法：解决这个问题的办法是使用<strong>弱引用</strong>打断<code>retain cycle</code>。使用<code>__block</code>修饰<code>obj</code>。</p>
+</li>
+</ul>
+<p>在<code>Block</code>中使用成员变量，<code>retain</code>的不是这个变量，而会<code>retain self</code>。</p>
+<p>注：<code>MRC</code>中<code>__block</code>是不会引起<code>retain</code>；但在<code>ARC</code>中<code>__block</code>则会引起<code>retain</code>。<code>ARC</code>中应该使用<code>__weak</code>或<code>__unsafe_unretained</code>弱引用。<code>__weak</code>只能在<code>iOS5</code>以后使用。</p>
+<p>避免<code>Block</code>使用对象被提前释放，此时必须要注意对象和<code>Block</code>的生命周期。</p>
+<h5 id="错误使用-block的场景"><a href="#错误使用-block的场景" class="headerlink" title="错误使用__block的场景"></a>错误使用__block的场景</h5><p>因担心<code>retain cycle</code>错误的使用<code>__block</code></p>
+<p>将<code>Block</code>作为参数传给<code>dispatch_async</code>时，系统会将<code>Block</code>拷贝到堆上，如果<code>Block</code>中使用了实例变量，还将<code>retain self</code>，因为<code>dispatch_async</code>并不知道<code>self</code>会在什么时候被释放，为了确保系统调度执行<code>Block</code>中的任务时<code>self</code>没有被意外释放掉，<code>dispatch_async</code>必须自己<code>retain</code>一次<code>self</code>，任务完成后再<code>release self</code>。但这里使用<code>__block</code>，使<code>dispatch_async</code>没有增加<code>self</code>的引用计数，这使得在系统在调度执行<code>Block</code>之前，<code>self</code>可能已被销毁，但系统并不知道这个情况，导致<code>Block</code>被调度执行时<code>self</code>已经被释放导致<code>crash</code>。</p>
+<p>上述情况下不要使用<code>__block</code>。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/09/26/Mac上给移动硬盘分区方法/" rel="prev" title="Mac上给移动硬盘分区方法">
+      <i class="fa fa-chevron-left"></i> Mac上给移动硬盘分区方法
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/09/30/不同编码标准的编码与解码/" rel="next" title="不同编码标准的编码与解码">
+      不同编码标准的编码与解码 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Block简介"><span class="nav-number">1.</span> <span class="nav-text">Block简介</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Block基本语法"><span class="nav-number">2.</span> <span class="nav-text">Block基本语法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Block在内存中的位置"><span class="nav-number">3.</span> <span class="nav-text">Block在内存中的位置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Block的copy、retain、release操作"><span class="nav-number">4.</span> <span class="nav-text">Block的copy、retain、release操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Block对不同类型的变量的存取"><span class="nav-number">5.</span> <span class="nav-text">Block对不同类型的变量的存取</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#retain-cycle"><span class="nav-number">6.</span> <span class="nav-text">retain cycle</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#错误使用-block的场景"><span class="nav-number">6.0.1.</span> <span class="nav-text">错误使用__block的场景</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Ben</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">51</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">categories</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ben</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

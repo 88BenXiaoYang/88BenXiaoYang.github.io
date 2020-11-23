@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="数学运算(math)函数算术运算函数 rand()函数：产生随机数 abs()函数/labs()函数：整数的绝对值 fabs()/fabsf()/fabsl()函数：浮点数的绝对值 floor()/floorf()/floorl()函数：向下取整 ceil()/ceilf()/ceill()函数：向上取整 round()/roundf()/roundl()函数：四舍五入 sqrt()/sqrtf(">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Foundation构架秘籍-函数">
+<meta property="og:url" content="http://yoursite.com/2020/09/14/Foundation构架秘籍-函数/index.html">
+<meta property="og:site_name" content="Ben&#39;Blog">
+<meta property="og:description" content="数学运算(math)函数算术运算函数 rand()函数：产生随机数 abs()函数/labs()函数：整数的绝对值 fabs()/fabsf()/fabsl()函数：浮点数的绝对值 floor()/floorf()/floorl()函数：向下取整 ceil()/ceilf()/ceill()函数：向上取整 round()/roundf()/roundl()函数：四舍五入 sqrt()/sqrtf(">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-11-23T03:54:31.113Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Foundation构架秘籍-函数">
+<meta name="twitter:description" content="数学运算(math)函数算术运算函数 rand()函数：产生随机数 abs()函数/labs()函数：整数的绝对值 fabs()/fabsf()/fabsl()函数：浮点数的绝对值 floor()/floorf()/floorl()函数：向下取整 ceil()/ceilf()/ceill()函数：向上取整 round()/roundf()/roundl()函数：四舍五入 sqrt()/sqrtf(">
+
+<link rel="canonical" href="http://yoursite.com/2020/09/14/Foundation构架秘籍-函数/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>Foundation构架秘籍-函数 | Ben'Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Ben'Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">工欲善其事，必先利其器</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/09/14/Foundation构架秘籍-函数/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Ben">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ben'Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Foundation构架秘籍-函数
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-09-14 19:20:51" itemprop="dateCreated datePublished" datetime="2020-09-14T19:20:51+08:00">2020-09-14</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-11-23 11:54:31" itemprop="dateModified" datetime="2020-11-23T11:54:31+08:00">2020-11-23</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="数学运算-math-函数"><a href="#数学运算-math-函数" class="headerlink" title="数学运算(math)函数"></a>数学运算(math)函数</h1><h2 id="算术运算函数"><a href="#算术运算函数" class="headerlink" title="算术运算函数"></a>算术运算函数</h2><ul>
+<li>rand()函数：产生随机数</li>
+<li>abs()函数/labs()函数：整数的绝对值</li>
+<li>fabs()/fabsf()/fabsl()函数：浮点数的绝对值</li>
+<li>floor()/floorf()/floorl()函数：向下取整</li>
+<li>ceil()/ceilf()/ceill()函数：向上取整</li>
+<li>round()/roundf()/roundl()函数：四舍五入</li>
+<li>sqrt()/sqrtf()/sqrtl()函数：求平方根</li>
+<li>fmax()/fmaxf()/fmaxl()函数：求最大值</li>
+<li>fmin()/fminf()/fminl()函数：求最小值</li>
+<li>hypot()/hypotf()/hypotl()函数：求直角三角形斜边的长度</li>
+<li>fmod()/fmodf()/fmodl()函数：求两数整除后的余数</li>
+<li>modf()/modff()/modfl()函数：浮点数分解为整数和小数</li>
+<li>frexp()/frexpf()/frexpl()函数：浮点数分解尾数和以二为底的指数</li>
+</ul>
+<h2 id="三角运算函数"><a href="#三角运算函数" class="headerlink" title="三角运算函数"></a>三角运算函数</h2><ul>
+<li>sin()/sinf()/sinl()/函数：求正弦值</li>
+<li>sinh()/sinhf()/sinhl()函数：求双曲正弦值</li>
+<li>cos()/cosf()/cosl()函数：求余弦值</li>
+<li>cosh()/coshf()/coshl()函数：求双曲余弦值</li>
+<li>tan()/tanf()/tanl()函数：求正切值</li>
+<li>tanh()/tanhf()/tanhl()函数：求双曲正切值</li>
+</ul>
+<h2 id="反三角运算"><a href="#反三角运算" class="headerlink" title="反三角运算"></a>反三角运算</h2><ul>
+<li>asin()/asinf()/asinl()函数：求反正弦值</li>
+<li>asinh()/asinhf()/asinhl()函数：求反双曲正弦值</li>
+<li>acos()/acosf()/acosl()函数：求反余弦值</li>
+<li>acosh()/acoshf()/acoshl()函数：求反双曲余弦值</li>
+<li>atan()/atanf()/atanl()函数：求反正切值</li>
+<li>atan2()/atan2f()/atanl()函数：求坐标值的反正切值</li>
+<li>atanh()/atanhf()/atanhl()函数：求反双曲正切值</li>
+</ul>
+<h2 id="指数和对数运算"><a href="#指数和对数运算" class="headerlink" title="指数和对数运算"></a>指数和对数运算</h2><ul>
+<li>pow()/powf()/powl函数：求n的m次方的值</li>
+<li>exp()/expf()/expl()函数：求e的x次方的值</li>
+<li>exp2()/exp2f()/exp2l()函数：2的x的次方的值</li>
+<li>log()/logf()/logl()函数：求以e为底的对数值</li>
+<li>log10()/log10f()/log10l()函数：求以10为底的对数值</li>
+</ul>
+<h1 id="数字对象-NSNumber"><a href="#数字对象-NSNumber" class="headerlink" title="数字对象(NSNumber)"></a>数字对象(NSNumber)</h1><h2 id="整型对象"><a href="#整型对象" class="headerlink" title="整型对象"></a>整型对象</h2><ul>
+<li>numberWithShort:方法：创建短整型数字对象</li>
+<li>numberWithUnsignedShort:方法：创建无符号短整型数字对象</li>
+<li>numberWithInteger:方法：创建整型数字对象</li>
+<li>numberWithUnsignedInteger:方法：创建无符号整型数字对象</li>
+<li>numberWithInt:方法：创建整型数字对象</li>
+<li>numberWithUnsignedInt:方法：创建无符号整型数字对象</li>
+<li>numberWithLong:方法：创建并初始化长整型数字对象</li>
+<li>numberWithUnsignedLong:方法：创建并初始化无符号长整型数字对象</li>
+<li>numberWithLongLong:方法：创建并初始化长长整型数字对象</li>
+<li>numberWithUnsignedLongLong:方法：创建并初始化无符号长长整型对象</li>
+<li>initWithShort:方法：初始化短整型数字对象</li>
+<li>initWithUnsignedShort:方法：初始化无符号短整型数字对象</li>
+<li>initWithInteger:方法：初始化整型数字对象</li>
+<li>initWithUnsignedInteger:方法：初始化无符号整型数字对象</li>
+<li>initWithInt:方法：初始化整型数字对象</li>
+<li>initWithUnsignedInt:方法：初始化无符号整型数字对象</li>
+<li>initWithLong:方法：初始化长整型数字对象</li>
+<li>initWithUnsignedLong:方法：初始化无符号长整型数字对象</li>
+<li>initWithLongLong:方法：初始化长长整型数字对象</li>
+<li>initWithUnsignedLongLong:方法：初始化无符号长长整型数字对象</li>
+<li>shortValue:方法：取短整型数字对象的值</li>
+<li>unsignedShortValue:方法：取无符号短整型数字对象的值</li>
+<li>integerValue:方法：取整型数字对象的值</li>
+<li>unsignedIntegerValue:方法：取无符号整型数字对象的值</li>
+<li>intValue:方法：取整型数字对象的值</li>
+<li>unsignedIntValue:方法：取无符号整型数字对象的值</li>
+<li>longValue:方法：取长整型数字对象的值</li>
+<li>unsignedLongValue:方法：取无符号长整型数字对象的值</li>
+<li>longlongValue:方法：取长长整型数字对象的值</li>
+<li>unsignedLongLongValue:方法：取无符号长长整型数字对象的值</li>
+</ul>
+<h2 id="字符型对象"><a href="#字符型对象" class="headerlink" title="字符型对象"></a>字符型对象</h2><ul>
+<li>numberWithChar:方法：创建并初始化字符型数字对象</li>
+<li>numberWithUnsignedChar:方法：创建并初始化无符号字符型数字对象</li>
+<li>initWithChar:方法：初始化字符型对象</li>
+<li>initWithUnsignedChar:方法：初始化无符号字符型对象</li>
+<li>charValue:方法：取字符型数字对象的值</li>
+<li>unsignedCharValue:方法：取无符号字符型数字对象的值</li>
+</ul>
+<h2 id="单精度型对象"><a href="#单精度型对象" class="headerlink" title="单精度型对象"></a>单精度型对象</h2><ul>
+<li>numberWithFloat:方法：创建并初始化单精度型数字对象</li>
+<li>initWithFloat:方法：初始化单精度型数字对象</li>
+<li>floatValue:方法：取单精度型数字对象的值</li>
+</ul>
+<h2 id="双精度型对象"><a href="#双精度型对象" class="headerlink" title="双精度型对象"></a>双精度型对象</h2><ul>
+<li>numberWithDouble:方法：创建并初始化一个双精度型数字对象</li>
+<li>initWithDouble:方法：初始化双精度型数字对象</li>
+<li>doubleValue:方法：取双精度型数字对象的值</li>
+</ul>
+<h2 id="布尔型对象"><a href="#布尔型对象" class="headerlink" title="布尔型对象"></a>布尔型对象</h2><ul>
+<li>numberWithBool:方法：创建并初始化布尔型数字对象</li>
+<li>initWithBool:方法：初始化布尔类型对象</li>
+<li>boolValue:方法：取布尔型数字对象的值</li>
+</ul>
+<h2 id="数字对象通用方法"><a href="#数字对象通用方法" class="headerlink" title="数字对象通用方法"></a>数字对象通用方法</h2><ul>
+<li>isEqualToNumber:方法：比较两对象值是否相等</li>
+<li>compare:方法：比较值的大小</li>
+</ul>
+<h1 id="字符串对象-NSString"><a href="#字符串对象-NSString" class="headerlink" title="字符串对象(NSString)"></a>字符串对象(NSString)</h1><h2 id="创建及初始化"><a href="#创建及初始化" class="headerlink" title="创建及初始化"></a>创建及初始化</h2><ul>
+<li>string:方法：创建字符串</li>
+<li>stringWithstring:方法：用字符串来创建字符串</li>
+<li>stringWithCstring:方法：创建C字符串</li>
+<li>stringWithFormat:方法：创建NSLog()格式的字符串</li>
+<li>stringWithContentsOfFile:方法：将创建的字符串设置为指定文件的内容</li>
+<li>stringWithContentsOfURL:方法：将创建字符串设置为url的内容</li>
+<li>stringWithUTF8String:方法：将创建的字符串转换为UTF8字符串</li>
+<li>init:方法：初始化字符串</li>
+<li>initWithString:方法：用字符串来初始化字符串</li>
+<li>initWithCString:方法：初始化字符串</li>
+<li>initWithFormat:方法：用NSLog()格式初始化字符串</li>
+<li>initWithContentsOfFile:方法：将初始化的字符串设置为指定文件的内容</li>
+<li>initWithContentsOfURL:方法：将初始化的字符串设置为url的内容</li>
+<li>initWithUTF8String:方法：将初始化的字符串转换为UTF8字符串</li>
+</ul>
+<h2 id="判断和比较"><a href="#判断和比较" class="headerlink" title="判断和比较"></a>判断和比较</h2><ul>
+<li>isEqualTostring:方法：比较字符串是否相等</li>
+<li>hasPrefix:方法：判断字符串是否以某个字符开始</li>
+<li>hasSuffix:方法：判断字符串是否以某个字符结束</li>
+<li>compare:方法：比较字符串的大小</li>
+<li>caseInsensitiveCompare:方法：不考虑大小写的比较大小</li>
+</ul>
+<h2 id="大小写转换"><a href="#大小写转换" class="headerlink" title="大小写转换"></a>大小写转换</h2><ul>
+<li>uppercaseString:方法：小写字母转为大写字母</li>
+<li>lowercaseString:方法：大写字母转为小写字母</li>
+<li>capitalizedString:方法：将每个单词的首字母大写</li>
+</ul>
+<h2 id="截取"><a href="#截取" class="headerlink" title="截取"></a>截取</h2><ul>
+<li>substringToIndex:方法：从字符串的开头一直截取到指定的位置</li>
+<li>substringFromIndex:方法：从指定位置开始截取字符串直到结束</li>
+<li>substringWithRange:方法：根据指定范围返回子字符串</li>
+<li>characterAtIndex:方法：返回索引号所在字符串中的字符</li>
+</ul>
+<h2 id="转换类型"><a href="#转换类型" class="headerlink" title="转换类型"></a>转换类型</h2><ul>
+<li>doubleValue:/floatValue:方法：返回转换为浮点类型的值</li>
+<li>intValue:方法：返回转换为整型的值</li>
+<li>boolValue:方法：返回转换为布尔类型的值</li>
+</ul>
+<h2 id="对文件的处理"><a href="#对文件的处理" class="headerlink" title="对文件的处理"></a>对文件的处理</h2><ul>
+<li>stringByAppendingPathExtension:方法：为文件添加扩展名</li>
+<li>pathExtension:方法：获取文件扩展名</li>
+<li>stringByDeletingPathExtension:方法：删除扩展名</li>
+<li>writeToFile:方法：将字符串写入到文件</li>
+<li>writeToURL:方法：将字符串写入到url中</li>
+<li>stringByExpandingTildeInPath:方法：将“～”替换成系统的主目录</li>
+<li>stringByAbbreviatingWithTildeInPath:方法：将系统主目录替换为“～”</li>
+<li>lastPathComponent:方法：获取路径中的文件名</li>
+<li>stringByDeletingLastPathComponent:方法：获取路径中文件所在的位置</li>
+<li>stringByAppendingPathComponent:方法：组合位置和文件名</li>
+<li>isAbsolutePath:方法：判断绝对路径</li>
+</ul>
+<h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><ul>
+<li>length:方法：求字符串的长度</li>
+<li>stringByAppendingString:方法：字符串后面增加一个新字符串</li>
+<li>rangeOfString:方法：查找字符串中是否包含其他字符串</li>
+<li>stringByTrimmingCharactersInSet:方法：去除空格或回车</li>
+</ul>
+<h2 id="可变字符串-NSMutableString"><a href="#可变字符串-NSMutableString" class="headerlink" title="可变字符串 (NSMutableString)"></a>可变字符串 (NSMutableString)</h2><ul>
+<li>stringWithCapacity:方法：按照固定长度生成空字符串</li>
+<li>initWithCapacity:方法：初始化一个固定长度的字符串</li>
+<li>appendString:方法：在字符串的末尾附加另一个字符串</li>
+<li>appendFormat:方法：附加一个格式化字符串</li>
+<li>SetString:方法：将字符串设置为规定的内容</li>
+<li>insertString:方法：在指定位置插入字符串</li>
+<li>deleteCharactersInRange:方法：删除指定范围的字符串</li>
+<li>replaceCharactersInRange:方法：使用字符串代替指定范围的字符串</li>
+<li>replaceOccurrencesOfString:方法：替换 将字符串中的某个字全部替换成别一个字</li>
+<li>stringByReplacingOccurrencesOfString:方法；将字符串中的某个字全部替换成别一个字</li>
+</ul>
+<h1 id="数组对象-NSArray"><a href="#数组对象-NSArray" class="headerlink" title="数组对象(NSArray)"></a>数组对象(NSArray)</h1><h2 id="创建及初始化-1"><a href="#创建及初始化-1" class="headerlink" title="创建及初始化"></a>创建及初始化</h2><ul>
+<li>array:方法：创建数组</li>
+<li>arrayWithArray:方法：通过一个数组创建另一个数组</li>
+<li>arrayWithContentsOfFile:方法：创建数组将内容设置为指定文件内容</li>
+<li>arrayWithContentsOfURL:方法：创建数组将内容设置为url指定内容</li>
+<li>arrayWithObject:方法：创建具有一个元素的数组</li>
+<li>arrayWithObjects:方法：创建具有多个元素的数组</li>
+<li>init:方法：初始化数组</li>
+<li>initWithArray:方法：用数组初始化数组</li>
+<li>initWithContentsOfFile:方法：初始化数组将内容设置为指定文件内容</li>
+<li>initWithContentsOfURL:方法：初始化数组将内容设置为url指定内容</li>
+<li>initWithObjects:方法：初始化具有多个元素的数组</li>
+</ul>
+<h2 id="数组元素的操作"><a href="#数组元素的操作" class="headerlink" title="数组元素的操作"></a>数组元素的操作</h2><ul>
+<li>containsObject:方法：判断数组中是否包含某个元素</li>
+<li>count:方法：计算元素个数</li>
+<li>firstObjectCommonWithArray:方法：获取首元素</li>
+<li>lastObject:方法：获取最后一个元素</li>
+<li>objectAtIndex:方法：获取在某个位置的数组元素</li>
+<li>objectAtIndexs:方法：获取数组元素</li>
+<li>arrayByAddingObject:方法：在数组末尾添加元素</li>
+<li>arrayByAddingObjectsFromArray:方法：在数组的末尾添加另一个数组</li>
+<li>subarrayWithRange:方法：数组的一部分创建数组</li>
+<li>isEqualToArray:方法：比较数组是否相等</li>
+<li>indexOfObject:方法：返回元素所在的位置</li>
+<li>indexOfObjectIdenticalTo:方法：返回元素所在的位置</li>
+<li>componentsJoinedByString:方法：数组转换为字符串</li>
+<li>componentsSeparatedByString:方法：字符串转换为数组</li>
+<li>sortedArrayHint:方法：数组转换为数据对象</li>
+<li>writeToFile:方法：将数组中的内容写入到文件</li>
+<li>writeToUrl:方法：将数组中的内容写入到url</li>
+<li>objectEnumerator:方法：数组元素从前向后访问</li>
+<li>reverseObjectEnumerator:方法：数组元素从后向前访问</li>
+<li>pathsMatchingExtensions:方法：查看某文件夹下的东西</li>
+<li>sortedArrayUsingFunction:方法：实现数组元素的简单排序</li>
+</ul>
+<h2 id="可变数组-NSMutableArray"><a href="#可变数组-NSMutableArray" class="headerlink" title="可变数组 (NSMutableArray)"></a>可变数组 (NSMutableArray)</h2><ul>
+<li>arrayWithCapacity:方法：创建一个具有固定长度的可变数组</li>
+<li>initWithCapacity:方法：初始化一个具有固定长度的可变数组</li>
+<li>addObject:方法：添加数组元素</li>
+<li>addObjectsFromArray:方法：用数组创建可变数组</li>
+<li>removeObject:方法：删除指定的元素</li>
+<li>removeAllObjects:方法：删除可变数组中的所有元素</li>
+<li>removeLastObject:方法：删除可变数组中的最后一个元素</li>
+<li>removeObjectAtIndex:方法：删除指定位置的元素</li>
+<li>removeObjectsAtIndex:方法：删除可变数组中的元素</li>
+<li>removeObjectsInRange:方法：删除某个范围内的可变数组中的元素</li>
+<li>removeObjectsInArray:方法：删除与另一个数组相同的元素</li>
+<li>replaceObjectAtIndex:方法：替换可变数组中某一位置的元素</li>
+<li>replaceObjectsAtIndexes:方法：替换可变数组中的多个元素</li>
+<li>replaceObjectsInRange:方法：替换某一范围的数组元素</li>
+<li>insertObject:方法：在某一位置插入数组元素</li>
+<li>insertObjects:方法：在某一位置或范围插入另一数组元素</li>
+<li>exchangeObjectAtIndex:方法：交换两个元素</li>
+<li>setArray:方法：设置可变数组中内容</li>
+</ul>
+<h1 id="字典对象-NSDictionary"><a href="#字典对象-NSDictionary" class="headerlink" title="字典对象(NSDictionary)"></a>字典对象(NSDictionary)</h1><h2 id="创建及初始化-2"><a href="#创建及初始化-2" class="headerlink" title="创建及初始化"></a>创建及初始化</h2><ul>
+<li>dictionary:方法：创建字典</li>
+<li>dictionaryWithContentsOfFile:方法：将创建的字典内容设置为指定文件内容</li>
+<li>dictionaryWithContentsOfURL:方法：将创建的字典内容设置为指定url内容</li>
+<li>dictionaryWithDictionary:方法：用字典创建字典</li>
+<li>dictionaryWithObject:方法：创建具有一个键-值的字典</li>
+<li>dictionaryWithObjects:方法：创建具有多个键-值的字典</li>
+<li>dictionaryWithObjectsAndKeys:方法：创建具有多个键-值的字典</li>
+<li>init:方法：初始化字典</li>
+<li>initWithContentsOfFile:方法：将初始化的字典内容设置为指定文件内容</li>
+<li>initWithContentsOfURL:方法：将初始化的字典内容设置为指定url内容</li>
+<li>initWithDictionary:方法：用字典初始化字典</li>
+<li>initWithObjects:方法：初始化具有多个键-值的字典</li>
+<li>initWithObjectsAndKeys:方法：初始化具有多个键-值的字典</li>
+</ul>
+<h2 id="访问键-值"><a href="#访问键-值" class="headerlink" title="访问键-值"></a>访问键-值</h2><ul>
+<li>objectForKey:方法：返回键的值</li>
+<li>allKeys:方法：返回所有的键</li>
+<li>allValue:方法：返回所有的值</li>
+<li>allKeysForObject:方法：返回值所对应的键</li>
+<li>keyEnumerator:方法：将字典中所有的键放到NSEnumerator对象中</li>
+<li>objectEnumerator:方法：将字典中所有的值放到一个NSEnumerator对象中</li>
+</ul>
+<h2 id="文件的处理"><a href="#文件的处理" class="headerlink" title="文件的处理"></a>文件的处理</h2><ul>
+<li>fileCreationDate:方法：文件创建日期</li>
+<li>fileModificationDate:方法：文件修改的日期</li>
+<li>fileSize:方法：文件的大小</li>
+<li>fileExtensionHidden:方法：扩展名是否隐藏</li>
+<li>fileType:方法：文件的类型</li>
+<li>fileGroupOwnerAccountID:方法：文件所属组标识</li>
+<li>fileGroupOwnerAccountName:方法：文件所属组名</li>
+<li>fileHFSCreatorCode:方法：文件分层系统创建者编码</li>
+<li>fileHFSTypeCode:方法：文件分层系统类型编码</li>
+<li>fileIsAppendOnly:方法：文件是否只读</li>
+<li>fileIsImmutable:方法：文件是否可变</li>
+<li>fileOwnerAccountID:方法：文件所属人标识</li>
+<li>fileOwnerAccountName:方法：文件所属人</li>
+<li>filePosixPermissions:方法：权限</li>
+<li>fileSystemFileNumber:方法：文件系统的文件编号</li>
+<li>fileSystemNumber:方法：文件系统编号</li>
+<li>writeToFile:方法：字典内容写入文件中</li>
+<li>writeToURL:方法：字典内容写入url中</li>
+</ul>
+<h2 id="其他-1"><a href="#其他-1" class="headerlink" title="其他"></a>其他</h2><ul>
+<li>count:方法：字典键-值个数</li>
+<li>isEqualToDictionary:方法：判断字典是否相等</li>
+</ul>
+<h2 id="可变字典"><a href="#可变字典" class="headerlink" title="可变字典"></a>可变字典</h2><ul>
+<li>dictionaryWithCapacity:方法：创建固定长度的可变字典</li>
+<li>initWithCapacity:方法：初始化固定长度的可变字典</li>
+<li>setObject:方法：设置键-值</li>
+<li>setDictionary:方法：用字典设置可变字典中的内容</li>
+<li>removeAllObjects:方法：删除所有的内容</li>
+<li>removeObjectForKey:方法：删除键所对应的值</li>
+<li>removeObjectsForKeys:方法：删除多个键所有的值</li>
+<li>addEntriesFromDictionary:方法：将字典中的键-值添加到可变字典中</li>
+</ul>
+<h1 id="集合-NSSet"><a href="#集合-NSSet" class="headerlink" title="集合(NSSet)"></a>集合(NSSet)</h1><h2 id="创建以初始化"><a href="#创建以初始化" class="headerlink" title="创建以初始化"></a>创建以初始化</h2><ul>
+<li>set:方法：创建集合</li>
+<li>setWithArray:方法：用数组创建集合</li>
+<li>setWithObject:方法：创建具有一个元素的集合</li>
+<li>setWithObjects:方法：创建具有多个元素的集合</li>
+<li>setWithSet:方法：集合创建集合</li>
+<li>init:方法：初始化集合</li>
+<li>initWithArray:方法：用数组初始化集合</li>
+<li>initWithObjects:方法：初始化具有多个元素的集合</li>
+<li>initWithSet:方法：集合初始化集合</li>
+</ul>
+<h2 id="访问元素"><a href="#访问元素" class="headerlink" title="访问元素"></a>访问元素</h2><ul>
+<li>objectEnumerator:方法：将所有集合中的元素放到NSEnumerator对象中</li>
+<li>allObjects:方法：返回集合中所有的元素</li>
+<li>anyObject:方法：返回任意一个元素</li>
+<li>count:方法：返回元素个数</li>
+</ul>
+<h2 id="判断比较"><a href="#判断比较" class="headerlink" title="判断比较"></a>判断比较</h2><ul>
+<li>containsObject:方法：判断集合中是否包含某个元素</li>
+<li>member:方法：判断集合中是否包含某个元素并返回</li>
+<li>isSubsetOfSet:方法：判断一个集合是否是一个集合的子集</li>
+<li>intersectsSet:方法：判断交集</li>
+<li>isEqualToSet:方法：判断集合是否相等</li>
+</ul>
+<h2 id="可变集合"><a href="#可变集合" class="headerlink" title="可变集合"></a>可变集合</h2><ul>
+<li>setWithCapacity:方法：创建具有固定长度的可变集合</li>
+<li>initWithCapacity:方法：初始化具有固定长度的可变集合</li>
+<li>setSet:方法：通过集合设置可变集合的内容</li>
+<li>addObject:方法：添加元素</li>
+<li>addObjectsFromArray:方法：添加数组中的元素</li>
+<li>removeAllObjects:方法：删除所有元素</li>
+<li>removeObject:方法：删除指定的元素</li>
+<li>unionSet:方法：添加集合元素</li>
+<li>minusSet:方法：去除另一个集合中的元素</li>
+<li>intersectSet:方法：做交集</li>
+</ul>
+<h1 id="文件-NSFileManager、NSFileHandle"><a href="#文件-NSFileManager、NSFileHandle" class="headerlink" title="文件(NSFileManager、NSFileHandle)"></a>文件(NSFileManager、NSFileHandle)</h1><h2 id="defaultManger-方法：创建文件管理器"><a href="#defaultManger-方法：创建文件管理器" class="headerlink" title="defaultManger:方法：创建文件管理器"></a>defaultManger:方法：创建文件管理器</h2><h2 id="文件与目录的操作"><a href="#文件与目录的操作" class="headerlink" title="文件与目录的操作"></a>文件与目录的操作</h2><ul>
+<li>createFileAtPath:方法：创建文件</li>
+<li>copyItemAtPath:方法：复制文件</li>
+<li>moveItemAtPath:方法：移动文件</li>
+<li>removeItemFileAtPath:方法：删除文件</li>
+<li>attributesOfItemAtPath:方法：获取文件的属性</li>
+<li>setAttributes:方法：更改属性</li>
+<li>currentDirectoryPath:方法：获取当前的目录</li>
+<li>changeCurrentDirectoryPath:方法：更改目录</li>
+<li>createDirectoryAtPath:方法：创建目录</li>
+</ul>
+<h2 id="获取文件和目录信息"><a href="#获取文件和目录信息" class="headerlink" title="获取文件和目录信息"></a>获取文件和目录信息</h2><ul>
+<li>contentsAtPath:方法：获取文件中的信息</li>
+<li>enumeratorAtPath:方法：枚举目录</li>
+<li>contentsOfDirectoryAtPath:方法：列举目录</li>
+</ul>
+<h2 id="判断文件"><a href="#判断文件" class="headerlink" title="判断文件"></a>判断文件</h2><ul>
+<li>fileExistsAtPath:方法：判断文件是否存在</li>
+<li>isReadableFile:方法：判断是否能进行读取操作</li>
+<li>isWritableFileAtPath:方法：判断是否能进行写入操作</li>
+<li>isDeletableFileAtPath:方法：判断是否可删除</li>
+<li>isExecutableFileAtPath:方法：判断是否可以执行</li>
+<li>contentsEqualAtPath:方法：判断是否相等</li>
+</ul>
+<h2 id="文件读取"><a href="#文件读取" class="headerlink" title="文件读取"></a>文件读取</h2><ul>
+<li>init:方法：初始化文件读写对象</li>
+<li>fileHandleForReadingAtPath:方法：读取时打开文件</li>
+<li>fileHandleForWritingAtPath:方法：写入时打开文件</li>
+<li>fileHandleForUpdatingAtPath:方法：更新时打开文件</li>
+<li>writeData:方法：数据写入文件</li>
+<li>readDataToEndOfFile:方法：读取数据</li>
+<li>readDataOfLength:方法：读取固定大小的内容</li>
+<li>offsetInFile:方法：获取当前偏移量</li>
+<li>seekToFileOffset:方法：设置当前的偏移量</li>
+<li>seekToEndOfFile:方法：将偏移量定位到文件尾</li>
+<li>truncateFileAtOffset:方法：设置字节</li>
+<li>availableData:方法：返回可用数据</li>
+<li>closeFile:方法：关闭文件</li>
+</ul>
+<h2 id="目录工具函数"><a href="#目录工具函数" class="headerlink" title="目录工具函数"></a>目录工具函数</h2><ul>
+<li>NSUserName()函数：返回登录名</li>
+<li>NSFullUserName()函数：返回完整用户名</li>
+<li>NSHomeDirectory()函数：返回路径</li>
+<li>NSHomeDirectoryForUser()函数：返回用户的主目录</li>
+<li>NSTemporaryDirectory()函数：返回临时文件的路径目录</li>
+</ul>
+<h1 id="时间和日历-NSDate、NSDateFormatter、NSCalendarDate、NSCalendar、NSTimeZone、NSTimer"><a href="#时间和日历-NSDate、NSDateFormatter、NSCalendarDate、NSCalendar、NSTimeZone、NSTimer" class="headerlink" title="时间和日历(NSDate、NSDateFormatter、NSCalendarDate、NSCalendar、NSTimeZone、NSTimer)"></a>时间和日历(NSDate、NSDateFormatter、NSCalendarDate、NSCalendar、NSTimeZone、NSTimer)</h1><h2 id="时间的创建及初始化"><a href="#时间的创建及初始化" class="headerlink" title="时间的创建及初始化"></a>时间的创建及初始化</h2><ul>
+<li>date:方法：创建时间</li>
+<li>dateWithString:方法：用字符串创建时间</li>
+<li>dateWithNaturalLanguageString:方法：用字符串创建时间</li>
+<li>dateWithTimeInterval:方法：用时间间隔创建时间</li>
+<li>dateWithTimeIntervalSince1970:方法：用时间间隔创建时间</li>
+<li>dateWithTimeIntervalSinceNow:方法：用时间间隔创建时间</li>
+<li>dateWithTimeIntervalSinceReferenceDate:方法：用时间间隔创建时间</li>
+<li>init:方法：初始化时间</li>
+<li>initWithString:方法：用字符串初始化时间</li>
+<li>initWithTimeInterval:方法：用时间间隔初始化时间</li>
+<li>initWithTimeIntervalSince1970:方法：用时间间隔初始化时间</li>
+<li>initWithTimeIntervalSinceNow:方法：用时间间隔初始化时间</li>
+<li>initWithTimeIntervalSinceReferenceDate:方法：用时间间隔初始化时间</li>
+</ul>
+<h2 id="时间的比较"><a href="#时间的比较" class="headerlink" title="时间的比较"></a>时间的比较</h2><ul>
+<li>isEqualToDate:方法：比较是否相等</li>
+<li>compare:方法：比较时间</li>
+<li>earlierDate:方法：比较哪个时间早</li>
+<li>laterDate:方法：比较哪个时间晚</li>
+</ul>
+<h2 id="获取时间"><a href="#获取时间" class="headerlink" title="获取时间"></a>获取时间</h2><ul>
+<li>dateByAddingTimeInterval:方法：获取经过时间间隔后的时间</li>
+<li>distantPast:方法：获取过去的时间</li>
+<li>distantFuture:方法：获取将来的时间</li>
+<li>timeIntervalSinceDate:方法：获取两时间的差值</li>
+<li>timeIntervalSinceNow:方法：获取两时间的差值</li>
+<li>timeIntervalSince1970:方法：获取两时间的差值</li>
+<li>timeIntervalSinceReferenceDate:方法：获取两时间的差值</li>
+</ul>
+<h2 id="时间和字符串的相互转换"><a href="#时间和字符串的相互转换" class="headerlink" title="时间和字符串的相互转换"></a>时间和字符串的相互转换</h2><ul>
+<li>init:方法：初始化用于时间转换的对象</li>
+<li>setDateFormat:方法：设置格式</li>
+<li>initWithDateFormat:方法：初始化用于时间转换的对象</li>
+</ul>
+<h2 id="日历时间的创建及初始化"><a href="#日历时间的创建及初始化" class="headerlink" title="日历时间的创建及初始化"></a>日历时间的创建及初始化</h2><ul>
+<li>calendarDate:方法：创建日历时间</li>
+<li>dateWithYear:方法：创建日历时间并设置内容</li>
+<li>dateWithString:方法：创建日历时间并设置内容及格式</li>
+<li>init:方法：初始化日历时间</li>
+<li>initWithYear:方法：初始化日历时间并设置内容</li>
+<li>initWithString:方法：初始化日历时间并设置内容及格式</li>
+</ul>
+<h2 id="获取日历时间信息"><a href="#获取日历时间信息" class="headerlink" title="获取日历时间信息"></a>获取日历时间信息</h2><ul>
+<li>dayOfWeek:方法：获取天数</li>
+<li>dayOfMonth:方法：获取天数</li>
+<li>dayOfYear:方法：获取天数</li>
+<li>hourOfDay:方法：获取时间</li>
+<li>minuteOfHour:方法：获取时间</li>
+<li>secondOfMinute:方法：获取时间</li>
+<li>monthOfYear:方法：获取时间</li>
+<li>yearOfCommonEra:方法：获取年</li>
+<li>dayOfCommonEra:方法：获取天数</li>
+<li>calendarFormat:方法：获取日历的格式</li>
+<li>timeZone:方法：获取时区</li>
+<li>dateByAddingYears:方法：获取日期时间</li>
+</ul>
+<h2 id="设置日历时间"><a href="#设置日历时间" class="headerlink" title="设置日历时间"></a>设置日历时间</h2><ul>
+<li>setCalendarFormat:方法：设置日历的格式</li>
+<li>setTimeZone:方法：设置时区</li>
+</ul>
+<h2 id="日历的使用"><a href="#日历的使用" class="headerlink" title="日历的使用"></a>日历的使用</h2><ul>
+<li>currentCalendar:方法：创建日历</li>
+<li>autoupdatingCurrentCalendar:方法：获取日历</li>
+<li>initWithCalendarIdentifier:方法：初始化日历</li>
+<li>local:方法：获取区域</li>
+<li>firstWeekday:方法：获取每周的第一天</li>
+<li>minimumDaysInFirstWeek:方法：获取天数</li>
+<li>calendarIdentifier:方法：获取日历</li>
+<li>setFirstWeekday:方法：设置每周的第一天</li>
+<li>setMinimumDaysInFirstWeek:方法：设置天数</li>
+</ul>
+<h2 id="时区的使用"><a href="#时区的使用" class="headerlink" title="时区的使用"></a>时区的使用</h2><ul>
+<li>timeZoneWithName:方法：用已知时区创建时区</li>
+<li>timeZoneWithAbbreviation:方法：用已知时区创建时区</li>
+<li>timeZoneForSecondsFromGMT:方法：用偏移创建时区</li>
+<li>initWithName:方法：用已知时区初始化时区</li>
+<li>systemTimeZone:方法：获取系统的时区</li>
+<li>localTimeZone:方法：获取本地时区</li>
+<li>knownTimeZoneNames:方法：返回所有时区</li>
+<li>name:方法：获取名称</li>
+<li>abbreviation:方法：获取缩写</li>
+<li>secondsFromGMT:方法：获取秒数</li>
+</ul>
+<h2 id="定时器的使用"><a href="#定时器的使用" class="headerlink" title="定时器的使用"></a>定时器的使用</h2><ul>
+<li>timerWithTimeInterval:方法：创建定时器</li>
+<li>initWithFireDate:方法：初始化定时器</li>
+<li>setFireDate:方法：设置时间</li>
+<li>fireDate:方法：返回时间</li>
+<li>invalidate:方法：使定时器无效</li>
+<li>isValid:方法：判断是否有效</li>
+</ul>
+<h1 id="进程、线程、锁-NSProcessInfo、NSThread、NSLock"><a href="#进程、线程、锁-NSProcessInfo、NSThread、NSLock" class="headerlink" title="进程、线程、锁(NSProcessInfo、NSThread、NSLock)"></a>进程、线程、锁(NSProcessInfo、NSThread、NSLock)</h1><h2 id="使用进程"><a href="#使用进程" class="headerlink" title="使用进程"></a>使用进程</h2><ul>
+<li>processInfo:方法：创建进程</li>
+<li>init:方法：初始化进程</li>
+<li>processName:方法：获取进程的名称</li>
+<li>environment:方法：获取变量/值</li>
+<li>globallyUniqueString:方法：生成字符串</li>
+<li>operatingSystem:方法：获取操作系统信息</li>
+<li>operatingSystemName:方法：获取操作系统的名称</li>
+<li>operatingSystemVersionString:方法：获取操作系统的版本信息</li>
+<li>processIdentifier:方法：获取进程的标识符</li>
+<li>arguments:方法：获取进程的参数</li>
+<li>hostName:方法：获取主机名称</li>
+<li>setProcessName:方法：设置进程的名称</li>
+<li>processorCount:方法：获取CPU的数目</li>
+</ul>
+<h2 id="线程的创建及初始化"><a href="#线程的创建及初始化" class="headerlink" title="线程的创建及初始化"></a>线程的创建及初始化</h2><ul>
+<li>detachNewThreadSelector:方法：创建线程</li>
+<li>init:方法：初始化线程</li>
+<li>initWithTarget:方法：初始化线程</li>
+</ul>
+<h2 id="执行线程"><a href="#执行线程" class="headerlink" title="执行线程"></a>执行线程</h2><ul>
+<li>start:方法：开启线程</li>
+<li>cancel:方法：取消线程</li>
+<li>exit:方法：结束线程</li>
+</ul>
+<h2 id="获取与设置线程"><a href="#获取与设置线程" class="headerlink" title="获取与设置线程"></a>获取与设置线程</h2><ul>
+<li>currentThread:方法：获取当前线程</li>
+<li>threadPriority:方法：获取属性值</li>
+<li>setThreadPriority:方法：设置属性值</li>
+<li>name:方法：获取名称</li>
+<li>setName:方法：设置名称</li>
+<li>stackSize:方法：获取堆栈</li>
+<li>setStackSize:方法：设置堆栈</li>
+</ul>
+<h2 id="判断线程"><a href="#判断线程" class="headerlink" title="判断线程"></a>判断线程</h2><ul>
+<li>isMultiThreaded:方法：判断线程是否为主线程</li>
+<li>isExecuting:方法：判断线程是否在执行</li>
+<li>isCancelled:方法：判断线程是否取消</li>
+<li>isFinished:方法：判断线程是否结束</li>
+</ul>
+<h2 id="使用互斥锁"><a href="#使用互斥锁" class="headerlink" title="使用互斥锁"></a>使用互斥锁</h2><ul>
+<li>lock:方法：调用锁</li>
+<li>unlock:方法：关闭锁</li>
+<li>trylock:方法：锁定锁</li>
+<li>lockBeforeDate:方法：在一定时间内获取锁</li>
+</ul>
+<h2 id="使用递归锁"><a href="#使用递归锁" class="headerlink" title="使用递归锁"></a>使用递归锁</h2><ul>
+<li>lock:方法：调用锁</li>
+<li>unlock:方法：关闭锁</li>
+<li>tryLock:方法：获取锁</li>
+<li>lockBeforeDate:方法：在一定时间内获取锁</li>
+</ul>
+<h2 id="使用条件锁"><a href="#使用条件锁" class="headerlink" title="使用条件锁"></a>使用条件锁</h2><ul>
+<li>initWithCondition:方法：初始化条件锁</li>
+<li>condition:方法：获取条件</li>
+<li>lockWhenCondition:方法：在条件允许下调用锁</li>
+<li>unlockWithCondition:方法：在条件允许下关闭锁</li>
+<li>tryLockWhenCondition:方法：在条件允许下获取锁</li>
+<li>lockWhenCondition:方法：在条件和时间允许下获取锁</li>
+<li>tryLock:方法：获取锁</li>
+<li>lockBeforeDate:方法：在一定时间下获取锁</li>
+<li>lock:方法：调用锁</li>
+<li>unlock:方法：关闭锁</li>
+</ul>
+<h1 id="数据对象及归档-NSData、NSKeyedArchiver"><a href="#数据对象及归档-NSData、NSKeyedArchiver" class="headerlink" title="数据对象及归档(NSData、NSKeyedArchiver)"></a>数据对象及归档(NSData、NSKeyedArchiver)</h1><h2 id="数据对象的创建及初始化"><a href="#数据对象的创建及初始化" class="headerlink" title="数据对象的创建及初始化"></a>数据对象的创建及初始化</h2><ul>
+<li>data:方法：创建数据对象</li>
+<li>dataWithBytes:方法：用已有数据创建数据对象</li>
+<li>dataWithContentsOfFile:方法：将数据对象内容设置为指定文件内容</li>
+<li>dataWithContentsOfURL:方法：将创建对象的内容设置为url指定的内容</li>
+<li>dataWithData:方法：用已有数据对象创建新的数据对象</li>
+<li>init:方法：初始化数据对象</li>
+<li>initWithBytes:方法：用已有数据初始化数据对象</li>
+<li>initWithContentsOfFile:方法：对数据对象初始化并将其设置为指定文件内容</li>
+<li>initWithContentsOfURL:方法：对数据对象初始化并将其设置为指定url内容</li>
+<li>initWithData:方法：用已有数据对象初始化新的数据对象</li>
+</ul>
+<h2 id="数据对象的使用"><a href="#数据对象的使用" class="headerlink" title="数据对象的使用"></a>数据对象的使用</h2><ul>
+<li>bytes:方法：将数据对象转换为字符</li>
+<li>dataUsingEncoding:方法：将字符串转换为数据对象</li>
+<li>length:方法：计算数据对象的长度</li>
+<li>isEqualToData:方法：判断两个数据对象是否相等</li>
+<li>subdataWithRange:方法：截取数据对象</li>
+<li>writeToFile:方法：写入文件</li>
+<li>writeToURL:方法：写入url</li>
+</ul>
+<h2 id="可变数据对象"><a href="#可变数据对象" class="headerlink" title="可变数据对象"></a>可变数据对象</h2><ul>
+<li>dataWithCapacity:方法：创建一个具有固定空间大小的可变数据对象</li>
+<li>dataWithLength:方法：创建具有固定长度的可变数据对象</li>
+<li>initWithCapacity:方法：初始化具有固定空间大小的可变数据对象</li>
+<li>initWithLength:方法：初始化具有固定长度的可变数据对象</li>
+<li>setData:方法：设置内容</li>
+<li>setLength:方法：设置长度</li>
+<li>appendBytes:方法：添加数据</li>
+<li>appendData:方法：添加数据对象</li>
+<li>mutableBytes:方法：可变数据对象转化为字符</li>
+<li>replaceBytesInRange:方法：替换</li>
+<li>resetBytesInRange:方法：删除</li>
+</ul>
+<h2 id="归档"><a href="#归档" class="headerlink" title="归档"></a>归档</h2><ul>
+<li>archiveRootObject:方法：数据归档</li>
+<li>unarchiveObjectWithFile:方法：取消归档</li>
+<li>encodeBool:方法：对布尔类型的数据编码</li>
+<li>decodeBoolForKey:方法：对布尔类型数据解码</li>
+<li>encodeInt:方法：对整型数据编码</li>
+<li>decodeIntForKey:方法：对整型数据解码</li>
+<li>encodeFloat:/encodeDouble:方法：对浮点型数据编码</li>
+<li>decodeFloatForKey:/decodeDoubleForKey:方法：对浮点型数据解码</li>
+<li>encodeObject:方法：对对象进行编码</li>
+<li>decodeObjectForKey:方法：对对象进行解码</li>
+<li>archivedDataWithRootObject:方法：将其他类型的数据进行转换</li>
+<li>initForWritingWithMutableData:方法：初始化</li>
+<li>initForReadingWithData:方法：初始化</li>
+</ul>
+<h1 id="窗口和颜色-NSWindow、NSColor"><a href="#窗口和颜色-NSWindow、NSColor" class="headerlink" title="窗口和颜色(NSWindow、NSColor)"></a>窗口和颜色(NSWindow、NSColor)</h1><h2 id="获取窗口信息"><a href="#获取窗口信息" class="headerlink" title="获取窗口信息"></a>获取窗口信息</h2><ul>
+<li>aspectRatio:方法：获取窗口的纵横比</li>
+<li>orderedIndex:方法：获取索引</li>
+<li>title:方法：获取窗口的标题</li>
+<li>miniwindowTitle:方法：获取窗口最小化后的标题</li>
+<li>frame:方法：获取窗口的位置和大小</li>
+<li>minSize:方法：获取窗口的最小尺寸</li>
+<li>maxSize:方法：获取窗口的最大尺寸</li>
+<li>miniwindowImage:方法：获取窗口最小化后的图片</li>
+<li>backgroundColor:方法：获取窗口的背景颜色</li>
+<li>childWindows:方法：获取子窗口</li>
+<li>alphaValue:方法：获取窗口的透明度值</li>
+</ul>
+<h2 id="设置窗口"><a href="#设置窗口" class="headerlink" title="设置窗口"></a>设置窗口</h2><ul>
+<li>setAspectRatio:方法：设置窗口的纵横比</li>
+<li>setIsVisible:方法：设置窗口是否可见</li>
+<li>setTitle:方法：设置窗口标题</li>
+<li>setMiniwindowTitle:方法：设置窗口最小化后的标题</li>
+<li>setIsMiniaturized:方法：设置窗口是否最小化</li>
+<li>setIsZoomed:方法：设置窗口是否最大化</li>
+<li>setFrame:方法：设置窗口的位置和大小</li>
+<li>setFrameOrigin:方法：设置窗口的位置</li>
+<li>setFrameTopLeftPoint:方法：设置窗口的位置</li>
+<li>setMinSize:方法：设置窗口的最小尺寸</li>
+<li>setMaxSize:方法：设置窗口的最大尺寸</li>
+<li>setMiniwindowImage:方法：设置窗口最小化后的图片</li>
+<li>setBackgroundColor:方法：设置窗口的背景颜色</li>
+<li>setCanHide:方法：设置窗口是否可以隐藏</li>
+<li>setAlphaValue:方法：设置窗口的透明度值</li>
+<li>disableFlushWindow:方法：将窗口设置为禁用的</li>
+<li>setHasShadow:方法：设置窗口的阴影</li>
+</ul>
+<h2 id="判断窗口"><a href="#判断窗口" class="headerlink" title="判断窗口"></a>判断窗口</h2><ul>
+<li>isVisible:方法：判断窗口是否可见</li>
+<li>isMiniaturized:方法：判断窗口是否最小化</li>
+<li>isZoomed:方法：判断窗口是否最大化</li>
+<li>canHide:方法：判断窗口是否可以隐藏</li>
+<li>hasShadow:方法：判断窗口是否有阴影</li>
+<li>isMiniaturizable:方法：判断窗口是否有最小化按钮</li>
+<li>hasTitleBar:方法：判断窗口是否有工具栏</li>
+</ul>
+<h2 id="创建自定义颜色对象"><a href="#创建自定义颜色对象" class="headerlink" title="创建自定义颜色对象"></a>创建自定义颜色对象</h2><ul>
+<li>colorWithCalibratedRed:方法：用标准RGB分量创建颜色对象</li>
+<li>colorWithCalibratedWhite:方法：用标准灰度分量创建颜色对象</li>
+<li>colorWithCalibratedHue:方法：用标准HSB分量创建颜色对象</li>
+<li>colorWithDeviceCyan:方法：用设备CMYB分量创建颜色对象</li>
+<li>colorWithDeviceRed:方法：用设备RGB分量创建颜色对象</li>
+<li>colorWithDeviceWhite:方法：用设备灰度分量创建颜色对象</li>
+<li>colorWithDeviceHue:方法：用设备HSB分量创建颜色对象</li>
+<li>colorWithPatternImage:方法：用图像创建颜色对象</li>
+</ul>
+<h2 id="创建颜色对象"><a href="#创建颜色对象" class="headerlink" title="创建颜色对象"></a>创建颜色对象</h2><ul>
+<li>redColor:方法：用红色创建颜色对象</li>
+<li>greenColor:方法：用绿色创建颜色对象</li>
+<li>blueColor:方法：用蓝色创建颜色对象</li>
+<li>cyanColor:方法：用青色创建颜色对象</li>
+<li>magentaColor:方法：用紫红色创建颜色对象</li>
+<li>yellowColor:方法：用黄色创建颜色对象</li>
+<li>blackColor:方法：用黑色创建颜色对象</li>
+<li>brownColor:方法：用棕色创建颜色对象</li>
+<li>darkGrayColor:方法：用深灰色创建颜色对象</li>
+<li>grayColor:方法：用灰色创建颜色对象</li>
+<li>lightGrayColor:方法：用浅灰色创建颜色对象</li>
+<li>orangeColor:方法：用橙色创建颜色对象</li>
+<li>purpleColor:方法：用紫色创建颜色对象</li>
+<li>whiteColor:方法：用白色创建颜色对象</li>
+</ul>
+<h2 id="获取颜色分量"><a href="#获取颜色分量" class="headerlink" title="获取颜色分量"></a>获取颜色分量</h2><ul>
+<li>redComponent:方法：获取红色的分量</li>
+<li>greenComponent:方法：获取绿色的分量</li>
+<li>blueComponent:方法：获取蓝色的分量</li>
+<li>cyanComponent:方法：获取青色的分量</li>
+<li>magentaComponent:方法：获取紫红色分量</li>
+<li>yellowComponent:方法：获取黄色分量</li>
+<li>blackComponent:方法：获取黑色的分量</li>
+<li>whiteComponent:方法：获取白色的分量</li>
+<li>alphaComponent:方法：获取透明度分量</li>
+<li>hueComponent:方法：获取色调的分量</li>
+<li>saturationComponent:方法：获取饱和度的分量</li>
+<li>brightnessComponent:方法：获取亮度分量</li>
+<li>patternImage:方法：获取图像信息</li>
+</ul>
+<h1 id="自定义视图-NSView"><a href="#自定义视图-NSView" class="headerlink" title="自定义视图(NSView)"></a>自定义视图(NSView)</h1><h2 id="initWithFrame-方法：初始化自定义视图"><a href="#initWithFrame-方法：初始化自定义视图" class="headerlink" title="initWithFrame:方法：初始化自定义视图"></a>initWithFrame:方法：初始化自定义视图</h2><h2 id="获取与设置自定义视图信息"><a href="#获取与设置自定义视图信息" class="headerlink" title="获取与设置自定义视图信息"></a>获取与设置自定义视图信息</h2><ul>
+<li>frame:方法：获取自定义视图的框架</li>
+<li>setFrame:方法：设置自定义视图框架</li>
+<li>frameRotation:方法：获取自定义视图的旋转度数</li>
+<li>setFrameRotation:方法：设置自定义视图旋转度数</li>
+<li>setFrameOrigin:方法：设置自定义视图的位置</li>
+<li>setFrameSize:方法：设置自定义视图的大小</li>
+<li>bounds:方法：获取自定义视图框架</li>
+<li>setBounds:方法：设置自定义视图框架</li>
+<li>boundsRotation:方法：获取自定义视图的旋转度数</li>
+<li>setBoundsRotation:方法：设置自定义视图旋转的度数</li>
+<li>setBoundsOrigin:方法：设置视图的位置</li>
+<li>setBoundsSize:方法：设置视图的大小</li>
+<li>subviews:方法：获取子视图</li>
+<li>setPostsFrameChangedNotifications:方法：设置是否接收视图的变化</li>
+<li>setPostsBoundsChangedNotifications:方法：设置是否接收视图的变化</li>
+<li>printJobTitle:方法：获取输出标题</li>
+</ul>
+<h2 id="drawRect-方法：绘图"><a href="#drawRect-方法：绘图" class="headerlink" title="drawRect:方法：绘图"></a>drawRect:方法：绘图</h2><h2 id="判断自定义视图"><a href="#判断自定义视图" class="headerlink" title="判断自定义视图"></a>判断自定义视图</h2><ul>
+<li>postsFrameChangedNotifications:方法：判断是否接收视图变换的消息</li>
+<li>postsBoundsChangedNotifications:方法：判断是否接收视图变换的消息</li>
+<li>isFlipped:方法：判断视图是否翻转</li>
+<li>isRotatedFromBase:方法：判断视图是否旋转</li>
+<li>isRotatedOrScaledFromBase:方法：判断视图是否旋转或缩放</li>
+<li>canDraw:方法：判断视图是否绘制</li>
+<li>isOpaque:方法：判断视图是否不透明</li>
+</ul>
+<h2 id="操作自定义视图"><a href="#操作自定义视图" class="headerlink" title="操作自定义视图"></a>操作自定义视图</h2><ul>
+<li>addSubview:方法：添加视图</li>
+<li>removeFromSuperview:方法：删除视图</li>
+<li>replaceSubview:方法：替换视图</li>
+</ul>
+<h1 id="文本框和文本视图-NSTextField、NSTextView"><a href="#文本框和文本视图-NSTextField、NSTextView" class="headerlink" title="文本框和文本视图(NSTextField、NSTextView)"></a>文本框和文本视图(NSTextField、NSTextView)</h1><h2 id="获取与设置文本框信息"><a href="#获取与设置文本框信息" class="headerlink" title="获取与设置文本框信息"></a>获取与设置文本框信息</h2><ul>
+<li>stringValue:方法：获取文本框的字符串</li>
+<li>setStringValue:方法：设置文本框中的字符串</li>
+<li>backgroundColor:方法：获取文本框的背景颜色</li>
+<li>setBackgroundColor:方法：设置文本框的背景颜色</li>
+<li>textColor:方法：获取字符串的颜色</li>
+<li>setTextColor:方法：设置字符串的颜色</li>
+<li>setImportsGraphics:方法：设置是否可以将图像拖到文本框</li>
+<li>setEditable:方法：设置文本框是否可以编译</li>
+<li>bezelStyle:方法：获取文本框边框的风格</li>
+<li>setBezelStyle:方法：设置文本框边框的风格</li>
+<li>setBezeled:方法：设置文本框是否接受bezeled边框</li>
+<li>setBordered:方法：设置文本框是否接受黑边框</li>
+</ul>
+<h2 id="判断文本框信息"><a href="#判断文本框信息" class="headerlink" title="判断文本框信息"></a>判断文本框信息</h2><ul>
+<li>importsGraphics:方法：判断是否可以将图像拖到文本框</li>
+<li>isEditable:方法：判断文本框是否可以编辑</li>
+<li>isBezeled:方法：判断文本框是否接受了bezeled边框</li>
+<li>isBordered:方法：判断文本框是否接受了黑边框</li>
+<li>acceptsFirstResponder:方法：判断文本框是否可以编辑</li>
+</ul>
+<h2 id="initWithFrame-方法：创建并初始化文本视图"><a href="#initWithFrame-方法：创建并初始化文本视图" class="headerlink" title="initWithFrame:方法：创建并初始化文本视图"></a>initWithFrame:方法：创建并初始化文本视图</h2><h2 id="获取与设置文本视图信息"><a href="#获取与设置文本视图信息" class="headerlink" title="获取与设置文本视图信息"></a>获取与设置文本视图信息</h2><ul>
+<li>backgroundColor:方法：获取文本视图的颜色</li>
+<li>setBackgroundColor:方法：设置文本视图的背景颜色</li>
+<li>setImportsGraphics:方法：设置文件是否可以导入到文本视图</li>
+<li>setAcceptsGlyphInfo:方法：设置文本视图是否接受字形信息</li>
+<li>setAlignment:方法：设置文本视图内容的对齐方式</li>
+<li>insertionPointColor:方法：获取插入点的颜色</li>
+<li>setInsertionPointColor:方法：设置插入点的颜色</li>
+<li>setAllowsUndo:方法：设置文本视图是否可以撤销</li>
+<li>selectedTextAttributes:方法：获取用于指示选择的属性</li>
+<li>setSelectedTextAttributes:方法：设置文本视图用于指示选择的属性</li>
+<li>textContainer:方法：获取文本框的文本容器</li>
+<li>acceptableDragTypes:方法：获取文本视图的数据类型</li>
+<li>markedTextAttributes:方法：获取绘制标记的文本属性</li>
+<li>setMarkedTextAttributes:方法：设置绘制标记的文本属性</li>
+<li>setSmartInsertDeleteEnabled:方法：设置选择字符串周围的空间</li>
+<li>markedRange:方法：获取被标记文本的范围</li>
+<li>selectedRange:方法：获取选中文本的范围</li>
+<li>setSelectedRange:方法：设置文本的选中范围</li>
+<li>typingAttributes:方法：获取新文本的属性</li>
+<li>setTypingAttributes:方法：设置新文本的属性</li>
+</ul>
+<h2 id="判断文本视图的信息"><a href="#判断文本视图的信息" class="headerlink" title="判断文本视图的信息"></a>判断文本视图的信息</h2><ul>
+<li>importsGraphics:方法：判断文件是否可以导入到文本视图</li>
+<li>acceptsGlyphInfo:方法：判断文本视图是否接受字形信息</li>
+<li>allowsUndo:方法：判断文本视图是否启用撤销</li>
+<li>smartInsertDeleteEnabled:方法：判断选择字符串周围的空间</li>
+</ul>
+<h1 id="图像、图像视图-NSImage、NSImageView"><a href="#图像、图像视图-NSImage、NSImageView" class="headerlink" title="图像、图像视图(NSImage、NSImageView)"></a>图像、图像视图(NSImage、NSImageView)</h1><h2 id="加载图像"><a href="#加载图像" class="headerlink" title="加载图像"></a>加载图像</h2><ul>
+<li>imageNamed:方法：加载Supporting Files文件夹中的图片</li>
+<li>initWithContentsOfURL:方法：加载URL中的图像</li>
+<li>initWithContentsOfFile:方法：加载文件中的图片</li>
+<li>initWithSize:方法：加载图像的大小</li>
+</ul>
+<h2 id="获取与设置图像信息"><a href="#获取与设置图像信息" class="headerlink" title="获取与设置图像信息"></a>获取与设置图像信息</h2><ul>
+<li>size:方法：获取图像的大小</li>
+<li>setSize:方法：设置图像的大小</li>
+<li>setFlipped:方法：设置图像是否倒立</li>
+<li>cacheMode:方法：获取图像的缓存模式</li>
+<li>setCacheMode:方法：设置图像的缓存模式</li>
+<li>backgroundColor:方法：获取图像的背景色</li>
+<li>setBackgroundColor:方法：设置图像的背景色</li>
+<li>name:方法：获取图像的名称</li>
+<li>setName:方法：设置图像的名称</li>
+<li>setTemplate:方法：设置图像是否表示一个模板图像</li>
+<li>imageTypes:方法：获取图像类型</li>
+<li>imageUnfilteredTypes:方法：获取图像类型</li>
+<li>imageFileTypes:方法：获取文件类型</li>
+<li>imageUnfilteredFileTypes:方法：获取文件类型</li>
+<li>imagePasteboardTypes:方法：获取粘贴板类型</li>
+<li>imageUnfilteredPasteboardTypes:方法：获取粘贴板类型</li>
+<li>representations:方法：获取图像表示</li>
+</ul>
+<h2 id="判断图像信息"><a href="#判断图像信息" class="headerlink" title="判断图像信息"></a>判断图像信息</h2><ul>
+<li>isFlipped:方法：判断图像是否倒立</li>
+<li>prefersColorMatch:方法：判断图像颜色匹配</li>
+<li>isTemplate:方法：判断图像是否为模板图像</li>
+</ul>
+<h2 id="获取与设置图像视图"><a href="#获取与设置图像视图" class="headerlink" title="获取与设置图像视图"></a>获取与设置图像视图</h2><ul>
+<li>image:方法：获取显示图像的信息</li>
+<li>setImage:方法：设置显示的图像</li>
+<li>imageAlignment:方法：获取图像的对齐方式</li>
+<li>setImageAlignment:方法：设置图像的对齐方式</li>
+<li>imageFrameStyle:方法：获取框架的风格</li>
+<li>setImageFrameStyle:方法：设置框架的风格</li>
+<li>imageScaling:方法：获取图像缩放的方式</li>
+<li>setImageScaling:方法：设置图像缩放方式</li>
+<li>isEditable:方法：判断图像视图是否可以编辑</li>
+<li>setEditable:方法：设置图像视图是否编辑</li>
+<li>allowsCutCopyPaste:方法：判断图像是否可复制、粘贴等操作</li>
+<li>setAllowsCutCopyPaste:方法：设置图像是否可复制、粘贴等操作</li>
+<li>animates:方法：判断图像视图是否播放动画</li>
+<li>setAnimates:方法：设置图像视图是否播放动画</li>
+</ul>
+<h1 id="表视图-NSTableView"><a href="#表视图-NSTableView" class="headerlink" title="表视图(NSTableView)"></a>表视图(NSTableView)</h1><h2 id="获取表视图信息"><a href="#获取表视图信息" class="headerlink" title="获取表视图信息"></a>获取表视图信息</h2><ul>
+<li>rowHeight:方法：获取表视图的行高</li>
+<li>headerView:方法：获取NSTableHeaderView对象</li>
+<li>intercellSpacing:方法：获取表单元之间的间距</li>
+<li>numberOfColumns:方法：获取表视图中的列数</li>
+<li>numberOfRows:方法：获取表视图的行数</li>
+<li>numberOfSelectedColumns:方法：获取选中的列数</li>
+<li>numberOfSelectedRows:方法：获取选择的行数</li>
+<li>rowSizeStyle:方法：获取行风格</li>
+</ul>
+<h2 id="设置表视图的信息"><a href="#设置表视图的信息" class="headerlink" title="设置表视图的信息"></a>设置表视图的信息</h2><ul>
+<li>setRowHeight:方法：设置表视图的行高</li>
+<li>setIntercellSpacing:方法：设置表单元之间的间距</li>
+<li>setRowSizeStyle:方法：设置行风格</li>
+<li>setAllowsColumnReordering:方法：设置用户是否可以重新排列列标题</li>
+<li>setAllowsColumnResizing:方法：设置是否可以调整列标题</li>
+<li>setAllowsColumnSelection:方法：设置是否可以选择一整列</li>
+<li>setAllowsTypeSelect:方法：设置是否可以通过按键字符进行选择</li>
+<li>setAllowsMultipleSelection:方法：设置是否允许选择多行或多列</li>
+</ul>
+<h2 id="判断表视图信息"><a href="#判断表视图信息" class="headerlink" title="判断表视图信息"></a>判断表视图信息</h2><ul>
+<li>allowsColumnReordering:方法：判断用户是否可以重新排列列标题</li>
+<li>allowsColumnResizing:方法：判断是否可以调整列标题</li>
+<li>allowsColumnSelection:方法：判断是否可以选择一整列</li>
+<li>allowsEmptySelection:方法：判断是否允许有0个行或列被选中</li>
+<li>allowsTypeSelect:方法：判断是否可以通过按键字符进行选择</li>
+<li>allowsMultipleSelection:方法：判断是否允许选择多行或多列</li>
+</ul>
+<h1 id="常见控件-NSButton、NSDatePicker、NSProgressIndicator、NSComboBox"><a href="#常见控件-NSButton、NSDatePicker、NSProgressIndicator、NSComboBox" class="headerlink" title="常见控件(NSButton、NSDatePicker、NSProgressIndicator、NSComboBox)"></a>常见控件(NSButton、NSDatePicker、NSProgressIndicator、NSComboBox)</h1><h2 id="按钮控件-NSButton"><a href="#按钮控件-NSButton" class="headerlink" title="按钮控件(NSButton)"></a>按钮控件(NSButton)</h2><ul>
+<li>title:方法：获取按钮的标题</li>
+<li>setTitle:方法：设置按钮的标题</li>
+<li>image:方法：获取按钮的图像</li>
+<li>setImage:方法：设置按钮的图像</li>
+<li>isTransparent:方法：判断按钮是否透明</li>
+<li>setTransparent:方法：设置按钮是否透明</li>
+<li>showsBorderOnlyWhileMouseInside:方法：判断边框的显示</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/09/10/新电脑常用软件工具的安装配置/" rel="prev" title="新电脑常用软件工具的安装配置">
+      <i class="fa fa-chevron-left"></i> 新电脑常用软件工具的安装配置
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/11/23/常用正则匹配/" rel="next" title="常用正则匹配">
+      常用正则匹配 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#数学运算-math-函数"><span class="nav-number">1.</span> <span class="nav-text">数学运算(math)函数</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#算术运算函数"><span class="nav-number">1.1.</span> <span class="nav-text">算术运算函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三角运算函数"><span class="nav-number">1.2.</span> <span class="nav-text">三角运算函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#反三角运算"><span class="nav-number">1.3.</span> <span class="nav-text">反三角运算</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#指数和对数运算"><span class="nav-number">1.4.</span> <span class="nav-text">指数和对数运算</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#数字对象-NSNumber"><span class="nav-number">2.</span> <span class="nav-text">数字对象(NSNumber)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#整型对象"><span class="nav-number">2.1.</span> <span class="nav-text">整型对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#字符型对象"><span class="nav-number">2.2.</span> <span class="nav-text">字符型对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#单精度型对象"><span class="nav-number">2.3.</span> <span class="nav-text">单精度型对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#双精度型对象"><span class="nav-number">2.4.</span> <span class="nav-text">双精度型对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#布尔型对象"><span class="nav-number">2.5.</span> <span class="nav-text">布尔型对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数字对象通用方法"><span class="nav-number">2.6.</span> <span class="nav-text">数字对象通用方法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#字符串对象-NSString"><span class="nav-number">3.</span> <span class="nav-text">字符串对象(NSString)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#创建及初始化"><span class="nav-number">3.1.</span> <span class="nav-text">创建及初始化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#判断和比较"><span class="nav-number">3.2.</span> <span class="nav-text">判断和比较</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#大小写转换"><span class="nav-number">3.3.</span> <span class="nav-text">大小写转换</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#截取"><span class="nav-number">3.4.</span> <span class="nav-text">截取</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#转换类型"><span class="nav-number">3.5.</span> <span class="nav-text">转换类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#对文件的处理"><span class="nav-number">3.6.</span> <span class="nav-text">对文件的处理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他"><span class="nav-number">3.7.</span> <span class="nav-text">其他</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#可变字符串-NSMutableString"><span class="nav-number">3.8.</span> <span class="nav-text">可变字符串 (NSMutableString)</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#数组对象-NSArray"><span class="nav-number">4.</span> <span class="nav-text">数组对象(NSArray)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#创建及初始化-1"><span class="nav-number">4.1.</span> <span class="nav-text">创建及初始化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数组元素的操作"><span class="nav-number">4.2.</span> <span class="nav-text">数组元素的操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#可变数组-NSMutableArray"><span class="nav-number">4.3.</span> <span class="nav-text">可变数组 (NSMutableArray)</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#字典对象-NSDictionary"><span class="nav-number">5.</span> <span class="nav-text">字典对象(NSDictionary)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#创建及初始化-2"><span class="nav-number">5.1.</span> <span class="nav-text">创建及初始化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#访问键-值"><span class="nav-number">5.2.</span> <span class="nav-text">访问键-值</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#文件的处理"><span class="nav-number">5.3.</span> <span class="nav-text">文件的处理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他-1"><span class="nav-number">5.4.</span> <span class="nav-text">其他</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#可变字典"><span class="nav-number">5.5.</span> <span class="nav-text">可变字典</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#集合-NSSet"><span class="nav-number">6.</span> <span class="nav-text">集合(NSSet)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#创建以初始化"><span class="nav-number">6.1.</span> <span class="nav-text">创建以初始化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#访问元素"><span class="nav-number">6.2.</span> <span class="nav-text">访问元素</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#判断比较"><span class="nav-number">6.3.</span> <span class="nav-text">判断比较</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#可变集合"><span class="nav-number">6.4.</span> <span class="nav-text">可变集合</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#文件-NSFileManager、NSFileHandle"><span class="nav-number">7.</span> <span class="nav-text">文件(NSFileManager、NSFileHandle)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#defaultManger-方法：创建文件管理器"><span class="nav-number">7.1.</span> <span class="nav-text">defaultManger:方法：创建文件管理器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#文件与目录的操作"><span class="nav-number">7.2.</span> <span class="nav-text">文件与目录的操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#获取文件和目录信息"><span class="nav-number">7.3.</span> <span class="nav-text">获取文件和目录信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#判断文件"><span class="nav-number">7.4.</span> <span class="nav-text">判断文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#文件读取"><span class="nav-number">7.5.</span> <span class="nav-text">文件读取</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#目录工具函数"><span class="nav-number">7.6.</span> <span class="nav-text">目录工具函数</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#时间和日历-NSDate、NSDateFormatter、NSCalendarDate、NSCalendar、NSTimeZone、NSTimer"><span class="nav-number">8.</span> <span class="nav-text">时间和日历(NSDate、NSDateFormatter、NSCalendarDate、NSCalendar、NSTimeZone、NSTimer)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#时间的创建及初始化"><span class="nav-number">8.1.</span> <span class="nav-text">时间的创建及初始化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#时间的比较"><span class="nav-number">8.2.</span> <span class="nav-text">时间的比较</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#获取时间"><span class="nav-number">8.3.</span> <span class="nav-text">获取时间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#时间和字符串的相互转换"><span class="nav-number">8.4.</span> <span class="nav-text">时间和字符串的相互转换</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#日历时间的创建及初始化"><span class="nav-number">8.5.</span> <span class="nav-text">日历时间的创建及初始化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#获取日历时间信息"><span class="nav-number">8.6.</span> <span class="nav-text">获取日历时间信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#设置日历时间"><span class="nav-number">8.7.</span> <span class="nav-text">设置日历时间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#日历的使用"><span class="nav-number">8.8.</span> <span class="nav-text">日历的使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#时区的使用"><span class="nav-number">8.9.</span> <span class="nav-text">时区的使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#定时器的使用"><span class="nav-number">8.10.</span> <span class="nav-text">定时器的使用</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#进程、线程、锁-NSProcessInfo、NSThread、NSLock"><span class="nav-number">9.</span> <span class="nav-text">进程、线程、锁(NSProcessInfo、NSThread、NSLock)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#使用进程"><span class="nav-number">9.1.</span> <span class="nav-text">使用进程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#线程的创建及初始化"><span class="nav-number">9.2.</span> <span class="nav-text">线程的创建及初始化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#执行线程"><span class="nav-number">9.3.</span> <span class="nav-text">执行线程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#获取与设置线程"><span class="nav-number">9.4.</span> <span class="nav-text">获取与设置线程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#判断线程"><span class="nav-number">9.5.</span> <span class="nav-text">判断线程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用互斥锁"><span class="nav-number">9.6.</span> <span class="nav-text">使用互斥锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用递归锁"><span class="nav-number">9.7.</span> <span class="nav-text">使用递归锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用条件锁"><span class="nav-number">9.8.</span> <span class="nav-text">使用条件锁</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#数据对象及归档-NSData、NSKeyedArchiver"><span class="nav-number">10.</span> <span class="nav-text">数据对象及归档(NSData、NSKeyedArchiver)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#数据对象的创建及初始化"><span class="nav-number">10.1.</span> <span class="nav-text">数据对象的创建及初始化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据对象的使用"><span class="nav-number">10.2.</span> <span class="nav-text">数据对象的使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#可变数据对象"><span class="nav-number">10.3.</span> <span class="nav-text">可变数据对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#归档"><span class="nav-number">10.4.</span> <span class="nav-text">归档</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#窗口和颜色-NSWindow、NSColor"><span class="nav-number">11.</span> <span class="nav-text">窗口和颜色(NSWindow、NSColor)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#获取窗口信息"><span class="nav-number">11.1.</span> <span class="nav-text">获取窗口信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#设置窗口"><span class="nav-number">11.2.</span> <span class="nav-text">设置窗口</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#判断窗口"><span class="nav-number">11.3.</span> <span class="nav-text">判断窗口</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建自定义颜色对象"><span class="nav-number">11.4.</span> <span class="nav-text">创建自定义颜色对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建颜色对象"><span class="nav-number">11.5.</span> <span class="nav-text">创建颜色对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#获取颜色分量"><span class="nav-number">11.6.</span> <span class="nav-text">获取颜色分量</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#自定义视图-NSView"><span class="nav-number">12.</span> <span class="nav-text">自定义视图(NSView)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#initWithFrame-方法：初始化自定义视图"><span class="nav-number">12.1.</span> <span class="nav-text">initWithFrame:方法：初始化自定义视图</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#获取与设置自定义视图信息"><span class="nav-number">12.2.</span> <span class="nav-text">获取与设置自定义视图信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#drawRect-方法：绘图"><span class="nav-number">12.3.</span> <span class="nav-text">drawRect:方法：绘图</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#判断自定义视图"><span class="nav-number">12.4.</span> <span class="nav-text">判断自定义视图</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#操作自定义视图"><span class="nav-number">12.5.</span> <span class="nav-text">操作自定义视图</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#文本框和文本视图-NSTextField、NSTextView"><span class="nav-number">13.</span> <span class="nav-text">文本框和文本视图(NSTextField、NSTextView)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#获取与设置文本框信息"><span class="nav-number">13.1.</span> <span class="nav-text">获取与设置文本框信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#判断文本框信息"><span class="nav-number">13.2.</span> <span class="nav-text">判断文本框信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#initWithFrame-方法：创建并初始化文本视图"><span class="nav-number">13.3.</span> <span class="nav-text">initWithFrame:方法：创建并初始化文本视图</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#获取与设置文本视图信息"><span class="nav-number">13.4.</span> <span class="nav-text">获取与设置文本视图信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#判断文本视图的信息"><span class="nav-number">13.5.</span> <span class="nav-text">判断文本视图的信息</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#图像、图像视图-NSImage、NSImageView"><span class="nav-number">14.</span> <span class="nav-text">图像、图像视图(NSImage、NSImageView)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#加载图像"><span class="nav-number">14.1.</span> <span class="nav-text">加载图像</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#获取与设置图像信息"><span class="nav-number">14.2.</span> <span class="nav-text">获取与设置图像信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#判断图像信息"><span class="nav-number">14.3.</span> <span class="nav-text">判断图像信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#获取与设置图像视图"><span class="nav-number">14.4.</span> <span class="nav-text">获取与设置图像视图</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#表视图-NSTableView"><span class="nav-number">15.</span> <span class="nav-text">表视图(NSTableView)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#获取表视图信息"><span class="nav-number">15.1.</span> <span class="nav-text">获取表视图信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#设置表视图的信息"><span class="nav-number">15.2.</span> <span class="nav-text">设置表视图的信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#判断表视图信息"><span class="nav-number">15.3.</span> <span class="nav-text">判断表视图信息</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#常见控件-NSButton、NSDatePicker、NSProgressIndicator、NSComboBox"><span class="nav-number">16.</span> <span class="nav-text">常见控件(NSButton、NSDatePicker、NSProgressIndicator、NSComboBox)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#按钮控件-NSButton"><span class="nav-number">16.1.</span> <span class="nav-text">按钮控件(NSButton)</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Ben</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">51</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">categories</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ben</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

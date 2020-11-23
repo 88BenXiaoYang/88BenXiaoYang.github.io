@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="背景iOS系统的资源是有限的，应用程序在前台和后台的状态是不一样的。在后台时，程序会受到系统的很多限制，这样可以提高电池的使用和用户体验。 应用程序生命周期应用程序的状态 Not Running -&amp;gt; 未运行，程序没有启动 Inactive -&amp;gt; 未激活，程序在前台运行，不过没有接收到事件。在没有事件处理的情况下程序通常停留在这个状态 Active -&amp;gt; 激活，程序在前台运行而且">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS生命周期">
+<meta property="og:url" content="http://yoursite.com/2019/09/26/iOS生命周期/index.html">
+<meta property="og:site_name" content="Ben&#39;Blog">
+<meta property="og:description" content="背景iOS系统的资源是有限的，应用程序在前台和后台的状态是不一样的。在后台时，程序会受到系统的很多限制，这样可以提高电池的使用和用户体验。 应用程序生命周期应用程序的状态 Not Running -&amp;gt; 未运行，程序没有启动 Inactive -&amp;gt; 未激活，程序在前台运行，不过没有接收到事件。在没有事件处理的情况下程序通常停留在这个状态 Active -&amp;gt; 激活，程序在前台运行而且">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2019/09/26/iOS生命周期/程序状态变化图.png">
+<meta property="og:image" content="http://yoursite.com/2019/09/26/iOS生命周期/加载应用程序进入前台代理方法的执行.png">
+<meta property="og:image" content="http://yoursite.com/2019/09/26/iOS生命周期/加载应用程序进入后台代理方法的执行.png">
+<meta property="og:image" content="http://yoursite.com/2019/09/26/iOS生命周期/程序中断流程.png">
+<meta property="og:image" content="http://yoursite.com/2019/09/26/iOS生命周期/应用程序转到后台运行流程图.png">
+<meta property="og:image" content="http://yoursite.com/2019/09/26/iOS生命周期/程序从后台返回前台的流程图.png">
+<meta property="og:image" content="http://yoursite.com/2019/09/26/iOS生命周期/MainRunLoop处理事件流程图.png">
+<meta property="og:updated_time" content="2020-11-23T03:54:31.145Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="iOS生命周期">
+<meta name="twitter:description" content="背景iOS系统的资源是有限的，应用程序在前台和后台的状态是不一样的。在后台时，程序会受到系统的很多限制，这样可以提高电池的使用和用户体验。 应用程序生命周期应用程序的状态 Not Running -&amp;gt; 未运行，程序没有启动 Inactive -&amp;gt; 未激活，程序在前台运行，不过没有接收到事件。在没有事件处理的情况下程序通常停留在这个状态 Active -&amp;gt; 激活，程序在前台运行而且">
+<meta name="twitter:image" content="http://yoursite.com/2019/09/26/iOS生命周期/程序状态变化图.png">
+
+<link rel="canonical" href="http://yoursite.com/2019/09/26/iOS生命周期/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>iOS生命周期 | Ben'Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Ben'Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">工欲善其事，必先利其器</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/26/iOS生命周期/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Ben">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ben'Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          iOS生命周期
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-09-26 16:27:12" itemprop="dateCreated datePublished" datetime="2019-09-26T16:27:12+08:00">2019-09-26</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-11-23 11:54:31" itemprop="dateModified" datetime="2020-11-23T11:54:31+08:00">2020-11-23</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p><code>iOS</code>系统的资源是有限的，应用程序在前台和后台的状态是不一样的。在后台时，程序会受到系统的很多限制，这样可以提高电池的使用和用户体验。</p>
+<h3 id="应用程序生命周期"><a href="#应用程序生命周期" class="headerlink" title="应用程序生命周期"></a>应用程序生命周期</h3><h5 id="应用程序的状态"><a href="#应用程序的状态" class="headerlink" title="应用程序的状态"></a>应用程序的状态</h5><ul>
+<li><code>Not Running</code> -&gt; 未运行，程序没有启动</li>
+<li><code>Inactive</code> -&gt; 未激活，程序在前台运行，不过没有接收到事件。在没有事件处理的情况下程序通常停留在这个状态</li>
+<li><code>Active</code> -&gt; 激活，程序在前台运行而且接收到了事件。</li>
+<li><code>Background</code> -&gt; 后台，程序在后台而且能执行代码。大多数程序进入这个状态后会在这个状态上停留一会，时间到之后进入挂起状态(<code>Suspended</code>)。</li>
+<li><code>Suspened</code> -&gt; 挂起，程序在后台不能执行代码。系统会自动把程序变成这个状态而且不会发出通知。挂起时，程序还是停留在内存中，当系统内存低时，系统就把挂起的程序清除掉，为前台程序提供更多的内存。</li>
+<li>程序状态变化图如下</li>
+</ul>
+<p><img src="/2019/09/26/iOS生命周期/程序状态变化图.png" alt="程序状态变化图"></p>
+<h5 id="程序状态对应的代理方法如下"><a href="#程序状态对应的代理方法如下" class="headerlink" title="程序状态对应的代理方法如下"></a>程序状态对应的代理方法如下</h5><ul>
+<li><code>willFinishLaunchingWithOptions</code> - 告诉代理进程启动但还没进入状态保存</li>
+<li><code>didFinishLaunchingWithOptions</code> - 告诉代理启动基本完成程序准备开始运行</li>
+<li><code>applicationWillResignActive</code> - 当应用程序将要进入非活动状态执行(在此期间，应用程序不接收消息或事件。如来电话了会进入这种状态)</li>
+<li><code>applicationDidBecomeActive</code> - 当应用程序进入活动状态执行这个代理方法</li>
+<li><code>applicationDidEnterBackground</code> - 当应用程序被推送到后台的时候调用(所以要设置后台继续运行，则在这个函数里面设置即可)</li>
+<li><code>applicationWillEnterForeground</code> - 当应用程序从后台将要重新回到前台的时候调用</li>
+<li><code>applicationWillTerminate</code> - 当应用程序将要退出时被调用(通常是用来保存数据和一些退出前的清理工作。需要设置<code>UIApplicationExitsOnSuspend</code>的键值)</li>
+<li><code>applicationDidFinishLaunching</code> - 当应用程序载入后执行</li>
+</ul>
+<h5 id="应用程序使用过程中，代理方法的执行顺序"><a href="#应用程序使用过程中，代理方法的执行顺序" class="headerlink" title="应用程序使用过程中，代理方法的执行顺序"></a>应用程序使用过程中，代理方法的执行顺序</h5><ul>
+<li><p>启动程序时：</p>
+<ul>
+<li><code>willFinishLaunchingWithOptions</code></li>
+<li><code>didFinishLaunchingWithOptions</code></li>
+<li><code>applicationDidBecomeActive</code></li>
+</ul>
+</li>
+<li><p>按下<code>home</code>键：</p>
+<ul>
+<li><code>applicationWillResignActive</code></li>
+<li><code>applicationDidEnterBackground</code></li>
+</ul>
+</li>
+<li><p>双击<code>home</code>键，再打开程序：</p>
+<ul>
+<li><code>applicationWillEnterForeground</code></li>
+<li><code>applicationDidBecomeActive</code></li>
+</ul>
+</li>
+<li><p>加载应用程序进入前台，所执行的代理方法如下图</p>
+</li>
+</ul>
+<p><img src="/2019/09/26/iOS生命周期/加载应用程序进入前台代理方法的执行.png" alt="加载应用程序进入前台代理方法的执行"></p>
+<ul>
+<li>加载应用程序进入后台，所执行的代理方法如下图</li>
+</ul>
+<p><img src="/2019/09/26/iOS生命周期/加载应用程序进入后台代理方法的执行.png" alt="加载应用程序进入后台代理方法的执行"></p>
+<h5 id="main函数"><a href="#main函数" class="headerlink" title="main函数"></a><code>main</code>函数</h5><p><code>main</code>函数是程序启动的入口，在<code>iOS app</code>中，<code>main</code>函数的功能被最小化，它的主要工作都交给了<code>UIKit framework</code>。<code>iOS</code>中<code>main</code>类中的内容如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">int main(int argc, char * argv[]) &#123;</span><br><span class="line">    @autoreleasepool &#123;</span><br><span class="line">        return UIApplicationMain(argc, argv, nil, NSStringFromClass([AppDelegate class]));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p><code>UIApplicationMain</code>函数有四个参数，不需要改变这些参数值。每个参数的意义和作用：</p>
+<ol>
+<li><code>argc</code>和<code>argv</code>参数包含了系统带过来的启动时间；</li>
+<li>第三个参数确定了主要应用程序类的名称，这个参数指定为<code>nil</code>，这样<code>UIKit</code>就会使用默认的程序类<code>UIApplication</code>；</li>
+<li>第四个参数是程序自定义的代理类名，这个类负责系统和代码之间的交互。它一般在<code>Xcode</code>新建项目时会自动生成。</li>
+</ol>
+</li>
+<li><p><code>UIApplicationMain</code>函数加载了程序主界面的文件。虽然这个函数加载了界面文件，但是没有放到应用程序的<code>windows</code>上，需要在<code>Delegate</code>的<code>willFinishLaunchingWithOptions</code>方法中加载它。一个应用程序可以有一个主的<code>storyboard</code>文件或者有一个主的<code>nib</code>文件，但不能同时有两个存在。如果程序在启动时没有自动加载主要的故事板或<code>nib</code>文件，可以在<code>willFinishLaunchingWithOptions</code>方法里准备<code>windows</code>的展示。</p>
+</li>
+</ul>
+<h5 id="中断"><a href="#中断" class="headerlink" title="中断"></a>中断</h5><p>当一个基于警告式的中断发生时，如有电话打进来时，这时程序会临时进入<code>inactive</code>状态，用户可选择如何处理这个中断，如下图：</p>
+<p><img src="/2019/09/26/iOS生命周期/程序中断流程.png" alt="程序中断流程"></p>
+<p>除电话打进来时，应用程序会发生响应中断。还有以下情况发生时应用程序也会发生响应中断：</p>
+<ol>
+<li>在<code>iOS5</code>,通知不会把程序变成为激活状态，通知会显示在状态栏上，如果你；拉下状态栏，程序会变成<code>inactive</code>，把状态栏放回去，程序变回<code>active</code>；</li>
+<li>按锁屏键也是另外一种程序的中断，当你按下锁屏键，系统屏蔽了所有触摸事件，把<code>app</code>放到了后台，这时<code>app</code>状态是<code>inactive</code>，并进入后台。</li>
+</ol>
+<p>当应用程序响应中断时，应在<code>applicationWillResignActive</code>代理方法中，进行以下操作：</p>
+<ul>
+<li>停止<code>timer</code>和其他周期性的任务</li>
+<li>停止任何正在运行的请求</li>
+<li>暂停视频的播放</li>
+<li>如果是游戏那就暂停它</li>
+<li>减少<code>OpenGL ES</code>的帧率</li>
+<li>挂起任何分发的队列和不重要的操作队列(你可以继续处理网络请求或其他时间敏感的后台任务)<br>当程序回到<code>active</code>状态时，根据情况，在<code>applicationDidBecomeActive</code>代理方法中恢复响应中断时暂停的任务。如重新开始<code>timer</code>，继续分发队列，提高<code>OpenGL ES</code>的帧率。不过游戏要回到暂停状态，不能自动开始。</li>
+</ul>
+<ul>
+<li>应用程序转到后台运行，流程图如下</li>
+</ul>
+<p><img src="/2019/09/26/iOS生命周期/应用程序转到后台运行流程图.png" alt="应用程序转到后台运行流程图"></p>
+<p>只有在<code>iOS4</code>以上系统或者支持多任务的设备，应用程序才能在后台运行，不然会直接结束状态。</p>
+<p>应用程序进入后台时，应执行以下操作：</p>
+<ol>
+<li>保存用户数据或状态信息，所有没写到磁盘的文件或信息，在进入后台时，最后都写到磁盘去，因为程序可能在后台被杀死；</li>
+<li>释放尽可能释放的内存。</li>
+</ol>
+<p><code>applicationDidEnterBackgound:</code>方法有大概<code>5</code>秒的时间让你完成这些任务。如果超过时间还有未完成的任务，你的程序就会被终止而且从内存中清除。如果还需要长时间的运行任务，可以调用  <code>beginBackgroundTaskWithExpirationHandler</code>方法去请求后台运行时间和启动线程来运行长时间运行的任务。</p>
+<p>在后台时，每个应用程序都应该释放最大的内存。系统努力的保持更多的应用程序在后台同时运行。不过当内存不足时，会终止一些挂起的程序来回收内存，那些内存最大的程序首先被终止。因此在程序进入后台时，像下面类型的对象应该去掉强引用：</p>
+<ol>
+<li>可以重新加载的 大的视频或数据文件；</li>
+<li>任何没用而且可以轻易创建的对象。</li>
+</ol>
+<p>在后台时，为了减少程序占用的内存，系统会自动再回收一些系统帮助你开辟的内存。如：</p>
+<ol>
+<li>系统回收<code>Core Animation</code>的后备存储；</li>
+<li>去掉任何系统引用的缓存图片；</li>
+<li>去掉系统管理数据缓存强引用。</li>
+</ol>
+<ul>
+<li>程序从后台返回前台的流程如下图：</li>
+</ul>
+<p><img src="/2019/09/26/iOS生命周期/程序从后台返回前台的流程图.png" alt="程序从后台返回前台的流程图"></p>
+<p>当<code>app</code>处于挂起状态时，它是不能执行任何代码的。因此它不能处理在挂起期间发过来的通知，比如方向改变，时间改变，设置的改变还有其他影响程序展现或状态的通知。在程序进入后台或返回前台时，程序都要正确的处理这些通知。</p>
+<p><code>app</code>如果终止了，系统会调用<code>app</code>的代理的方法<code>applicationWillTerminate</code>这样可以让你做一些清理工作。你可以保存一些数据或<code>app</code>的状态。这个方法也有<code>5</code>秒钟的限制。</p>
+<p>程序终止的情况：</p>
+<ol>
+<li>设备不支持多任务；</li>
+<li>在<code>Info.plist</code>文件中，程序包含了<code>UIApplicationExitsOnSuspend</code>键；</li>
+<li>用户手动关闭应用程序。</li>
+</ol>
+<h5 id="Main-Run-Loop"><a href="#Main-Run-Loop" class="headerlink" title="Main Run Loop"></a><code>Main Run Loop</code></h5><p><code>Main Run Loop</code>负责处理用户相关的事件。<code>UIApplication</code>对象在程序启动时启动<code>main run Loop</code>，它处理事件和更新视图的界面。看<code>Main Run Loop</code>就知道，它是运行在程序的主线程上的。这样保证了接收到用户相关操作的事件是按顺序处理的。</p>
+<ul>
+<li><code>Main Run Loop</code>处理事件的流程图如下</li>
+</ul>
+<p><img src="/2019/09/26/iOS生命周期/MainRunLoop处理事件流程图.png" alt="MainRunLoop处理事件流程图"></p>
+<p>用户操作设备，相关的操作事件被系统生成并通过<code>UIKit</code>的指定端口进行分发。事件在内部排成队列，一个个的分发到<code>Main run loop</code>去做处理。<code>UIApplication</code>对象是第一个接收到事件的对象，它决定事件如何被处理。触摸事件分发到主窗口，窗口再分发到对应触发触摸事件的<code>View</code>。</p>
+<h3 id="VC生命周期"><a href="#VC生命周期" class="headerlink" title="VC生命周期"></a><code>VC</code>生命周期</h3><ul>
+<li><p><code>VC</code>生命周期中涉及的函数有</p>
+<ul>
+<li><code>alloc</code> - 创建对象，分配空间</li>
+<li><code>init</code> - 初始化对象，初始化数据</li>
+<li><code>loadView</code> - 此时<code>VC</code>还未初始化，可以重写该方法自定义控制器的<code>View</code>，若重写逻辑，就不能调用<code>[super loadView]</code></li>
+<li><code>viewDidLoad</code> - 在<code>VC</code>的生命周期中，该函数只会被调用一次。此时<code>view</code>已经初始化好，可以做一些页面初始化任务，由于此时<code>view</code>的<code>bounds</code>尚未确定，所以不适合写<code>frame</code>类型的布局代码，但是给视图添加约束没有影响</li>
+<li><code>viewWillAppear</code> - <code>VC</code>的视图将要出现时调用，这个一般在<code>view</code>被添加到<code>superview</code>之前，切换动画之前调用，在这里可以进行一些显示前的处理，这个函数可能会调用多次，适合做一些与视图及视图出现相关联的任务，例如改变状态栏的方向、风格，键盘弹出</li>
+<li><code>viewWillLayoutSubviews</code> - <code>view</code>的子视图即将布局，触发条件是<ul>
+<li><code>view</code>被添加到视图层次中</li>
+<li><code>view</code>的<code>bounds</code>发生了改变</li>
+<li>调用了<code>- setNeedsLayout</code>方法</li>
+<li>调用了<code>- layoutIfNeeded</code>方法</li>
+</ul>
+</li>
+<li><code>viewDidLayoutSubviews</code> - 当<code>view</code>的子视图已经布局时，此方法会被调用，触发条件同<code>viewWillLayoutSubviews</code>的触发条件</li>
+<li><code>viewDidAppear</code> - 视图完全出现在屏幕中后触发</li>
+<li><code>viewWillDisappear</code> - 视图即将从屏幕中消失时触发</li>
+<li><code>viewDidDisappear</code> - 视图从屏幕中消失后触发</li>
+<li><code>dealloc</code> - 视图被销毁，此处需要对你在<code>init</code>和<code>viewDidLoad</code>中创建的对象进行释放。如果应用程序异常中止，<code>dealloc</code>没有机会被调用</li>
+</ul>
+</li>
+<li><p><code>VC</code>各生命周期函数的调用时机</p>
+<ul>
+<li>项目创建有<code>A</code>、<code>B</code>两个<code>VC</code>，<code>tag</code>分别为<code>1</code>、<code>2</code></li>
+<li>加载<code>A</code>的时候，生命周期函数的调用顺序如下：<ul>
+<li><code>1 initWithCoder</code></li>
+<li><code>1 loadView</code></li>
+<li><code>1 viewDidLoad</code></li>
+<li><code>1 viewWillAppear</code></li>
+<li><code>1 viewWillLayoutSubviews</code></li>
+<li><code>1 viewDidLayoutSubviews</code></li>
+<li><code>1 viewDidAppear</code></li>
+</ul>
+</li>
+<li>切换至<code>B</code>的时候，调用顺序依次如下：<ul>
+<li><code>2 initWithCoder</code>     //先将2初始化</li>
+<li><code>1 prepareForSegue</code>   //调用1的准备过度的函数，所以在该函数中可以对界面B的一些相关属性进行赋值</li>
+<li><code>2 loadView</code>          //如果这里进行了重写</li>
+<li><code>2 viewDidLoad</code>       //2界面加载</li>
+<li><code>1 viewWillDisappear</code></li>
+<li><code>2 viewWillAppear</code></li>
+<li><code>2 viewWillLayoutSubviews</code></li>
+<li><code>2 viewDidLayoutSubviews</code></li>
+<li><code>2 viewDidAppear</code></li>
+<li><code>1 viewDidDisappear</code></li>
+</ul>
+</li>
+<li>从B切换回A的时候依次调用<ul>
+<li><code>2 viewWillDisappear</code></li>
+<li><code>1 viewWillAppear</code></li>
+<li><code>1 viewDidAppear</code></li>
+<li><code>2 viewDidDisappear</code></li>
+<li><code>2 dealloc</code></li>
+</ul>
+</li>
+<li>总结<ul>
+<li>加载依次为：加载 - 显示 - 布局</li>
+<li>完成顺序依次为：完成布局 - 完成显示  - 完成加载</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/09/25/数据存储/" rel="prev" title="数据存储">
+      <i class="fa fa-chevron-left"></i> 数据存储
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/09/26/Mac上给移动硬盘分区方法/" rel="next" title="Mac上给移动硬盘分区方法">
+      Mac上给移动硬盘分区方法 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#背景"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#应用程序生命周期"><span class="nav-number">2.</span> <span class="nav-text">应用程序生命周期</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#应用程序的状态"><span class="nav-number">2.0.1.</span> <span class="nav-text">应用程序的状态</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#程序状态对应的代理方法如下"><span class="nav-number">2.0.2.</span> <span class="nav-text">程序状态对应的代理方法如下</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#应用程序使用过程中，代理方法的执行顺序"><span class="nav-number">2.0.3.</span> <span class="nav-text">应用程序使用过程中，代理方法的执行顺序</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#main函数"><span class="nav-number">2.0.4.</span> <span class="nav-text">main函数</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#中断"><span class="nav-number">2.0.5.</span> <span class="nav-text">中断</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Main-Run-Loop"><span class="nav-number">2.0.6.</span> <span class="nav-text">Main Run Loop</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#VC生命周期"><span class="nav-number">3.</span> <span class="nav-text">VC生命周期</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Ben</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">51</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">categories</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ben</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

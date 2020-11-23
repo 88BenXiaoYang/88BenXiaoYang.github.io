@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="背景OC是一门基于C语言加入了面向对象特性和消息转发机制的动态语言，因此OC总是想办法把一些决定工作从编译连接推迟到运行时，这意味着只有编译器是不够的，还需要一个运行时系统(runtime system)来执行编译后的代码，动态创建类和对象，进行消息发送和转发，这就是Objective-C Runtime系统存在的意义，它是整个OC运行框架的一块基石。Runtime简称运行时。OC就是运行时机制，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Runtime">
+<meta property="og:url" content="http://yoursite.com/2019/10/16/Runtime/index.html">
+<meta property="og:site_name" content="Ben&#39;Blog">
+<meta property="og:description" content="背景OC是一门基于C语言加入了面向对象特性和消息转发机制的动态语言，因此OC总是想办法把一些决定工作从编译连接推迟到运行时，这意味着只有编译器是不够的，还需要一个运行时系统(runtime system)来执行编译后的代码，动态创建类和对象，进行消息发送和转发，这就是Objective-C Runtime系统存在的意义，它是整个OC运行框架的一块基石。Runtime简称运行时。OC就是运行时机制，">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2019/10/16/Runtime/id数据结构.png">
+<meta property="og:image" content="http://yoursite.com/2019/10/16/Runtime/Class的数据结构.png">
+<meta property="og:image" content="http://yoursite.com/2019/10/16/Runtime/objc_class结构体定义.png">
+<meta property="og:image" content="http://yoursite.com/2019/10/16/Runtime/objc_class定义.png">
+<meta property="og:image" content="http://yoursite.com/2019/10/16/Runtime/Class中isa和super_class间的关系图.png">
+<meta property="og:image" content="http://yoursite.com/2019/10/16/Runtime/objc_ivar_list结构体定义.png">
+<meta property="og:image" content="http://yoursite.com/2019/10/16/Runtime/objc_method_list结构体的定义.png">
+<meta property="og:image" content="http://yoursite.com/2019/10/16/Runtime/method定义.png">
+<meta property="og:image" content="http://yoursite.com/2019/10/16/Runtime/Ivar结构定义.png">
+<meta property="og:image" content="http://yoursite.com/2019/10/16/Runtime/IMP的定义.png">
+<meta property="og:image" content="http://yoursite.com/2019/10/16/Runtime/Cache的定义.png">
+<meta property="og:image" content="http://yoursite.com/2019/10/16/Runtime/消息发送流程图.png">
+<meta property="og:updated_time" content="2020-11-23T03:54:31.130Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Runtime">
+<meta name="twitter:description" content="背景OC是一门基于C语言加入了面向对象特性和消息转发机制的动态语言，因此OC总是想办法把一些决定工作从编译连接推迟到运行时，这意味着只有编译器是不够的，还需要一个运行时系统(runtime system)来执行编译后的代码，动态创建类和对象，进行消息发送和转发，这就是Objective-C Runtime系统存在的意义，它是整个OC运行框架的一块基石。Runtime简称运行时。OC就是运行时机制，">
+<meta name="twitter:image" content="http://yoursite.com/2019/10/16/Runtime/id数据结构.png">
+
+<link rel="canonical" href="http://yoursite.com/2019/10/16/Runtime/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>Runtime | Ben'Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Ben'Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">工欲善其事，必先利其器</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/16/Runtime/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Ben">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ben'Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Runtime
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-10-16 14:38:13" itemprop="dateCreated datePublished" datetime="2019-10-16T14:38:13+08:00">2019-10-16</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-11-23 11:54:31" itemprop="dateModified" datetime="2020-11-23T11:54:31+08:00">2020-11-23</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p><code>OC</code>是一门基于<code>C</code>语言加入了<strong>面向对象特性</strong>和<strong>消息转发机制</strong>的动态语言，因此<code>OC</code>总是想办法把一些决定工作从<strong>编译连接</strong>推迟到<strong>运行时</strong>，这意味着只有编译器是不够的，还需要一个运行时系统(<code>runtime system</code>)来执行编译后的代码，动态创建类和对象，进行消息发送和转发，这就是<code>Objective-C Runtime</code>系统存在的意义，它是整个<code>OC</code>运行框架的一块基石。<code>Runtime</code>简称运行时。<strong><code>OC</code>就是运行时机制，其中最主要的是消息机制。</strong>对于<code>C</code>语言，函数的调用在编译的时候会决定调用哪个函数；对于<code>OC</code>的函数，属于动态调用过程，在编译的时候并不能决定真正调用哪个函数，只有在真正运行的时候才会根据函数的名称找到对应的函数来调用。<code>Runtime</code>基本是用<code>C</code>和汇编写的，可见苹果为了动态系统的高效而作出的努力。</p>
+<p>高级编程语言想要成为可执行文件需要先编译为汇编语言再汇编为机器语言，机器语言也是计算机能够识别的唯一语言，但是<code>OC</code>并不能直接编译为汇编语言，而是要先转写为纯<code>C</code>语言再进行编译和汇编的操作，从<code>OC</code>到<code>C</code>语言的过渡就是由<code>Runtime</code>来实现的。然而我们使用<code>OC</code>进行面向对象开发，而<code>C</code>语言更多的是面向过程开发，这就需要将面向对象的类转变为面向过程的结构体。</p>
+<h3 id="核心"><a href="#核心" class="headerlink" title="核心"></a>核心</h3><p><code>Runtime</code>的核心是消息传递(<code>Messaging</code>)</p>
+<p>在<code>OC</code>中，使用<code>[receiver message]</code>语法并不会马上执行<code>receiver</code>对象的<code>message</code>方法的代码，而是向<code>receiver</code>发送一条<code>message</code>消息，这条消息可能由<code>receiver</code>来处理，也可能由转发给其他对象来处理，也有可能假装没有接收到这条消息而没有处理。其实<code>[receiver message]</code>被编译器转化为：<code>id objc_msgSend(id self, SEL op, ...);</code></p>
+<p>以上述例子，从<code>id</code>和<code>SEL</code>两个数据结构来理解<code>Runtime</code>所包含的重要数据结构</p>
+<h5 id="Runtime数据结构"><a href="#Runtime数据结构" class="headerlink" title="Runtime数据结构"></a><code>Runtime</code>数据结构</h5><ul>
+<li><p><code>SEL</code></p>
+<ul>
+<li><code>SEL</code>是函数<code>objc_msgSend</code>第二个参数的数据类型，表示<strong>方法选择器</strong></li>
+<li><code>SEL</code>的数据结构是：<code>typedef struct objc_selector *SEL;</code><ul>
+<li><code>SEL</code>是映射到方法的<code>C</code>字符串</li>
+<li>可以通过<code>OC</code>编译器命令<code>@selector()</code>或者<code>Runtime</code>系统的<code>sel_registerName</code>函数来获取一个<code>SEL</code>类型的方法选择器</li>
+<li>如果知道<code>selector</code>对应的方法名是什么，可以通过<code>NSString* NSStringFromSelector(SEL aSelector)</code>方法将<code>SEL</code>转化为字符串</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><code>id</code></p>
+<ul>
+<li><code>id</code>是通用类型指针，能够表示任何对象</li>
+<li><p><code>id</code>的数据结构如下</p>
+<p> <img src="/2019/10/16/Runtime/id数据结构.png" alt="id数据结构"></p>
+</li>
+<li><p><code>id</code>其实就是一个指向<code>objc_object</code>结构体指针，它包含一个<code>Class isa</code>成员，根据<code>isa</code>指针就可以顺藤摸瓜找到<strong>对象所属的类</strong></p>
+</li>
+<li>注：根据<code>Apple</code>的官方文档<a href="https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/KeyValueObserving/Articles/KVOImplementation.html" target="_blank" rel="noopener">Key-Value Observing Implementation Details</a>提及，<code>key-value observing</code>是使用<code>isa-swizzling</code>的技术实现的，<code>isa</code>指针在运行时被修改，指向一个中间类而不是真正的类。所以，你不应该使用<code>isa</code>指针来确定类的关系，而是使用<code>class</code>方法来确定实例对象的类</li>
+</ul>
+</li>
+<li><p><code>Class</code></p>
+<ul>
+<li><code>isa</code>指针的数据类型是<code>Class</code>，<code>Class</code>表示对象所属的类</li>
+<li><p><code>Class</code>的数据结构如下</p>
+<p><img src="/2019/10/16/Runtime/Class的数据结构.png" alt="Class的数据结构"></p>
+</li>
+<li><p><code>Class</code>是一个<code>objc_class</code>结构体指针</p>
+</li>
+<li><p><code>objc_class</code>结构体定义如下</p>
+<p><img src="/2019/10/16/Runtime/objc_class结构体定义.png" alt="objc_class结构体定义"></p>
+</li>
+<li><p>注：<code>OBJC2_UNAVAILABLE</code>是一个<code>Apple</code>对<code>Objc</code>系统运行版本进行约束的宏定义，主要为了兼容非<code>Objective-C 2.0</code>的遗留版本</p>
+</li>
+<li><p>重要成员变量的分析</p>
+<ul>
+<li><p><code>isa</code>表示一个<code>Class</code>对象的<code>Class</code>，也就是<code>Meta Class</code>。在面向对象设计中，一切都是对象，<code>Class</code>在设计中本身也是一个对象。<code>objc_class</code>定义如下：</p>
+<p><img src="/2019/10/16/Runtime/objc_class定义.png" alt="objc_class定义"></p>
+</li>
+<li><p>由上图可见，结构体<code>objc_class</code>也是继承<code>objc_object</code>，说明<code>Class</code>在设计中本身也是一个对象</p>
+</li>
+<li><p><code>Meta Class</code>也是一个<code>Class</code>，它也跟其他<code>Class</code>一样有自己的<code>isa</code>和<code>super_class</code>指针。关系图如下：</p>
+<p><img src="/2019/10/16/Runtime/Class中isa和super_class间的关系图.png" alt="Class中isa和super_class间的关系图"></p>
+</li>
+<li><p>上图中实线是<code>super_class</code>指针，虚线是<code>isa</code>指针，其中</p>
+<ul>
+<li><code>Root class</code>(<code>class</code>)其实就是<code>NSObject</code>，<code>NSObject</code>是没有超类的，所以<code>Root class</code>(<code>class</code>)的<code>superclass</code>指向<code>nil</code></li>
+<li>每个<code>Class</code>都有一个<code>isa</code>指针指向唯一的<code>Meta class</code>(<code>isa</code>是对象指向自己所属类型的指针)</li>
+<li><code>Root class</code>(<code>meta</code>)的<code>superclass</code>指向<code>Root class</code>(<code>class</code>)，也就是<code>NSObject</code>，形成一个回路</li>
+<li>每个<code>Meta class</code>的<code>isa</code>指针都指向<code>Root class</code>(<code>meta</code>)</li>
+</ul>
+</li>
+<li><p><code>ivars</code>表示多个成员变量，它指向<code>objc_ivar_list</code>结构体，结构体的定义如下</p>
+<p><img src="/2019/10/16/Runtime/objc_ivar_list结构体定义.png" alt="objc_ivar_list结构体定义"></p>
+<ul>
+<li><code>objc_ivar_list</code>是一个链表，存储多个<code>objc_ivar</code>，而<code>objc_ivar</code>结构体存储类的单个成员变量信息</li>
+</ul>
+</li>
+<li><p><code>methodLists</code>表示方法列表，它指向<code>objc_method_list</code>结构体的二级指针，可以动态修改<code>*methodLists</code>的值来添加成员方法，也是<code>Category</code>实现原理，同样也解释<code>Category</code>不能添加实例变量的原因。<code>objc_method_list</code>结构体的定义如下</p>
+<p><img src="/2019/10/16/Runtime/objc_method_list结构体的定义.png" alt="objc_method_list结构体的定义"></p>
+<ul>
+<li><code>objc_method_list</code>也是一个链表，存储多个<code>objc_method</code>，而<code>objc_method</code>结构体存储类的某个方法的信息</li>
+</ul>
+</li>
+<li><code>cache</code>用来缓存经常访问的方法，它指向<code>objc_cache</code>结构体</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><code>Method</code></p>
+<ul>
+<li><p><code>Method</code>表示类中的某个方法，其定义如下</p>
+<p><img src="/2019/10/16/Runtime/method定义.png" alt="method定义"></p>
+<ul>
+<li><code>Method</code>是一个指向<code>objc_method</code>结构体的指针，<code>objc_method</code>结构体存储了方法名(<code>method_name</code>)、方法类型(<code>method_types</code>)和方法实现(<code>method_imp</code>)等信息，<code>method_imp</code>的数据类型是<code>IMP</code>，它是一个函数指针</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><code>Ivar</code></p>
+<ul>
+<li><code>Ivar</code>表示类中的实例变量</li>
+<li><p><code>Ivar</code>的结构定义如下</p>
+<p><img src="/2019/10/16/Runtime/Ivar结构定义.png" alt="Ivar结构定义"></p>
+<ul>
+<li><code>Ivar</code>是一个指向<code>objc_ivar</code>结构体指针，它包含了变量名(<code>ivar_name</code>)、变量类型(<code>ivar_type</code>)等信息</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><code>IMP</code></p>
+<ul>
+<li><code>IMP</code>本质上是一个函数指针，指向方法的实现</li>
+<li><p><code>IMP</code>的定义如下</p>
+<p><img src="/2019/10/16/Runtime/IMP的定义.png" alt="IMP的定义"></p>
+<ul>
+<li>当向某个对象发送一条信息，可以由这个函数指针(<code>IMP</code>)来指定方法的实现，它最终就会执行那段代码，这样可以绕开<strong>消息传递</strong>阶段而去执行另一个方法实现</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><code>Cache</code></p>
+<ul>
+<li><code>Cache</code>用来缓存</li>
+<li><p><code>Cache</code>的定义如下</p>
+<p><img src="/2019/10/16/Runtime/Cache的定义.png" alt="Cache的定义"></p>
+<ul>
+<li><code>Cache</code>其实就是一个存储<code>Method</code>的链表，主要是为了优化方法调用的性能</li>
+<li>不通过<code>Cache</code>进行方法调用的流程为，当对象<code>receiver</code>调用方法<code>message</code>时，首先根据对象<code>receiver</code>的<code>isa</code>指针查找到它对应的类，然后在类的<code>methodLists</code>中搜索方法，如果没有找到，就使用<code>super_class</code>指针到父类中的<code>methodLists</code>查找，一旦找到就调用方法。如果没有找到，有可能消息转发，也可能忽略它。但这样查找方式效率太低，因为往往一个类大概只有<code>20%</code>的方法经常被调用，占总调用次数的<code>80%</code>。所以使用<code>Cache</code>来缓存经常调用的方法，当调用方法时，优先在<code>Cache</code>查找，如果没有找到，再到<code>methodLists</code>查找，这样就可以大大提高函数查询的效率。这也就是<code>objc_class</code>中重要成员<code>objc_cache</code>做的事情，在找到<code>message</code>之后，把<code>message</code>的<code>method_name</code>作为<code>key</code>，<code>method_imp</code>作为<code>value</code>给存起来。当再次收到<code>message</code>消息的时候，可以直接在<code>cache</code>里找到，避免去遍历<code>objc_method_list</code>。<code>objc_cache</code>是存在<code>objc_class</code>结构体中的。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="消息发送"><a href="#消息发送" class="headerlink" title="消息发送"></a>消息发送</h3><h5 id="objc-msgSend函数"><a href="#objc-msgSend函数" class="headerlink" title="objc_msgSend函数"></a><code>objc_msgSend</code>函数</h5><p>当某个对象使用语法<code>[receiver message]</code>来调用某个方法时，其实<code>[receiver message]</code>被编译器转化为:<code>id objc_msgSend(id self, SEL op, ...);</code></p>
+<ul>
+<li><p><code>objc_msgSend</code>具体发送消息的流程如下</p>
+<ol>
+<li>首先根据<code>receiver</code>对象的isa指针获取它对应的<code>class</code>(找到对象对应的类)</li>
+<li>优先在<code>class</code>的<code>cache</code>查找<code>message</code>方法，如果找不到，再到<code>methodLists</code>查找</li>
+<li>如果没有在<code>class</code>找到，再到<code>super_class</code>查找</li>
+<li>一旦找到<code>message</code>这个方法，就执行它实现的<code>IMP</code></li>
+<li><p>消息发送流程图如下</p>
+<p><img src="/2019/10/16/Runtime/消息发送流程图.png" alt="消息发送流程图"></p>
+</li>
+</ol>
+</li>
+</ul>
+<h5 id="方法解析与消息转发"><a href="#方法解析与消息转发" class="headerlink" title="方法解析与消息转发"></a>方法解析与消息转发</h5><h3 id="OC中基于Runtime特性的运用"><a href="#OC中基于Runtime特性的运用" class="headerlink" title="OC中基于Runtime特性的运用"></a><code>OC</code>中基于<code>Runtime</code>特性的运用</h3><h5 id="分类"><a href="#分类" class="headerlink" title="分类"></a>分类</h5><p>分类中不能重写系统方法，因为会把系统的方法给覆盖掉，分类中不能调用<code>super</code></p>
+<p>运用<code>Runtime</code>在分类中添加自定义方法，涉及的点：<code>+load VS +initialize</code>、<code>method_exchangeImplementations(originalMethod, swizzledMethod);</code></p>
+<p>分类中添加自定义方法时在<code>load</code>中操作的原因：<code>+load</code>方法能够确保在类的初始化时候调用，这能够保证改变应用行为的一致性。(由于<code>load</code>类方法是程序运行时这个类被加载到内存中就调用的一个方法，执行比较早，并且不需要我们手动调用。而且这个方法具有唯一性，也就是只会被调用一次，不用担心资源抢夺的问题)</p>
+<p><code>class_addMethod</code>：当被添加的方法已经存在时，会返回<code>NO</code></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/10/09/iOS中的框架/" rel="prev" title="iOS中的框架">
+      <i class="fa fa-chevron-left"></i> iOS中的框架
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/10/18/轮子(代码)/" rel="next" title="轮子(代码)">
+      轮子(代码) <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#背景"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#核心"><span class="nav-number">2.</span> <span class="nav-text">核心</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Runtime数据结构"><span class="nav-number">2.0.1.</span> <span class="nav-text">Runtime数据结构</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#消息发送"><span class="nav-number">3.</span> <span class="nav-text">消息发送</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#objc-msgSend函数"><span class="nav-number">3.0.1.</span> <span class="nav-text">objc_msgSend函数</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#方法解析与消息转发"><span class="nav-number">3.0.2.</span> <span class="nav-text">方法解析与消息转发</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#OC中基于Runtime特性的运用"><span class="nav-number">4.</span> <span class="nav-text">OC中基于Runtime特性的运用</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#分类"><span class="nav-number">4.0.1.</span> <span class="nav-text">分类</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Ben</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">51</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">categories</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ben</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

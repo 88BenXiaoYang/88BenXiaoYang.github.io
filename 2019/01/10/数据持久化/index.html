@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="plist文件存储数据 生成plist文件：  12345678910111213141516171.建立文件管理NSFileManager *fm = [NSFileManager defaultManager];2.找到 Documents 文件所在的路径NSArray *path = NSSearchPathForDirectoriesInDomains(NSDocumentDirector">
+<meta name="keywords" content="iOS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据持久化">
+<meta property="og:url" content="http://yoursite.com/2019/01/10/数据持久化/index.html">
+<meta property="og:site_name" content="Ben&#39;Blog">
+<meta property="og:description" content="plist文件存储数据 生成plist文件：  12345678910111213141516171.建立文件管理NSFileManager *fm = [NSFileManager defaultManager];2.找到 Documents 文件所在的路径NSArray *path = NSSearchPathForDirectoriesInDomains(NSDocumentDirector">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-11-23T03:54:31.355Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="数据持久化">
+<meta name="twitter:description" content="plist文件存储数据 生成plist文件：  12345678910111213141516171.建立文件管理NSFileManager *fm = [NSFileManager defaultManager];2.找到 Documents 文件所在的路径NSArray *path = NSSearchPathForDirectoriesInDomains(NSDocumentDirector">
+
+<link rel="canonical" href="http://yoursite.com/2019/01/10/数据持久化/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>数据持久化 | Ben'Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Ben'Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">工欲善其事，必先利其器</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/10/数据持久化/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Ben">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ben'Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          数据持久化
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-01-10 18:46:41" itemprop="dateCreated datePublished" datetime="2019-01-10T18:46:41+08:00">2019-01-10</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-11-23 11:54:31" itemprop="dateModified" datetime="2020-11-23T11:54:31+08:00">2020-11-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/移动端/" itemprop="url" rel="index"><span itemprop="name">移动端</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="plist文件存储数据"><a href="#plist文件存储数据" class="headerlink" title="plist文件存储数据"></a><code>plist</code>文件存储数据</h3><ul>
+<li>生成<code>plist</code>文件：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">1.建立文件管理</span><br><span class="line">NSFileManager *fm = [NSFileManager defaultManager];</span><br><span class="line"></span><br><span class="line">2.找到 Documents 文件所在的路径</span><br><span class="line">NSArray *path = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);</span><br><span class="line"></span><br><span class="line">3.取得第一个 Documents 文件夹的路径</span><br><span class="line">NSString *filePath = [path objectAtIndex:0];</span><br><span class="line"></span><br><span class="line">4.把要生成的 plist 文件名称(xxx.plist)添加到文件夹路径后面</span><br><span class="line">NSString *plistPath = [filePath stringByAppendingPathComponent:@&quot;xxx.plist&quot;];</span><br><span class="line"></span><br><span class="line">5.创建文件</span><br><span class="line">[fm createFileAtPath:plistPath contents:nil attributes:nil];</span><br><span class="line"></span><br><span class="line">//操作过程中如需删除文件，用以下代码</span><br><span class="line">[fm removeItemAtPath:plistPath error:nil];</span><br></pre></td></tr></table></figure>
+<ul>
+<li>往<code>plist</code>文件中写入数据</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">注：将数据存入 plist 文件之前，先确定所存储的数据类型，根据所存储的数据类型构建对应的对象。</span><br><span class="line">以存储的数据类型为字典为例，在写入数据之前，需要把数据先存入字典中。</span><br><span class="line"></span><br><span class="line">1.创建字典并把数据存入字典中</span><br><span class="line">NSDictionary *dic = [NSDictionary dictionaryWithObjectsAndKeys:@&quot;key1&quot;,@&quot;value1&quot;,@&quot;key2&quot;,@&quot;value2&quot;, nil];</span><br><span class="line"></span><br><span class="line">2.把字典写入 plist 文件</span><br><span class="line">[dic writeToFile:plistPath atomically:YES];</span><br></pre></td></tr></table></figure>
+<ul>
+<li>从<code>plist</code>文件中读取数据</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">1.根据“生成`plist`文件”的过程，获取 plist 文件所在的路径</span><br><span class="line"></span><br><span class="line">2.读取plist文件，用 plist 所存储的数据类型对应的对象接收所读出的数据（如：存储的是字典用字典接收；存储的是数组用数组接收），以字典为例。</span><br><span class="line">NSDictionary *dic2 = [NSDictionary dictionaryWithContentsOfFile:plistPath];</span><br><span class="line"></span><br><span class="line">3.根据字典的取值规则，取到所需数据</span><br></pre></td></tr></table></figure>
+<ul>
+<li>示例（将从服务器请求到的数据存入<code>plist</code>文件）：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">1.解析请求到的数据</span><br><span class="line">NSMutableArray *dataArr = [responseDictionary objectForKey:@&quot;dataList&quot;];</span><br><span class="line"></span><br><span class="line">2.建立文件夹管理</span><br><span class="line">NSFileManager *fm = [NSFileManager defaultManager];</span><br><span class="line"></span><br><span class="line">3.找到Documents文件所在的路径</span><br><span class="line">NSArray *path = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);</span><br><span class="line"></span><br><span class="line">4.取得第一个Documents文件夹的路径</span><br><span class="line">NSString *filePath = [path objectAtIndex:0];</span><br><span class="line"></span><br><span class="line">5.把要存储数据的 plist 文件名称追加到路径后面</span><br><span class="line">NSString *plistPath = [filePath stringByAppendingPathComponent:@&quot;xxx.plist&quot;];</span><br><span class="line"></span><br><span class="line">6.开始创建文件</span><br><span class="line">[fm createFileAtPath:plistPath contents:nil attributes:nil];</span><br><span class="line"></span><br><span class="line">7.往 plist 文件中写入数据</span><br><span class="line">[dataArr writeToFile:plistPath atomically:YES];</span><br></pre></td></tr></table></figure>
+<h3 id="归档-解档"><a href="#归档-解档" class="headerlink" title="归档/解档"></a>归档/解档</h3><p>要将一个自定义的类进行归档，那么类里面的每个属性都必须是可以被归档的，如果是不能归档的类型，可以把他转化为<code>NSValue</code>进行归档，然后在读出来的时候再转化为相应的类。</p>
+<p>自定义的类需要实现：</p>
+<ul>
+<li>归档方法，<code>encodeWithCoder</code></li>
+<li>解档方法，<code>decodeObjectForKey</code>，通常在<code>initWithCoder</code>中调用</li>
+<li>拷贝方法，<code>copyWithZone</code>，实现字符串的<code>copy</code></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/iOS/" rel="tag"># iOS</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/01/10/Mac快捷键/" rel="prev" title="Mac快捷键">
+      <i class="fa fa-chevron-left"></i> Mac快捷键
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/01/23/数据结构与算法/" rel="next" title="数据结构与算法">
+      数据结构与算法 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#plist文件存储数据"><span class="nav-number">1.</span> <span class="nav-text">plist文件存储数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#归档-解档"><span class="nav-number">2.</span> <span class="nav-text">归档/解档</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Ben</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">51</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">categories</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ben</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

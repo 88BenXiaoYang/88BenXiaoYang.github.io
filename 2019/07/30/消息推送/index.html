@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Notification是移动端应用编程中非常常用的一种传递信息的机制，而且可以非常好的节省资源，不用消耗资源来不停地检查信息状态(Pooling)，在iOS下应用分为两种不同的Notification种类，本地和远程。 本地消息推送本地通知(LocalNotification)，实际上是由iOS系统管理的一个功能 应用程序的本地通知是由用户的iOS设备生成并发布的，无论这个应用程序是否运行在前台">
+<meta property="og:type" content="article">
+<meta property="og:title" content="消息推送">
+<meta property="og:url" content="http://yoursite.com/2019/07/30/消息推送/index.html">
+<meta property="og:site_name" content="Ben&#39;Blog">
+<meta property="og:description" content="Notification是移动端应用编程中非常常用的一种传递信息的机制，而且可以非常好的节省资源，不用消耗资源来不停地检查信息状态(Pooling)，在iOS下应用分为两种不同的Notification种类，本地和远程。 本地消息推送本地通知(LocalNotification)，实际上是由iOS系统管理的一个功能 应用程序的本地通知是由用户的iOS设备生成并发布的，无论这个应用程序是否运行在前台">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2019/07/30/消息推送/APNs消息推送的过程.jpg">
+<meta property="og:image" content="http://yoursite.com/2019/07/30/消息推送/APNs实现流程图.jpg">
+<meta property="og:image" content="http://yoursite.com/2019/07/30/消息推送/推送流程.jpg">
+<meta property="og:image" content="http://yoursite.com/2019/07/30/消息推送/设备注册APNs的流程图.jpg">
+<meta property="og:image" content="http://yoursite.com/2019/07/30/消息推送/注册执行顺序.jpg">
+<meta property="og:image" content="http://yoursite.com/2019/07/30/消息推送/从FeedbackService读取的数据结构.jpg">
+<meta property="og:image" content="http://yoursite.com/2019/07/30/消息推送/消息的数据包格式.jpg">
+<meta property="og:updated_time" content="2020-11-23T03:54:31.362Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="消息推送">
+<meta name="twitter:description" content="Notification是移动端应用编程中非常常用的一种传递信息的机制，而且可以非常好的节省资源，不用消耗资源来不停地检查信息状态(Pooling)，在iOS下应用分为两种不同的Notification种类，本地和远程。 本地消息推送本地通知(LocalNotification)，实际上是由iOS系统管理的一个功能 应用程序的本地通知是由用户的iOS设备生成并发布的，无论这个应用程序是否运行在前台">
+<meta name="twitter:image" content="http://yoursite.com/2019/07/30/消息推送/APNs消息推送的过程.jpg">
+
+<link rel="canonical" href="http://yoursite.com/2019/07/30/消息推送/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>消息推送 | Ben'Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Ben'Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">工欲善其事，必先利其器</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/07/30/消息推送/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Ben">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ben'Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          消息推送
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-07-30 09:57:47" itemprop="dateCreated datePublished" datetime="2019-07-30T09:57:47+08:00">2019-07-30</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-11-23 11:54:31" itemprop="dateModified" datetime="2020-11-23T11:54:31+08:00">2020-11-23</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p><code>Notification</code>是移动端应用编程中非常常用的一种传递信息的机制，而且可以非常好的节省资源，不用消耗资源来不停地检查信息状态(<code>Poolin</code>g)，在<code>iOS</code>下应用分为两种不同的<code>Notification</code>种类，本地和远程。</p>
+<h3 id="本地消息推送"><a href="#本地消息推送" class="headerlink" title="本地消息推送"></a>本地消息推送</h3><p>本地通知(<code>LocalNotification</code>)，实际上是由<code>iOS</code>系统管理的一个功能</p>
+<p>应用程序的本地通知是由用户的<code>iOS</code>设备生成并发布的，无论这个应用程序是否运行在前台。就像一个日历应用，或者是一个<code>to-do list</code>应用，可以发出一条本地通知提醒用户计划的日常事务要开始了。</p>
+<p>对本地通知的数量限制，<code>iOS</code>最多允许最近本地通知数量是<code>64</code>个，超过限制的本地通知将被<code>iOS</code>忽略。</p>
+<p>想让我们的<code>APP</code>实现本地通知功能，必须得到用户的授权。</p>
+<ul>
+<li><p>本地的<code>Notification</code>由<code>iOS</code>下<code>NotificationManager</code>统一管理，只需要将封装好的本地<code>Notification</code>对象加入到系统<code>Notification</code>管理机制队列中，系统会在指定的时间激发本地<code>Notification</code>，应用程序中只需设计好处理<code>Notification</code>的方法就完成了整个<code>Notification</code>的流程了。</p>
+</li>
+<li><p>本地<code>Notification</code>所使用的对象是<code>UILocalNotification</code>。<code>UILocalNotification</code>的属性涵盖了所有处理<code>Notification</code>需要的内容</p>
+</li>
+<li><p><code>UILocalNotification</code>的属性有<code>fireDate</code>、<code>timeZone</code>、<code>repeatInterval</code>、<code>repeatCalendar</code>、<code>alertBody</code>、 <code>alertAction</code>、<code>hasAction</code>、<code>alertLaunchImage</code>、<code>applicationIconBadgeNumber</code>、<code>soundName和userInfo</code></p>
+<ul>
+<li>其中<code>fireDate</code>、<code>timeZone</code>、<code>repeatInterval</code>和<code>repeatCalendar</code>是用于<code>UILocalNotification</code>的调度<ul>
+<li><code>fireDate</code>是<code>UILocalNotification</code>激发的确切时间</li>
+<li><code>timeZone</code>是<code>UILocalNotification</code>激发时间是否根据时区改变而改变，如果设置为<code>nil</code>的话，那么<code>UILocalNotification</code>将在一段时间后被激发，而不是某一个确切时间被激发。</li>
+<li><code>repeatInterval</code>是<code>UILocalNotification</code>被重复激发之间的时间差，不过时间差是完全根据日历单位(<code>NSCalendarUnit</code>)的，例如每周激发的单位<code>NSWeekCalendarUnit</code>，如果不设置的话，将不会重复激发</li>
+<li><code>repeatCalendar</code>是<code>UILocalNotification</code>重复激发所使用的日历单位需要参考的日历，如果不设置的话，系统默认的日历将被作为参考日历</li>
+</ul>
+</li>
+<li><code>UILocalNotification</code>的提醒内容<ul>
+<li><code>alertBody</code>、<code>alertAction</code>、<code>hasAction</code>和<code>alertLaunchImage</code>是当应用不在运行时，系统处理</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>如果已经注册了本地通知，当客户端响应通知时：</p>
+<ul>
+<li><code>APP</code>在前台或者后台收到通知进入前台时会调用<code>didReceiveLocalNotification</code>方法。应用程序正在运行中，设备不会收到提醒</li>
+<li>如<code>APP</code>在关闭状态，本地通知会给设备送达一个和远程通知一样的提醒。只能从函数<code>didFinishLaunchingWithOptions</code>的<code>launchOptions</code>中取到我们想要的参数</li>
+</ul>
+</li>
+</ul>
+<p><strong>‘UILocalNotification’ is deprecated: first deprecated in iOS 10.0 - Use UserNotifications Framework’s UNNotificationRequest</strong></p>
+<h3 id="远程消息推送-APNs"><a href="#远程消息推送-APNs" class="headerlink" title="远程消息推送 - APNs"></a>远程消息推送 - <code>APNs</code></h3><p><code>Apple Push Notification service(APNs)</code>，即苹果推送通知服务，是苹果为<code>APP</code>开发商提供「间接的」推送通知到指定设备的一种服务。官方介绍可见<a href="https://developer.apple.com/library/archive/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/APNSOverview.html" target="_blank" rel="noopener">APNs Overview</a></p>
+<h5 id="原理流程"><a href="#原理流程" class="headerlink" title="原理流程"></a>原理流程</h5><p>通过<code>APNs</code>实现消息推送的过程如下图：</p>
+<p><img src="/2019/07/30/消息推送/APNs消息推送的过程.jpg" alt="APNs消息推送的过程"></p>
+<p>上图可以分为三个阶段：</p>
+<ul>
+<li>第一阶段：<code>Push</code>服务器应用程序把要发送的消息、目的<code>iPhone</code>的标识打包，发给<code>APNs</code></li>
+<li>第二阶段：<code>APNs</code>在自身的已注册<code>Push</code>服务的<code>iPhone</code>列表中，查找有相应标识的<code>iPhone</code>，并把消息发到<code>iPhone</code></li>
+<li>第三阶段：<code>iPhone</code>把发来的消息传递给相应的应用程序， 并且按照设定弹出<code>Push</code>通知</li>
+<li><code>Provider</code>是指某个<code>iPhone</code>软件的<code>Push</code>服务器</li>
+</ul>
+<p><code>APNs</code>实现流程如下图：</p>
+<p><img src="/2019/07/30/消息推送/APNs实现流程图.jpg" alt="APNs实现流程图"></p>
+<ol>
+<li>首先是应用程序注册消息推送</li>
+<li><code>iOS</code>跟<code>APNs Server</code>要<code>deviceToken</code>，应用程序接受<code>deviceToken</code></li>
+<li>应用程序将<code>deviceToken</code>发送给<code>PUSH</code>服务端程序</li>
+<li>服务端程序向<code>APNs</code>服务发送消息</li>
+<li><code>APNs</code>服务将消息发送给<code>iPhone</code>应用程序</li>
+</ol>
+<p>上述流程如下图形象所示：</p>
+<p><img src="/2019/07/30/消息推送/推送流程.jpg" alt="推送流程"></p>
+<ol>
+<li>首先，安装了具有推送功能的应用，我们的设备在有网络的情况下会连接苹果推送服务器，连接过程中，<code>APNs</code>会验证<code>device_token</code>，连接成功后维持一个长连接</li>
+<li><code>Provider</code>(我们自己的服务器)收到需要被推送的消息并结合被推送设备的<code>device_token</code>一起打包发送给<code>APNs</code>服务器</li>
+<li><code>APNs</code>服务器将推送信息推送给指定<code>device_token</code>的设备</li>
+<li>设备收到推送消息后通知我们的应用程序并显示和提示用户(声音、弹出框)</li>
+</ol>
+<p>推送的前提是装有我们应用的设备需要向<code>APNs</code>服务器注册，注册成功后<code>APNs</code>服务器会返给我们一个<code>device_token</code>，拿到这个<code>token</code>后我们将这个<code>token</code>发给我们自己的应用服务器，当有需要被推送的消息时，我们的应用服务器会将消息按指定的格式打包，然后结合设备的<code>device_token</code>一并发给<code>APNs</code>服务器，由于我们的应用和<code>APNs</code>维持一个基于<code>TCP</code>的长连接，<code>APNs</code>将新消息推送到我们设备上，然后在屏幕上显示出新消息来。</p>
+<ul>
+<li>设备注册<code>APNs</code>的流程如下图</li>
+</ul>
+<p><img src="/2019/07/30/消息推送/设备注册APNs的流程图.jpg" alt="设备注册APNs的流程图"></p>
+<ul>
+<li>注册<code>APNs</code>的执行顺序如下图</li>
+</ul>
+<p><img src="/2019/07/30/消息推送/注册执行顺序.jpg" alt="注册执行顺序"></p>
+<ol>
+<li><code>Device</code>连接<code>APNs</code>服务器并携带设备序列号</li>
+<li>连接成功，<code>APNs</code>经过打包和处理产生<code>device_token</code>并返回给注册的<code>Device</code></li>
+<li><code>Device</code>携带获取的<code>device_token</code>向我们自己的应用服务器注册</li>
+</ol>
+<p>经过上述流程，完成需要被推送的<code>Device</code>在<code>APNs</code>服务器和我们自己的应用服务器注册。</p>
+<p>我们的设备和<code>APNs</code>服务器之间的通讯是基于<code>SSL</code>协议的<code>TCP</code>流通讯，二者之间维持一个长连接，当从<code>APNs</code>服务器注册成功后，一定要将<code>device_token</code>发送给我们的应用服务器。</p>
+<p>Tips:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">使deviceToken值不一样的情况：重装iOS或更换设备</span><br><span class="line"></span><br><span class="line">无论是iPhone客户端跟APNs，还是Provider和APNs都需要通过证书进行连接</span><br><span class="line"></span><br><span class="line">如何维护消息队列和如何保证消息能被推送到指定的设备上，这些都由苹果APNs给我们做完了</span><br><span class="line"></span><br><span class="line">与用户的交互是弹框提示是否允许推送通知，用户点击“好”iOS操作系统会继续往下走与APNs服务的流程，用户点击“不允许”iOS操作系统不会走与APNs交流的流程</span><br></pre></td></tr></table></figure>
+<h5 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h5><h6 id="证书"><a href="#证书" class="headerlink" title="证书"></a>证书</h6><p>实现<code>APNs</code>过程中，所需的证书有4个：</p>
+<ol>
+<li><code>.certSigningRequest</code>(<code>CSR</code>文件)</li>
+<li><code>.cer</code>(<code>SSL certificate</code>文件)</li>
+<li><code>.mobileprovision</code>(<code>profile</code>证书)(因为推送消息只能在真机上测试)</li>
+<li><code>.p12</code>(<code>p12</code>证书)(<code>Provider</code>(<code>JAVA</code>)后台用于连接<code>APNs</code>的证书)</li>
+</ol>
+<p>上述证书的制作过程如下：</p>
+<ul>
+<li><p><code>CSR</code>文件(<code>Certificate Signing Request</code>)</p>
+<ul>
+<li>通过<strong>钥匙串</strong>在本地制作<ul>
+<li>钥匙串访问 - 证书助理 - 从证书颁发机构请求证书</li>
+<li>邮箱&amp;常用名称 - 存储到磁盘 - 存储到桌面</li>
+<li>执行完上述操作后，本地桌面上就生成了一个<code>xxx.certSigningRequest</code>文件</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><code>SSL Certificate</code>文件</p>
+<ul>
+<li>通过付费账号登录<a href="https://developer.apple.com" target="_blank" rel="noopener">苹果开发者平台</a><ul>
+<li>创建<code>Certificate</code>，会需要前面生成的<code>CSR</code>文件，<code>Submit</code>后，创建<code>Certificate</code>完成</li>
+<li>新建一个<code>App ID</code>，输入<code>Description</code>、<code>Bundle Identifier</code>，<code>Submit</code>后，新建<code>App ID</code>完成<ul>
+<li>新建<code>App ID</code>完成后，对应的<code>App ID</code>下会有相应的<code>SSL Certificate</code>文件，对<code>SSL Certificate</code>进行<code>Configure</code></li>
+<li>进行<code>Configure</code>时，需要用到前面生成的<code>CSR</code>文件</li>
+<li><code>Configure</code>完成后，<code>SSL Certificate</code>文件就能<code>Download</code>了</li>
+<li><code>Download`</code>SSL<code>证书，命名为</code>xxx.cer<code>(双击</code>.cer`文件将其安装到钥匙串中)</li>
+<li>执行完上述操作后，<code>App ID</code>下对应的<code>SSL</code>证书状态会变成<code>Enabled</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>准备<code>profile</code>证书，因为推送消息只能在真机上测试，所以要建一个<code>profile</code>证书</p>
+<ul>
+<li>在之前创建<code>SSL</code>证书的账号下，创建<code>Provisioning Profile</code>证书</li>
+<li>选择之前的<code>App ID</code>，并添加测试设备的<code>ID</code></li>
+<li><code>Submit</code>后，创建<code>xxx.mobileprovision</code>完成</li>
+<li><code>Download`</code>.mobileprovision<code>证书，双击将其加入到</code>Xcode<code>的</code>Provisioning Profiles`中</li>
+</ul>
+</li>
+<li><p>生成后台用于连接<code>APNs</code>的证书</p>
+<ul>
+<li>打开钥匙串，找到之前安装的<code>.cer</code>证书文件，右键将其导出</li>
+<li>导出存储为用于<code>JAVA</code>后台连接<code>APNs</code>的<code>.p12</code>证书。导出存储时输入<code>.p12</code>证书的密码，这个密码<code>JAVA</code>后台使用<code>.p12</code>证书的时候要用到</li>
+<li>进行上述操作后，导出<code>xxx.p12</code>证书完成</li>
+</ul>
+</li>
+</ul>
+<p>Tips：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">App ID下不同SSL证书的区别：</span><br><span class="line">Development Push SSL Certificate ，与Production Push SSL Certificate</span><br><span class="line">区别在于一个是用于开发的推送证书，一个是用于发布产品的推送证书。</span><br><span class="line">两个证书获取到的终端deviceToken是不一样的。因Development是develop的mobileprovision下获取的；Production是production的mobileprovision获取的。</span><br><span class="line"></span><br><span class="line">Development Push SSL Certificate和Production Push SSL Certificate是有有效时间的：</span><br><span class="line">Development Push SSL Certificate有效期是四个月</span><br><span class="line">Production Push SSL Certificate有效期是一年</span><br><span class="line"></span><br><span class="line">用两个证书生成的P12证书用于JAVA后台连接APNS的服务器地址也是不同的，</span><br><span class="line">Development Push SSL Certificate 对应连接的服务器地址是：gateway.sandbox.push.apple.com。</span><br><span class="line">Production Push SSL Certificate  对应连接的服务器地址是：gateway.push.apple.com。</span><br></pre></td></tr></table></figure>
+<h5 id="客户端操作"><a href="#客户端操作" class="headerlink" title="客户端操作"></a>客户端操作</h5><ul>
+<li>涉及的操作方法</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">//注册远程通知，在didFinishLaunchingWithOptions中添加下面代码</span><br><span class="line">//通过registerForRemoteNotifications方法，告诉APNs，应用程序能接受push来的通知</span><br><span class="line">[[UIApplication sharedApplication] registerForRemoteNotifications];</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">当客户端注册远程通知时，会回调下面两个方法：</span><br><span class="line">如果成功，则回调第一个，客户端把deviceToken取出来发给服务端，push消息的时候要用，发送通知的后台应用程序除了需要知道deviceToken之外，还需要一个与APNs连接的证书；</span><br><span class="line">如果失败，则回调第二个，可以从error参数中看一下失败原因。</span><br><span class="line">**/</span><br><span class="line">- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken &#123;&#125;</span><br><span class="line">- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error &#123;&#125;</span><br><span class="line"></span><br><span class="line">//处理收到的消息推送</span><br><span class="line">- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo &#123;&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>应每次程序启动的时候都调用<code>registerForRemoteNotifications</code>来重新获取设备相关的<code>deviceToken</code>，因重装<code>iOS</code>或更换设备，都会使<code>deviceToken</code>的值不一样</p>
+</li>
+<li><p>当<code>iOS</code>收到远程消息时</p>
+<ul>
+<li>如果应用程序处于后台，<code>iOS</code>会处理这个消息，比如弹出一个框、在应用程序的<code>icon</code>上显示红色数字<ul>
+<li>如果用户通过点击弹框进入程序，<code>iOS</code>会启动程序并调用<code>application:didFinishLaunchingWithOptions</code>并且拿远程消息的<code>payload</code>进行传参，<code>payload</code>的详细格式可见<a href="https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/generating_a_remote_notification" target="_blank" rel="noopener">JSON payload</a></li>
+<li>如果用户直接点击<code>app icon</code>进入程序，<code>iOS</code>会启动程序并同样调用<code>application:didFinishLaunchingWithOptions</code>，但是传参将不会有远程消息的任何信息</li>
+</ul>
+</li>
+<li>如果应用程序处于前台(即当前正在使用应用程序)，就会调用<code>application:didReceiveRemoteNotification</code></li>
+</ul>
+</li>
+</ul>
+<h5 id="APNs"><a href="#APNs" class="headerlink" title="APNs"></a><code>APNs</code></h5><ul>
+<li><p><code>APNs</code>的特点</p>
+<ul>
+<li><code>APNs</code>提供的连接接口是二进制的、<code>streaming TCP socket</code>、异步的。</li>
+<li><code>Production</code>环境是<code>gateway.push.apple.com:2195</code></li>
+<li><code>Development</code>环境是<code>gateway.sandbox.push.apple.com:2195</code></li>
+</ul>
+</li>
+<li><p><code>APNs</code>与<code>iOS</code>终端</p>
+</li>
+</ul>
+<p><code>iOS</code>设备会持久连接<code>APNs</code>以接受远程消息</p>
+<p><code>iOS</code>与<code>APNs</code>连接：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">我们的应用和APNs维持一个基于TCP的长连接，APNs将新消息推送到我们设备上，然后在屏幕上显示出新消息来。</span><br><span class="line">我们的设备和APNs服务器之间的通讯是基于SSL协议的TCP流通讯，二者之间维持一个长连接。</span><br><span class="line">我们的设备在有网络的情况下会连接苹果推送服务器，连接过程中，APNs会验证device_token，连接成功后维持一个长连接。</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>APNs</code>与<code>Provider</code></li>
+</ul>
+<p><code>provider</code>发送消息到<code>APNs</code>，然后<code>APNs</code>再发送到目标<code>iOS</code>设备。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">这个传输是单向的</span><br><span class="line">这个消息的内容含两部分：设备token和payload</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>反馈服务</p>
+<ul>
+<li>使用场景：有时候<code>APNs</code>发送消息到某设备(<code>deviceToken</code>)某程序(<code>bundle identifier</code>)但是该设备并没有这个程序，多次这种情况之后，<code>APNs</code>会通知<code>provider</code>，通过其连接的一个<strong>反馈服务(<code>a feedback service</code>)</strong></li>
+<li><strong>反馈服务</strong>为每一个程序维护了一个失效设备列表，<code>provider</code>应该获取这个列表从而停止向<code>APNs</code>发送以这些设备为目的地的某程序的远程消息</li>
+<li><code>Provider</code>应该定期查询这个列表，并且作出对应处理，如:停止向这些的设备发送消息</li>
+<li><code>provider</code>访问<code>feedback server</code>通过一个与发送消息类似的二进制接口<ul>
+<li><code>Production</code>环境通过<code>feedback.push.apple.com:2196</code>来建立连接</li>
+<li><code>Development</code>环境通过<code>feedback.sandbox.push.apple.com:2196</code>来建立连接</li>
+</ul>
+</li>
+<li><p><code>feedback service</code>和发送消息是不同的服务接口(但都属于<code>APNs</code>)，他的连接方式和发送消息是一样的。也要通过证书建立<code>SSL</code>连接，连接后不需要发送任何命令，直接开始读取流一直读完为止，然后<code>provider</code>要解析读到的数据</p>
+<ul>
+<li><p>数据是由多个如下格式数据项组成的</p>
+<ul>
+<li>|四字节时间|<code>2</code>字节的<code>token</code>长度|<code>32</code>字节的设备<code>token</code>|</li>
+<li>四字节时间：<code>Provider</code>需要判断对应设备的这个<code>iOS</code>应用程序有没有在该时间之后重新向<code>provider</code>发送注册推送消息所获得的设备<code>token</code>。如果没有，就认为该设备失效了，需停止向该设备发送消息。如果有，那就是这个设备失效过，但是现在又有效了，只是<code>feedback service</code>还没来得及刷新列表<ul>
+<li>从<code>Feedback service</code>读取的数据结构如下</li>
+</ul>
+</li>
+</ul>
+<p><img src="/2019/07/30/消息推送/从FeedbackService读取的数据结构.jpg" alt="从FeedbackService读取的数据结构"></p>
+<p>结构中包含三个部分：</p>
+<ol>
+<li>第一部分是一个时间戳，记录的是设备失效后的时间信息</li>
+<li>第二个部分是<code>device_token</code>的长度</li>
+<li>第三部分就是失效的<code>device_token</code></li>
+</ol>
+<p>我们所要获取的就是第三部分，跟我们的数据库进行对比后，删除对应的<code>device_token</code>，下次不再向这些设备发送推送消息</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><code>APNs</code>的安全架构</p>
+</li>
+</ul>
+<p><code>provider</code>需要一个有效证书才能和<code>APNs</code>连接(这个证书有目标程序的<code>Bundle identifier</code>信息)。与<code>APNs</code>连接后，<code>provider</code>向<code>APNs</code>发送的消息带有设备<code>token</code>(由目标程序连接<code>provider</code>然后发来<code>token</code>)，<code>APNs</code>以此找到目标设备，然后看目标设备里的目标程序是否有接受推送的证书，<code>APNs</code>以此验证给目标设备的目标程序发送的消息是合法的。</p>
+<p><strong>注意：远程消息是不可靠的</strong></p>
+<h5 id="Provider"><a href="#Provider" class="headerlink" title="Provider"></a><code>Provider</code></h5><ul>
+<li><p><code>Payload</code>：最多<code>256bytes</code></p>
+</li>
+<li><p>本地化<code>alert</code></p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">eg：&quot;alert&quot; : &#123;&quot;loc-key&quot;:&quot;GAME_PLAY_REQUEST_FORMAT&quot;,&quot;loc-args&quot;:[&quot;Jenna&quot;,&quot;Frank&quot;]&#125;,</span><br><span class="line">程序包里面的本地化字符串如下：</span><br><span class="line">&quot;GAME_PLAY_REQUEST_FORMAT&quot; = &quot;%@ and %@ have invited you to play Monopoly&quot;;</span><br><span class="line">这样，最后显示alert的字符串就是:</span><br><span class="line">&quot;Jenna and Frank have invited you to play Monopoly&quot;</span><br></pre></td></tr></table></figure>
+<p>详情可见<a href="https://developer.apple.com/library/archive/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/CreatingtheNotificationPayload.html#//apple_ref/doc/uid/TP40008194-CH10-SW1" target="_blank" rel="noopener">Creating the Remote Notification Payload</a></p>
+<ul>
+<li><code>provider</code>端部署<ul>
+<li>需要来自苹果的SSL证书。服务器端，如果是<code>php</code>的，需要使用<code>.pem</code>的证书；如果是<code>java</code>的，需要使用<code>.p12</code>的证书</li>
+<li>部署在<code>provider</code>端的证书，对应于特定的<code>iOS Application</code>(<code>Bundle identifier</code>)</li>
+<li><code>provider</code>端证书分为<strong>开发测试</strong>和<strong>上线发布</strong>两种版本,对应于两种<code>APNs</code>环境：<ul>
+<li><code>Sandbox</code>(<code>Development</code>)：可用模拟器测试。地址是<code>gateway.sandbox.push.apple.com: TCP 2195</code></li>
+<li><code>Production</code>(<code>Distribution</code>)：<code>gateway.push.apple.com: TCP 2195</code></li>
+</ul>
+</li>
+<li><code>provision profile</code>也对应了两个版本：<ul>
+<li><code>Development</code></li>
+<li><code>Distribution</code>.(<code>The Distribution provision profile is a requirement for submitting your application to the App Store.</code>)</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>注意：尽管<code>SSL</code>证书(即<code>provider</code>端证书)没有放到<code>iOS application</code>的<code>provision profile</code>里，但是<code>iOS application</code>是否支持远程消息推送依然取决于<code>profile</code>，因为<code>profile</code>内含开发者证书、设备<code>ID</code>、<code>application ID</code>(<code>Bundle identifier</code>)、”是否支持推送”(在苹果开发者网站上配置证书的时候配置的)等信息。</p>
+<p>以文本方式打开<code>*.mobileprovision</code>，会看到里面类似<code>xml</code>格式，其中<code>&lt;key&gt;Entitlements&lt;/key&gt;</code>里包含了<code>&lt;key&gt;aps-environment&lt;/key&gt;</code>，说明支持远程消息推送。<code>&lt;key&gt;aps- environment&lt;/key&gt;</code>下面的<code>&lt;string&gt;</code>说明是调试版本还是发布版本(对应于<code>Sandbox</code>环境和<code>Production</code>环境)</p>
+<ul>
+<li>安装证书到服务端(<code>provider</code>程序运行的服务器)，步骤如下：<ol>
+<li>安装<code>.cer</code>证书到钥匙串(双击<code>.cer</code>即可)</li>
+<li>导出证书为<code>.p12</code>文件(选中证书，右键)</li>
+<li><code>provider</code>服务器程序最好用<code>Ruby</code>和<code>Perl</code>这类语言，以方便处理<code>.p12</code>的证书文件。打开终端输入以下命令以把证书转换为这类语言乐于交流的格式：<br><code>openssl pkcs12 -in CertificateName.p12 -out CertificateName.pem -nodes</code></li>
+<li>把<code>.pem</code>文件安装到服务器上适当的位置(把<code>.pem</code>文件放到对应目录下即可)</li>
+</ol>
+</li>
+</ul>
+<h5 id="Provider与APNs连接"><a href="#Provider与APNs连接" class="headerlink" title="Provider与APNs连接"></a><code>Provider</code>与<code>APNs</code>连接</h5><p><code>Provider</code>可以建立多个与<code>APNs</code>的连接。每个都得用<code>TLS</code>(<code>or SSL</code>)来建立安全通道，需要用到<code>SSL</code>证书(即<code>provider</code>连接<code>APNs</code>用到的<code>.p12</code>(<code>SSL</code>)证书）。</p>
+<p><code>Provider</code>到<code>APNs</code>的请求，可看<a href="https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/sending_notification_requests_to_apns" target="_blank" rel="noopener">Sending Notification Requests to APNs</a></p>
+<p>Tips：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">要建立与APNs的TLS会话，需要在provider服务器上安装Entrust </span><br><span class="line">Secure CA根证书。如服务器上未安装CA根证书，可以从Entrust SSL</span><br><span class="line"> Certificates的网站http://www.entrust.net/下载安装根证书。</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>发送消息的二进制接口和消息的数据包格式</p>
+<ul>
+<li>消息须是网络字节顺序(即大尾顺序)，消息里面的<code>payload</code>部分不可以超过<code>256</code>字节，且不得以<code>\0</code>结尾，即服务器端发出的<code>json</code>包是有大小限制的，最大<code>256</code>字节，包括自定义字典集</li>
+<li>消息的数据包格式</li>
+</ul>
+<p><img src="/2019/07/30/消息推送/消息的数据包格式.jpg" alt="消息的数据包格式"></p>
+<p>这个结构体包括五个部分：</p>
+<ol>
+<li>命令标示符</li>
+<li><code>device_token</code>的长度</li>
+<li><code>device_token</code>字符串</li>
+<li>推送消息体(<code>Payload</code>)的长度</li>
+<li>真正的消息内容，里面包含了推送消息的基本信息，比如消息内容，应用<code>Icon</code>右上角显示多少数字以及推送消息到达时所播放的声音等</li>
+</ol>
+<p><code>APNs</code>验证这个结构正确并提取其中的信息后，再将消息推送到指定的设备</p>
+</li>
+</ul>
+<h3 id="相关操作"><a href="#相关操作" class="headerlink" title="相关操作"></a>相关操作</h3><ul>
+<li>测试证书是否有效</li>
+</ul>
+<p>终端输入：<br>//开发证书验证<br><code>openssl s_client -connect gateway.sandbox.push.apple.com:2195 -cert 下载证书生成的.pem -key p12生成的.pem</code></p>
+<p>//发布证书验证<br><code>openssl s_client -connect gateway.push.apple.com:2195 -cert 下载证书生成的.pem -key p12生成的.pem</code></p>
+<p>终端输出正常<code>Log</code>，并且当在终端任意输入几个字符时，服务器会提示断开，则说明所验证证书没问题</p>
+<ul>
+<li>收到推送通知调用的函数</li>
+</ul>
+<p>如果是程序正在运行或者说程序正在后台，那么这个时候处理推送消息的工作都是在：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">-(void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo</span><br><span class="line">或者：</span><br><span class="line"></span><br><span class="line">//推荐使用这个函数</span><br><span class="line">-(void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler</span><br></pre></td></tr></table></figure>
+<p> 中完成。但是如果用户点击推送通知的时候程序还没有被启动，这个时候以上两个函数都是接收不到用户的推送通知的，这个时候需要在<code>application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions</code>函数里面进行处理。而推送消息的相关信息就存储在<code>launchOptions</code>这个字典里。</p>
+<ul>
+<li>客户端需要注意的<ul>
+<li><code>bundle ID</code>与<code>App Id</code>一致</li>
+<li>设备Token能正常获取</li>
+</ul>
+</li>
+</ul>
+<h5 id="注"><a href="#注" class="headerlink" title="注"></a>注</h5><ul>
+<li>通配符<code>ID</code>不能用于推送通知服务</li>
+<li>在发送各<code>payload</code>时频繁连接和断开，<code>APNs</code>有可能会封锁你的<code>IP</code></li>
+</ul>
+<h3 id="总结整理"><a href="#总结整理" class="headerlink" title="总结整理"></a>总结整理</h3><ul>
+<li><code>APNs</code></li>
+</ul>
+<p>无论是<code>iPhone</code>客户端跟<code>APNs</code>，还是<code>Provider</code>和<code>APNs</code>都需要通过证书进行连接的。</p>
+<ul>
+<li>四个文件：<ol>
+<li><code>certSigningRequest</code>(<code>CSR</code>文件)</li>
+<li><code>cer</code>(<code>SSL certificate</code>文件)</li>
+<li><code>mobileprovision</code>(<code>profile</code>证书)(因为推送消息只能在真机上测试)</li>
+<li><code>p12</code>(<code>p12</code>证书)(<code>Provider</code>(<code>JAVA</code>)后台用于连接<code>APNs</code>的证书)</li>
+</ol>
+</li>
+</ul>
+<p><code>Provider</code>与<code>APNs</code>连接：(<code>TCP</code>连接)<br><code>APNs</code>提供的连接接口是二进制的、<code>streaming TCP socket</code>、异步的。<br><code>Provider</code>可以建立多个与<code>APNs</code>的连接。每个都得用<code>TSL</code>(<code>or SSL</code>)来建立安全通道，需要用到<code>SSL</code>证书。</p>
+<p><code>iOS</code>与<code>APNs</code>连接：<br>我们的应用和<code>APNs</code>维持一个基于<code>TCP</code>的长连接，<code>APNs</code>将新消息推送到我们设备上，然后在屏幕上显示出新消息来。<br>我们的设备和<code>APNs</code>服务器之间的通讯是基于<code>SSL</code>协议的<code>TCP</code>流通讯，二者之间维持一个长连接。<br>我们的设备在有网络的情况下会连接苹果推送服务器，连接过程中，<code>APNs</code>会验证<code>device_token</code>，连接成功后维持一个长连接。</p>
+<p>服务器端所需要的证书格式：<br>服务器端，如果是<code>php</code>的，需要使用<code>.pem</code>的证书；如果是<code>java</code>的，需要使用<code>.p12</code>的证书。</p>
+<p>服务器端发出的<code>json</code>包是有大小限制的，最大<code>256</code>字节，包括自定义字典集。</p>
+<hr>
+<ul>
+<li>本地通知</li>
+</ul>
+<p>对本地通知的数量限制，<code>iOS</code>最多允许最近本地通知数量是<code>64</code>个，超过限制的本地通知将被<code>iOS</code>忽略。</p>
+<p>应用程序的本地通知是由用户的<code>iOS</code>设备生成并发布的，无论这个应用程序是否运行在前台。就像一个日历应用、闹钟应用，或<code>to-do list</code>应用，可以发出一条本地通知提醒用户计划的日常事项要开始了。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/07/26/RunLoop/" rel="prev" title="RunLoop">
+      <i class="fa fa-chevron-left"></i> RunLoop
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/09/25/数据存储/" rel="next" title="数据存储">
+      数据存储 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#本地消息推送"><span class="nav-number">1.</span> <span class="nav-text">本地消息推送</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#远程消息推送-APNs"><span class="nav-number">2.</span> <span class="nav-text">远程消息推送 - APNs</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#原理流程"><span class="nav-number">2.0.1.</span> <span class="nav-text">原理流程</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#准备工作"><span class="nav-number">2.0.2.</span> <span class="nav-text">准备工作</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#证书"><span class="nav-number">2.0.2.1.</span> <span class="nav-text">证书</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#客户端操作"><span class="nav-number">2.0.3.</span> <span class="nav-text">客户端操作</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#APNs"><span class="nav-number">2.0.4.</span> <span class="nav-text">APNs</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Provider"><span class="nav-number">2.0.5.</span> <span class="nav-text">Provider</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Provider与APNs连接"><span class="nav-number">2.0.6.</span> <span class="nav-text">Provider与APNs连接</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#相关操作"><span class="nav-number">3.</span> <span class="nav-text">相关操作</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#注"><span class="nav-number">3.0.1.</span> <span class="nav-text">注</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结整理"><span class="nav-number">4.</span> <span class="nav-text">总结整理</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Ben</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">51</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">categories</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ben</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

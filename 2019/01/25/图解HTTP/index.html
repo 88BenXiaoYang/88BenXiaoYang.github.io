@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="第一章 协议  12协议是指规则的约定。协议，是相互之间通信前所定下的规则。 像通过发送请求获取服务器资源的Web浏览器等，都可称为客户端。Web是建立在HTTP协议上通信的。（HTTP是Web文档传输的协议）  WWW  1234567WWW这一提议是致力于全世界的研究者们进行知识共享。WWW基本理念：借助多文档之间相互关联形成的超文本（HyperText），连成可相互参阅的WWW（world">
+<meta name="keywords" content="网络协议">
+<meta property="og:type" content="article">
+<meta property="og:title" content="图解HTTP">
+<meta property="og:url" content="http://yoursite.com/2019/01/25/图解HTTP/index.html">
+<meta property="og:site_name" content="Ben&#39;Blog">
+<meta property="og:description" content="第一章 协议  12协议是指规则的约定。协议，是相互之间通信前所定下的规则。 像通过发送请求获取服务器资源的Web浏览器等，都可称为客户端。Web是建立在HTTP协议上通信的。（HTTP是Web文档传输的协议）  WWW  1234567WWW这一提议是致力于全世界的研究者们进行知识共享。WWW基本理念：借助多文档之间相互关联形成的超文本（HyperText），连成可相互参阅的WWW（world">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2019/01/25/图解HTTP/请求报文结构图.jpg">
+<meta property="og:image" content="http://yoursite.com/2019/01/25/图解HTTP/响应报文结构图.jpg">
+<meta property="og:updated_time" content="2020-11-23T03:54:31.338Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="图解HTTP">
+<meta name="twitter:description" content="第一章 协议  12协议是指规则的约定。协议，是相互之间通信前所定下的规则。 像通过发送请求获取服务器资源的Web浏览器等，都可称为客户端。Web是建立在HTTP协议上通信的。（HTTP是Web文档传输的协议）  WWW  1234567WWW这一提议是致力于全世界的研究者们进行知识共享。WWW基本理念：借助多文档之间相互关联形成的超文本（HyperText），连成可相互参阅的WWW（world">
+<meta name="twitter:image" content="http://yoursite.com/2019/01/25/图解HTTP/请求报文结构图.jpg">
+
+<link rel="canonical" href="http://yoursite.com/2019/01/25/图解HTTP/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>图解HTTP | Ben'Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Ben'Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">工欲善其事，必先利其器</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/25/图解HTTP/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Ben">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ben'Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          图解HTTP
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-01-25 16:45:15" itemprop="dateCreated datePublished" datetime="2019-01-25T16:45:15+08:00">2019-01-25</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-11-23 11:54:31" itemprop="dateModified" datetime="2020-11-23T11:54:31+08:00">2020-11-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/网络协议/" itemprop="url" rel="index"><span itemprop="name">网络协议</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="第一章"><a href="#第一章" class="headerlink" title="第一章"></a>第一章</h3><ul>
+<li>协议</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">协议是指规则的约定。</span><br><span class="line">协议，是相互之间通信前所定下的规则。</span><br></pre></td></tr></table></figure>
+<p>像通过发送请求获取服务器资源的Web浏览器等，都可称为客户端。Web是建立在HTTP协议上通信的。（HTTP是Web文档传输的协议）</p>
+<ul>
+<li>WWW</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">WWW这一提议是致力于全世界的研究者们进行知识共享。</span><br><span class="line">WWW基本理念：</span><br><span class="line">借助多文档之间相互关联形成的超文本（HyperText），</span><br><span class="line">连成可相互参阅的WWW（world wide web，万维网）。</span><br><span class="line"></span><br><span class="line">现阶段构建WWW的3项技术：</span><br><span class="line">HTML、HTTP（文档传递协议）、URL</span><br></pre></td></tr></table></figure>
+<ul>
+<li>TCP/IP</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">TCP/IP是互联网相关的各类协议族的总称。</span><br><span class="line">TCP/IP协议族里重要的一点就是分层。</span><br><span class="line">分为4层：</span><br><span class="line">应用层（FTP/DNS/HTTP）、</span><br><span class="line">传输层（TCP/UDP）、</span><br><span class="line">网络层、</span><br><span class="line">数据链路层（硬件上的范畴均在链路层的作用范围之内）</span><br></pre></td></tr></table></figure>
+<p>通常使用的网络（包括互联网）是在TCP/IP协议族的基础上运作的。利用TCP/IP协议族进行网络通信时，当客户端的请求传输到服务器的应用层，才能算真正接收到由客户端发送过来的HTTP请求。（HTTP属于TCP/IP内部的一个子集）</p>
+<h5 id="与HTTP关系密切的协议：IP、TCP、DNS"><a href="#与HTTP关系密切的协议：IP、TCP、DNS" class="headerlink" title="与HTTP关系密切的协议：IP、TCP、DNS"></a>与HTTP关系密切的协议：IP、TCP、DNS</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">- 负责传输的IP协议</span><br><span class="line">- 确保可靠性的TCP协议</span><br><span class="line">- 负责域名解析的DNS服务（DNS提供域名到IP地址之间的解析服务）</span><br></pre></td></tr></table></figure>
+<ul>
+<li>IP和IP地址的区别</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">- IP其实是一种协议的名称，IP协议的作用是把各种数据包传送给对方。</span><br><span class="line">要保证确实传送到对方那里，则需要满足各类条件，其中两个重要的条件</span><br><span class="line">是IP地址和MAC地址（media access control address）。</span><br><span class="line"></span><br><span class="line">- IP地址指明了节点被分配到的地址，MAC地址是指网卡所属的固定地址，</span><br><span class="line">IP地址可以和MAC地址进行配对，IP地址可变换，但MAC地址基本上不会更改。</span><br></pre></td></tr></table></figure>
+<p>IP间的通信依赖MAC地址。ARP（address resolution protocol）是一种用以解析地址的协议，根据通信方的IP地址就可以反查出对应的MAC地址。</p>
+<ul>
+<li>TCP</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">TCP位于传输层，提供可靠的字节流服务。</span><br><span class="line">为了准确无误地将数据送达目标处，</span><br><span class="line">TCP协议采用了三次握手（three-way handshaking）策略。</span><br><span class="line">握手过程中使用了TCP的标志（flag），SYN（synchronize）和ACK（acknowledgement）。</span><br></pre></td></tr></table></figure>
+<ul>
+<li>DNS</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DNS协议提供通过域名查找IP地址，或逆向从IP地址反查域名的服务。</span><br></pre></td></tr></table></figure>
+<p>URI用字符串标识某一互联网资源，而URL表示资源的地点（互联网上所处的位置）。可见URL是URI的子集。表示指定的URI，要使用涵盖全部必要信息的绝对URI、绝对URL以及相对URL。相对URL，是指从浏览器中基本URI处指定的URL，形如<code>/image/logo.gif</code>。</p>
+<p>计算机既可以被赋予IP地址，也可以被赋予主机名和域名（如：<a href="http://www.baidu.com）。" target="_blank" rel="noopener">www.baidu.com）。</a></p>
+<p>RFC（Request for Comments，征求修正意见书），是一些用来制定HTTP协议技术标准的文档。</p>
+<h3 id="第二章"><a href="#第二章" class="headerlink" title="第二章"></a>第二章</h3><p>HTTP用于客户端和服务器之间的通信。HTTP协议应用过程中，有客户端角色、服务器端角色划分。计算机之间使用HTTP协议通信时，在一条通信线路上必定有一端是客户端，另一端则是服务器端。HTTP协议规定，请求从客户端发出，最后服务器端响应该请求并返回。即是先从客户端开始建立通信的，服务器端在没有接收到请求之前不会发送响应。通过请求和响应的交换达成通信。请求和响应过程中对应相应的报文。</p>
+<ul>
+<li>请求报文</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">请求报文是由请求方法、请求URI、协议版本、</span><br><span class="line">可选的请求首部字段和内容实体构成的。</span><br></pre></td></tr></table></figure>
+<p>结构图如下：</p>
+<p><img src="/2019/01/25/图解HTTP/请求报文结构图.jpg" alt="请求报文结构图"></p>
+<p>接收到请求的服务器，会将请求内容的处理结果以响应报文的形式返回。</p>
+<ul>
+<li>响应报文</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">响应报文基本上由协议版本、状态码（表示请求成功或失败的数字代码）、</span><br><span class="line">用以解释状态码的原因短语、可选的响应首部字段以及实体主体构成。</span><br></pre></td></tr></table></figure>
+<p>结构图如下：</p>
+<p><img src="/2019/01/25/图解HTTP/响应报文结构图.jpg" alt="响应报文结构图"></p>
+<p><strong>HTTP是一种不保存状态，即无状态协议。</strong>即在HTTP这个级别，协议对于发送过的请求或响应都不做持久化处理。协议本身并不保留之前一切的请求或响应报文的信息，<strong>这是为了更快地处理大量事务，确保协议的可伸缩性，</strong>而特意把HTTP协议设计成如此简单。</p>
+<p>HTTP协议使用URI定位互联网上的资源。如果不是访问特定资源而是对服务器本身发起请求，可以用一个<code>*</code>来代替请求<code>URI</code>。</p>
+<ul>
+<li>告知服务器意图的HTTP方法</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">GET：获取资源</span><br><span class="line">POST：传输实体主体</span><br><span class="line">PUT：传输文件</span><br><span class="line">HEAD：获得报文首部</span><br><span class="line">DELETE：删除文件</span><br><span class="line">OPTIONS：询问支持的方法</span><br><span class="line">TRACK：追踪路径</span><br><span class="line">CONNECT：要求用隧道协议连接代理</span><br></pre></td></tr></table></figure>
+<p>GET方法用来请求访问已被URI识别的资源，指定的资源经服务器端解析后返回响应内容。</p>
+<p>POST方法用来传输实体的主体。（GET也有这一功能，但这种情况下，通常使用POST方法）</p>
+<p>HTTP/1.1的PUT/DELETE方法自身不带验证机制，任何人都可以上传文件，存在安全性问题，因此一般的Web网站部使用该方法。</p>
+<p>OPTIONS方法用来查询针对请求URI指定的资源支持的方法。</p>
+<p>TRACK方法是用来确认连接过程中发生的一系列操作。（容易引发XST—Cross-Site Tracing 跨站追踪攻击）</p>
+<p>CONNECT方法要求在与代理服务器通信时建立隧道，实现用隧道协议进行TCP通信。主要使用SSL和TLS协议把通信内容加密后经网络隧道传输。</p>
+<p><strong>方法的作用在于，可以指定请求的资源按期望产生某种行为。注意方法名区分大小写，注意要用大写字母。</strong></p>
+<p>HTTP协议的初始版本中，每进行一次HTTP通信就要断开一次TCP连接（断开、重连会增加通信量的开销）。持久连接使得多数请求以管线化方式发送成为可能。这样就能够做到同时并行发送多个请求，而不需要一个接一个地等待响应了。</p>
+<p>HTTP是无状态协议，它不对之前发生过的请求和响应的状态进行管理。由于不必保存状态，自然可减少服务器的CPU及内存资源的消耗。<code>HTTP/1.1</code>虽然是无状态协议，但为了实现期望的保持状态功能，引入了<code>Cookie</code>技术。有了<code>Cookie</code>再用HTTP协议通信，就可以管理状态了。</p>
+<p>Cookie技术的引入，是为了解决HTTP无状态保存的问题。<strong>Cookie技术通过在请求和响应报文中写入Cookie信息来控制客户端的状态</strong>，Cookie会根据从服务器端发送的响应报文内的一个叫做<code>Set-Cookie</code>的首部字段信息，通知<strong>客户端保存Cookie。</strong></p>
+<ul>
+<li>状态信息校验获取过程</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">当下次客户端再往该服务器发送请求时，客户端会自动在请求报文中加入Cookie值后发送出去；</span><br><span class="line">服务器端发现客户端发送过来的Cookie后，会去检查究竟是从哪一个客户端发来的连接请求，</span><br><span class="line">然后对比服务器上的记录，最后得到之前的状态信息。</span><br></pre></td></tr></table></figure>
+<h3 id="第三章"><a href="#第三章" class="headerlink" title="第三章"></a>第三章</h3><p>用于HTTP协议交互的信息被称为HTTP报文。</p>
+<ul>
+<li>HTTP报文可分为：<strong>报文首部</strong>和<strong>报文主体</strong>两块</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">报文首部：服务器端或客户端需处理的请求或响应的内容及属性</span><br><span class="line">报文主体：应被发送的数据</span><br></pre></td></tr></table></figure>
+<ul>
+<li>报文的首部字段</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">报文的首部字段，一般有4种首部，分别是：</span><br><span class="line">通用首部、请求首部、响应首部、实体首部</span><br></pre></td></tr></table></figure>
+<ul>
+<li>报文：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">是HTTP通信中的基本单位，由8位组字节流组成，通过HTTP通信传输</span><br></pre></td></tr></table></figure>
+<ul>
+<li>实体：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">作为请求或响应的有效载荷数据被传输，其内容由实体首部和实体主体组成</span><br></pre></td></tr></table></figure>
+<p>通常，报文主体等于实体主体。只有当传输中进行编码操作<strong>（编码的操作需要计算机来完成，因此会消耗更多的CPU资源）</strong>时，实体主体的内容发生变化，才导致它和报文主体产生差异。</p>
+<p>HTTP协议中有一种被称为内容编码的功能能将待发送的“附件”压缩。内容编码后的实体由客户端接收并负责解码。</p>
+<ul>
+<li>常用的内容编码有以下几种：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">gzip(GNU zip)</span><br><span class="line">compress(UNIX系统的标准压缩)</span><br><span class="line">deflate(zlib)</span><br><span class="line">identity(不进行编码)</span><br></pre></td></tr></table></figure>
+<p>在HTTP通信过程中，请求的编码实体资源尚未全部传输完成之前，浏览器无法显示请求页面。在传输大容量数据时，通过把数据分割成多块（分块传输编码），能够让浏览器逐步显示页面。使用分块传输编码的实体主体会由接收的客户端负责解码，恢复到编码前的实体主体。</p>
+<p>发送邮件时，可以在邮件里写入文字并添加多份附件，这是因为采用了MIME（多用途因特网邮件扩展）机制，它允许邮件处理文本、图片、视频等多个不同类型的数据。在MIME扩展中会使用一种称为多部分对象集合的方法，来容纳多份不同类型的数据。</p>
+<ul>
+<li>内容协商</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">内容协商使用场景：</span><br><span class="line">同一个页面样式，根据请求的语言、浏览器类型加载出与当前请求目标相对应的页面（如谷歌的首页，中文版、英文版）</span><br><span class="line"></span><br><span class="line">内容协商技术有3种类型：</span><br><span class="line">服务器驱动协商、客户端驱动协商、透明协商</span><br></pre></td></tr></table></figure>
+<h3 id="第四章"><a href="#第四章" class="headerlink" title="第四章"></a>第四章</h3><h5 id="HTTP的状态码"><a href="#HTTP的状态码" class="headerlink" title="HTTP的状态码"></a>HTTP的状态码</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">状态码的职责是当客户端向服务器端发送请求时，描述返回的请求结果。</span><br><span class="line">状态码以3位数字和原因短语组成。数字中的第一位指定了响应类别，后两位无分类。</span><br></pre></td></tr></table></figure>
+<ul>
+<li>响应类别有以下5种：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">1XX：信息性状态码-&gt;接收的请求正在处理</span><br><span class="line">2XX：成功状态码-&gt;请求正常处理完毕</span><br><span class="line">3XX：重定向状态码-&gt;需要进行附加操作以完成请求</span><br><span class="line">4XX：客户端错误状态码-&gt;服务器无法处理请求（客户端请求的格式有错，导致服务器无法处理请求）</span><br><span class="line">5XX：服务器错误状态码-&gt;服务器处理请求出错</span><br></pre></td></tr></table></figure>
+<h3 id="第五章"><a href="#第五章" class="headerlink" title="第五章"></a>第五章</h3><p>一台Web服务器可搭建多个独立域名的Web网站，也可作为通信路径上的中转服务器提升传输效率。</p>
+<p>虚拟主机（虚拟服务器）：即使物理层面只有一台服务器，但只要使用虚拟主机的功能，则可以假想已具有多台服务器。</p>
+<p>客户端使用HTTP协议访问服务器时，会采用类似<code>www.baidu.com</code>这样的主机名和域名。在互联网上，域名通过DNS服务映射到IP地址（域名解析）之后访问目标网站。所以当请求发送到服务器时，已经是以IP地址形式访问了。</p>
+<p>通常Web服务托管在指定的服务器（该服务器上通常会使用虚拟主机技术）上供客户端访问。在相同的IP地址下，由于虚拟主机可以寄存多个不同主机名和域名的Web网站，因此在发送HTTP请求时，必须在host首部内完整指定主机名和域名的URI。</p>
+<ul>
+<li>通信数据转发程序：<code>代理（应用程序）、网关（服务器）、隧道（应用程序）</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">代理：负责服务器和客户端，请求、响应的转发</span><br><span class="line">网关：转发提供资源的服务器（类似拥有资源的源服务器）</span><br><span class="line">隧道：保持（相隔甚远的）客户端和服务器双方通信连接的应用程序</span><br><span class="line">（隧道的目的是确保客户端能与服务器进行安全的通信，通常会使用SSL等加密手段进行通信；</span><br><span class="line">隧道本身不会去解析HTTP请求，即原样传输）</span><br></pre></td></tr></table></figure>
+<ul>
+<li>缓存代理</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">代理服务器将响应的资源缓存，遇到相同的请求时，直接把缓存的资源作为</span><br><span class="line">响应返回（缓存服务器会向源服务器确认缓存资源的有效性）。利用缓存可</span><br><span class="line">减少对源服务器的访问，因此也就节省了通信流量和通信时间。</span><br></pre></td></tr></table></figure>
+<p>每次通过代理服务器转发请求或响应时，会追加写入Via首部信息。通过设置组织内部的代理服务器可做到针对特定URI访问的控制。</p>
+<h3 id="第六章"><a href="#第六章" class="headerlink" title="第六章"></a>第六章</h3><p>HTTP协议的请求和响应报文中必定包含HTTP首部。</p>
+<p>HTTP首部字段将定义成缓存代理和非缓存代理的行为，分成2种类型：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1.端到端首部（End-to-end Header）</span><br><span class="line">2.逐跳首部（Hop-by-hop Header）</span><br></pre></td></tr></table></figure>
+<p>HTTP首部字段是由首部字段名和字段值构成的，中间用冒号<code>:</code>分隔，即：<code>首部字段名:字段值</code>。</p>
+<ul>
+<li>HTTP首部字段根据实际用途被分为以下4种类型</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">1.通用首部字段：如Via（代理服务器的相关信息），指请求报文和响应报文</span><br><span class="line">双方都会使用的首部（使用首部字段Via是为了追踪客户端与服务器之间的</span><br><span class="line">请求和响应报文的传输路径；首部字段Via不仅用于追踪报文的转发，还可</span><br><span class="line">避免请求回环的发生，所以必须在经过代理时附加该首部字段内容）</span><br><span class="line">2.请求首部字段；</span><br><span class="line">3.响应首部字段；</span><br><span class="line">4.实体首部字段。</span><br></pre></td></tr></table></figure>
+<ul>
+<li>指令</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">缓存指令类型：</span><br><span class="line">no-cache指令：不缓存过期的资源</span><br><span class="line">no-store指令：是真正的不进行缓存</span><br><span class="line"></span><br><span class="line">no-transform指令：使用no-transform指令规定无论是在请求还是响应</span><br><span class="line">中，缓存都不能改变实体主体的媒体类型。这样做可防止缓存或代理压缩图</span><br><span class="line">片等类似操作</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>HTTP/1.1</code>特性</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">HTTP/1.1版本的默认连接都是持久连接</span><br><span class="line"></span><br><span class="line">HTTP/1.1的传输编码方式仅对分块传输编码有效</span><br></pre></td></tr></table></figure>
+<ul>
+<li>Warning首部的格式如下</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Warning:[警告码] [警告的主机:端口号] “[警告内容]” ([日期时间])</span><br></pre></td></tr></table></figure>
+<h5 id="首部字段"><a href="#首部字段" class="headerlink" title="首部字段"></a>首部字段</h5><p>Accept首部字段可通知服务器，用户代理能够处理的媒体类型及媒体类型的相对优先级。若想要给显示的媒体类型增加优先级，则使用q=来额外表示权重值，用分号（；）进行分隔。权重值q的范围是0~1（可精确到小数点后3位），且1为最大值。不指定权重q值时，默认权重为q=1.0。当服务器提供多种内容时，将会首先返回权重值最高的媒体类型。（q是指qvalue，即quality factor）</p>
+<p>首部字段Host会告知服务器，请求的资源所处的互联网主机名和端口号。<strong>Host首部字段在HTTP/1.1规范内是唯一一个必须被包含在请求内的首部字段。</strong>首部字段Host和以单台服务器分配多个域名的虚拟主机的工作机制有很密切的关联，这是首部字段Host必须存在的意义。</p>
+<p>请求被发送至服务器时，请求中的主机名会用IP地址直接替换解决。在GET或HEAD方法中使用首部字段If-None-Match可获取最新的资源。只要查看Referer就能知道请求的URI是从哪个Web页面发起的。首部字段User-Agent会将创建请求的浏览器和用户代理名称等信息传达给服务器。</p>
+<ul>
+<li>响应首部字段</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">首部字段ETag能告知客户端实体标识。它是一种可将资源以字符串形式做唯</span><br><span class="line">一性标识的方式。服务器会为每份资源分配对应的ETag值。当资源更新时，</span><br><span class="line">ETag值也需要更新。生成ETag值时，并没有统一的算法规则，而仅仅是由</span><br><span class="line">服务器来分配。</span><br><span class="line"></span><br><span class="line">若在下载过程中出现连接中断、再连接的情况，都会依照ETag值来指定资源。</span><br><span class="line"></span><br><span class="line">强ETag值，不论实体发生多么细微的变化都会改变其值；弱ETag值只用于</span><br><span class="line">提示资源是否相同。只有资源发生了根本改变，产生差异时才会改变ETag</span><br><span class="line">值，此时会在字段值最开始处附加W/。</span><br><span class="line"></span><br><span class="line">首部字段Server告知客户端当前服务器上安装的HTTP服务器应用程序的信息。</span><br></pre></td></tr></table></figure>
+<ul>
+<li>实体首部字段</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">内容编码是指在不丢失实体信息的前提下所进行的压缩。</span><br><span class="line"></span><br><span class="line">Content-MD5过程处理：由于HTTP首部无法记录二进制值，所以要通过Base64编码处理。</span><br></pre></td></tr></table></figure>
+<ul>
+<li>其他首部字段</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">首部字段P3P属于HTTP响应首部，通过利用P3P（The Platform for </span><br><span class="line">Privacy Preferences，在线隐私偏好平台）技术，可以让Web网站上的</span><br><span class="line">个人隐私变成一种仅供程序可理解的形式，以达到保护用户隐私的目的</span><br></pre></td></tr></table></figure>
+<h5 id="Cookie用于管理服务器与客户端之间的状态"><a href="#Cookie用于管理服务器与客户端之间的状态" class="headerlink" title="Cookie用于管理服务器与客户端之间的状态"></a>Cookie用于管理服务器与客户端之间的状态</h5><p>Cookie的工作机制是用户识别及状态管理。Web网站（服务器端）为了管理用户的状态会通过Web浏览器（客户端），把一些数据临时写入用户的计算机内。接着当用户访问该Web网站时，可通过通信方式取回之前发放的Cookie。</p>
+<ul>
+<li>Cookie的安全性</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">调用Cookie时，由于可校验Cookie的有效期，以及发送方的域、路径、协议等信息，</span><br><span class="line">所以正规发布的Cookie内的数据不会因来自其他Web站点和攻击者的攻击而泄露。</span><br></pre></td></tr></table></figure>
+<p>一旦Cookie从服务器端发送至客户端，服务器端就不存在可以显示删除Cookie的方法。但可通过覆盖已过期的Cookie，实现对客户端Cookie的实质性删除操作。</p>
+<h3 id="第七章"><a href="#第七章" class="headerlink" title="第七章"></a>第七章</h3><p>在HTTP协议中有可能存在信息窃听或身份伪装等安全问题。HTTPS通信机制可以有效地防止这些问题（确保Web安全的HTTPS）。</p>
+<ul>
+<li>环境</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">TCP/IP是可能被窃听的网络。</span><br><span class="line">如果通信经过加密，就有可能让人无法破解报文信息的含义，但加密处理后</span><br><span class="line">的报文信息本身还是会被看到的。</span><br></pre></td></tr></table></figure>
+<ul>
+<li>策略</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">加密处理防止被窃听。</span><br><span class="line">目前加密技术，是应对如何防止窃听保护信息的对策中最为普及的技术。</span><br></pre></td></tr></table></figure>
+<ul>
+<li>加密对象</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">1.通信的加密（HTTP协议中没有加密机制，但可以通过和SSL（Secure </span><br><span class="line">Socket Layer，安全套接层）或TLS（Transport Layer Security，</span><br><span class="line">安全传输层协议）的组合使用，加密HTTP的通信内容）。</span><br><span class="line"></span><br><span class="line">与SSL组合使用的HTTP被称为HTTPS（HTTP Secure，超文本传输安全协</span><br><span class="line">议）或HTTP over SSL。</span><br><span class="line"></span><br><span class="line">SSL提供认证和加密处理及摘要功能。</span><br><span class="line"></span><br><span class="line">2.内容的加密。</span><br></pre></td></tr></table></figure>
+<p>HTTP协议中的请求和响应不会对通信方进行确认。通信过程中校验所使用的证书由值得信任的第三方机构颁发，用以证明服务器和客户端是实际存在的。<strong>HTTP通信过程中防止篡改的方法：常用MD5和SHA-1等散列值校验，数字签名等方法。</strong></p>
+<h5 id="HTTPS"><a href="#HTTPS" class="headerlink" title="HTTPS"></a>HTTPS</h5><p>HTTP+加密+认证+完整性保护=HTTPS（HTTP加上加密处理和认证以及完整性保护后即是HTTPS）。HTTPS是身披SSL外壳的HTTP。<strong>要进行HTTPS通信，证书是必不可少的，而使用的证书必须向认证机构（CA）购买。</strong></p>
+<ul>
+<li>HTTPS的解释</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">HTTPS并非是应用层的一种新协议。只是HTTP通信接口部分用SSL和TLS协</span><br><span class="line">议代替而已。通常HTTP直接和TCP通信。当使用SSL时，则演变成先和SSL</span><br><span class="line">通信，再由SSL和TCP通信了。</span><br><span class="line"></span><br><span class="line">SSL是独立于HTTP的协议，SSL是当前应用最广泛的网络安全技术。</span><br></pre></td></tr></table></figure>
+<ul>
+<li>加密</li>
+</ul>
+<p>近代的加密方法中加密算法是公开的，而密钥却是保密的。加密和解密都会用到密钥。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">1.共享密钥加密：</span><br><span class="line">加密和解密同用一个密钥的方式称为共享密钥加密（Common key crypto </span><br><span class="line">system），也被叫做对称密钥加密</span><br><span class="line"></span><br><span class="line">2.公开密钥加密：</span><br><span class="line">公开密钥加密方式很好地解决了共享密钥加密的困难。公开密钥加密使用一</span><br><span class="line">对非对称的密钥。一把叫做私有密钥，另一把叫做公开密钥。（公开密钥加</span><br><span class="line">密，私有密钥解密）（公开密钥和私有密钥是配对的一套密钥）</span><br><span class="line"></span><br><span class="line">3.混合加密机制：</span><br><span class="line">将公开密钥加密和共享密钥加密组合起来使用。公开密钥加密用于传递在稍</span><br><span class="line">后共享密钥加密中会用到的密钥。公开密钥加密处理起来较共享密钥加密复</span><br><span class="line">杂，通信过程中会影响效率。</span><br></pre></td></tr></table></figure>
+<ul>
+<li>SSL的慢</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">SSL的慢分两种：</span><br><span class="line">一种是指通信慢；</span><br><span class="line">另一种是指由于大量消耗CPU及内存等资源（因SSL必须进行加密处理），</span><br><span class="line">导致处理速度变慢（加密处理会消耗硬件资源，导致负载增强）。速度慢可</span><br><span class="line">通过SSL加速器（专用服务器（硬件））进行改善。</span><br></pre></td></tr></table></figure>
+<h3 id="第八章"><a href="#第八章" class="headerlink" title="第八章"></a>第八章</h3><p>某些Web页面只想让特定的用户浏览，或者干脆仅本人可见。为达到这个目标，必不可少的就是<strong>认证功能</strong>。</p>
+<ul>
+<li>核对认证</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">核对认证的原则基于：</span><br><span class="line">登录者本人才知道的信息；</span><br><span class="line">登录者本人才会有的信息。</span><br></pre></td></tr></table></figure>
+<ul>
+<li>核对的信息通常有</li>
+</ul>
+<p><code>密码；动态令牌；数字证书；生物认证；IC卡</code></p>
+<ul>
+<li>HTTP使用的认证方式：（四种）</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">1、BASIC认证：基本认证，采用Base64编码方式（这不是加密处理），安</span><br><span class="line">全等级不高</span><br><span class="line"></span><br><span class="line">2、DIGEST认证：摘要认证，使用质询/响应的方式进行认证（认证过程中</span><br><span class="line">涉及质询码，响应码）</span><br><span class="line"></span><br><span class="line">3、SSL认证：SSL客户端认证是借由HTTPS的客户端证书完成认证的方式。</span><br><span class="line">为达到SSL客户端认证的目的，需要事先将客户端证书分发给客户端，且客</span><br><span class="line">户端必须安装此证书（客户端证书需要支付一定费用才能使用）。</span><br><span class="line">SSL客户端认证采用双因素认证（证书认证、基于表单认证）：第一个认证</span><br><span class="line">因素的SSL客户端证书用来认证客户端计算机，另一个认证因素的密码则用</span><br><span class="line">来确定这是用户本人的行为。</span><br><span class="line"></span><br><span class="line">4、FormBase认证：基于表单认证，运用到Session管理（应用场景：服</span><br><span class="line">务器端对认证状态和SessionID进行关联并管理）及Cookie应用。</span><br><span class="line">过程：客户端把用户ID和密码等登录信息放入报文的实体部分，通常是以</span><br><span class="line">POST方法把请求发送给服务器。这时会使用HTTPS通信来进行HTML表单画</span><br><span class="line">面的显示和用户输入数据的发送。</span><br></pre></td></tr></table></figure>
+<p>加盐措施，即通信双方约定随机串的规则，用该随机串对指定的对象进行加工，使对象的特征模糊化。</p>
+<h3 id="第九章"><a href="#第九章" class="headerlink" title="第九章"></a>第九章</h3><h5 id="SPDY"><a href="#SPDY" class="headerlink" title="SPDY"></a>SPDY</h5><p>SPDY：开发目标旨在解决HTTP的性能瓶颈，缩短Web页面的加载时间（50%）（对Web本身的速度提升，还可通过如改善Web内容的编写方式等进行优化）。</p>
+<p>现有Web实现尽可能实时地显示内容的更新，即服务器上一有内容更新，就需要直接把更新的内容反馈到客户端的界面上，以下HTTP标准会成为瓶颈：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">1、一条连接上只可发送一个请求。</span><br><span class="line">2、请求只能从客户端开始。客户端不可以接收除响应以外的指令。</span><br><span class="line">3、请求/响应首部未经压缩就发送。首部信息越多延迟越大。</span><br><span class="line">4、发送冗长的首部。每次互相发送相同的首部造成的浪费较多。</span><br><span class="line">5、可任意选择数据压缩格式。非强制压缩发送。</span><br></pre></td></tr></table></figure>
+<p>SPDY没有完全改写HTTP协议，而是在TCP/IP的应用层与运输层之间通过新加会话层的形式运作。考虑到安全性问题，SPDY规定通信中使用SSL。SPDY以会话层的形式加入，控制对数据的流动，但还是采用HTTP建立通信连接。因此可照常使用HTTP的GET和POST等方法、Cookie以及HTTP报文等。<br>使用SPDY后，HTTP协议额外获得以下功能：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">1、多路复用流；</span><br><span class="line">2、赋予请求优先级；</span><br><span class="line">3、压缩HTTP首部；</span><br><span class="line">4、推送功能；</span><br><span class="line">5、服务器提示功能。</span><br></pre></td></tr></table></figure>
+<h5 id="WebSocket协议"><a href="#WebSocket协议" class="headerlink" title="WebSocket协议"></a>WebSocket协议</h5><p><code>WebSocket</code>，即Web浏览器与Web服务器之间全双工通信标准<br>一旦Web服务器与客户端之间建立起WebSocket协议的通信连接，之后所有的通信都依靠这个专用协议进行（可互相发送JSON、XML、HTML或图片等任意格式的数据）。由于是建立在HTTP基础上的协议，因此连接的发起方仍是客户端，而一旦确立WebSocket通信连接，不论服务器还是客户端，任意一方都可直接向对方发送报文。</p>
+<p>成功握手确立WebSocket连接之后，通信时不再使用HTTP的数据帧，而采用WebSocket独立的数据帧。</p>
+<ul>
+<li>WebSocket协议的主要特点：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1、推送功能；</span><br><span class="line">2、减少通信量。</span><br></pre></td></tr></table></figure>
+<p>（补充：Web是基于HTTP协议运作的，因此在构建Web服务器或访问Web站点时，需事先设置防火墙HTTP(80/tcp)和HTTPS(443/tcp)的权限。防火墙的基本功能就是禁止非指定的协议和端口号的数据包通过。）</p>
+<h3 id="第十章"><a href="#第十章" class="headerlink" title="第十章"></a>第十章</h3><p>Web页面几乎全由HTML构建（平时我们浏览的Web页面几乎全是使用HTML写成的。由HTML构成的文档经过浏览器的解析、渲染后，呈现出来的结果就是Web页面）。</p>
+<p><strong>构建Web内容的技术</strong></p>
+<ul>
+<li><code>HTML、CSS</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">HTML（HyperText Markup Language ，超文本标记语言）</span><br><span class="line">HTML文档中被&lt;&gt;包围着的文字就是标签。</span><br><span class="line"></span><br><span class="line">设计应用CSS</span><br><span class="line">CSS（Cascading Style Sheets，层叠样式表）</span><br><span class="line">CSS可以指定如何展现HTML内的各种元素，属于样式表标准之一。</span><br><span class="line">CSS的理念就是让文档的结构和设计分离，达到解耦的目的。</span><br><span class="line"></span><br><span class="line">XML（eXtensible Markup Language，可扩展标记语言）</span><br></pre></td></tr></table></figure>
+<ul>
+<li>DOM（Document Object Model，文档对象模型）</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">DOM是用以操作HTML文档和XML文档的API（Application Programming Interface，应用编程接口）。</span><br><span class="line">通过调用JavaScript等脚本语言对DOM的操作，可以以更为简单的方式控制HTML的改变。</span><br></pre></td></tr></table></figure>
+<ul>
+<li>CGI（Common Gateway Interface，通用网关接口）</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">CGI，是指Web服务器在接收到客户端发送过来的请求后转发给程序的一组</span><br><span class="line">机制。在CGI的作用下，程序会对请求内容做出相应的动作，如创建HTML等</span><br><span class="line">动态内容。使用CGI的程序叫做CGI程序，通常是用Perl、PHP、Ruby和C</span><br><span class="line">等编程语言编写而成。（CGI是将请求转给CGI程序处理的一种机制）</span><br></pre></td></tr></table></figure>
+<ul>
+<li>Servlet</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Servlet是一种能在服务器上创建动态内容的程序。Servlet是用Java语</span><br><span class="line">言实现的一个接口。Servlet的运行环境叫做Web容器或Servlet容器。</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>RSS（简易信息聚合，也叫聚合内容）</p>
+</li>
+<li><p>JSON（JavaScript Object Notation）</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">JSON（JavaScript Object Notation）是一种以</span><br><span class="line">JavaScript（ECMAScript）的对象表示法为基础的轻量级数据标记语</span><br><span class="line">言。能够处理的数据类型有：false/null/true/对象/数组/数字/字符</span><br><span class="line">串，这7种类型。JSON让数据更轻更纯粹。</span><br></pre></td></tr></table></figure>
+<p>由程序创建的内容称为动态内容，事先准备好的内容称为静态内容（Web应用作用于动态内容之上）。动态HTML，是指使用客户端脚本语言将静态的HTML内容变成动态的技术的总称。</p>
+<h3 id="第十一章"><a href="#第十一章" class="headerlink" title="第十一章"></a>第十一章</h3><ul>
+<li>针对Web应用的攻击模式</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">主动攻击：主要攻击服务器上的资源</span><br><span class="line">被动攻击：主要攻击用户的资源和权限；利用被动攻击对企业内网发动攻击（利用用户身份的攻击）</span><br></pre></td></tr></table></figure>
+<ul>
+<li>实施Web应用的安全对策可大致分为以下两部分</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">1、客户端的验证</span><br><span class="line">2、Web应用端（服务器端）的验证</span><br><span class="line">     2.1输入值验证</span><br><span class="line">     2.2输出值转义</span><br></pre></td></tr></table></figure>
+<p>多数情况下采用JavaScript在客户端验证数据，但JavaScript存在被篡改或关闭的可能，不适合将JavaScript验证作为安全的防范对策。保留客户端验证只是为了尽早地辨识输入错误，起到提高UI体验的作用。</p>
+<p>从数据库或文件系统、HTML、邮件等输出Web应用处理的数据之际，针对输出做值转义处理是一项至关重要的安全策略。当输出值转义不完全时，会因触发攻击者传入的攻击代码，而给输出对象带来损害。</p>
+<ul>
+<li>OS命令注入攻击</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">OS命令注入攻击（OS Command Injection）是指通过Web应用，执行非</span><br><span class="line">法的操作系统命令达到攻击的目的。只要在能调用shell函数的地方就有存</span><br><span class="line">在被攻击的风险。</span><br><span class="line">可以从Web应用中通过Shell来调用操作系统命令。倘若调用Shell时存在</span><br><span class="line">疏漏，就可以执行插入非法的OS命令。</span><br><span class="line">通过OS注入攻击可执行OS上安装着的各种程序。</span><br></pre></td></tr></table></figure>
+<ul>
+<li>DoS攻击（服务停止攻击或拒绝服务攻击）</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">DoS攻击（Denial of Service attack）是一种让运行中的服务呈停止状态的攻击。</span><br><span class="line"></span><br><span class="line">主要有以下两种DoS攻击方式：</span><br><span class="line">1、集中利用访问请求造成资源过载，资源用尽的同时，实际上服务也就呈停止状态。</span><br><span class="line">2、通过攻击安全漏洞使服务停止。</span><br></pre></td></tr></table></figure>
+<ul>
+<li>其它</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">%0D%0A代表HTTP报文中的换行符</span><br><span class="line"></span><br><span class="line">会话管理是用来管理用户状态的必备功能</span><br><span class="line"></span><br><span class="line">彩虹表：预先已收集的明文与散列值的匹配表</span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/网络协议/" rel="tag"># 网络协议</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/01/23/数据结构与算法图表（一）/" rel="prev" title="数据结构与算法图表（一）">
+      <i class="fa fa-chevron-left"></i> 数据结构与算法图表（一）
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/01/26/SQL基础/" rel="next" title="SQL基础">
+      SQL基础 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#第一章"><span class="nav-number">1.</span> <span class="nav-text">第一章</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#与HTTP关系密切的协议：IP、TCP、DNS"><span class="nav-number">1.0.1.</span> <span class="nav-text">与HTTP关系密切的协议：IP、TCP、DNS</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第二章"><span class="nav-number">2.</span> <span class="nav-text">第二章</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第三章"><span class="nav-number">3.</span> <span class="nav-text">第三章</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第四章"><span class="nav-number">4.</span> <span class="nav-text">第四章</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#HTTP的状态码"><span class="nav-number">4.0.1.</span> <span class="nav-text">HTTP的状态码</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第五章"><span class="nav-number">5.</span> <span class="nav-text">第五章</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第六章"><span class="nav-number">6.</span> <span class="nav-text">第六章</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#首部字段"><span class="nav-number">6.0.1.</span> <span class="nav-text">首部字段</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Cookie用于管理服务器与客户端之间的状态"><span class="nav-number">6.0.2.</span> <span class="nav-text">Cookie用于管理服务器与客户端之间的状态</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第七章"><span class="nav-number">7.</span> <span class="nav-text">第七章</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#HTTPS"><span class="nav-number">7.0.1.</span> <span class="nav-text">HTTPS</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第八章"><span class="nav-number">8.</span> <span class="nav-text">第八章</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第九章"><span class="nav-number">9.</span> <span class="nav-text">第九章</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#SPDY"><span class="nav-number">9.0.1.</span> <span class="nav-text">SPDY</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#WebSocket协议"><span class="nav-number">9.0.2.</span> <span class="nav-text">WebSocket协议</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第十章"><span class="nav-number">10.</span> <span class="nav-text">第十章</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第十一章"><span class="nav-number">11.</span> <span class="nav-text">第十一章</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Ben</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">51</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">categories</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ben</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

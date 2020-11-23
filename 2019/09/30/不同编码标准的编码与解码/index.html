@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="常用的编码标准 常用的编码标准 GBK UTF-8 ISO8859-1    编码基础知识为方便表示各种各样的语言，逐渐出现很多标准编码。最早的编码是ISO8859-1和ASCII编码相似。重要的有如下几个：  ISO8859-1(通常称为Latin-1)  属于单字节编码(一字节八位)，最多能表示的字符范围是0～255 应用于英文系列，如，字母a的编码为0x61=97 ISO8859-1编码表示">
+<meta property="og:type" content="article">
+<meta property="og:title" content="不同编码标准的编码与解码">
+<meta property="og:url" content="http://yoursite.com/2019/09/30/不同编码标准的编码与解码/index.html">
+<meta property="og:site_name" content="Ben&#39;Blog">
+<meta property="og:description" content="常用的编码标准 常用的编码标准 GBK UTF-8 ISO8859-1    编码基础知识为方便表示各种各样的语言，逐渐出现很多标准编码。最早的编码是ISO8859-1和ASCII编码相似。重要的有如下几个：  ISO8859-1(通常称为Latin-1)  属于单字节编码(一字节八位)，最多能表示的字符范围是0～255 应用于英文系列，如，字母a的编码为0x61=97 ISO8859-1编码表示">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-11-23T03:54:31.337Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="不同编码标准的编码与解码">
+<meta name="twitter:description" content="常用的编码标准 常用的编码标准 GBK UTF-8 ISO8859-1    编码基础知识为方便表示各种各样的语言，逐渐出现很多标准编码。最早的编码是ISO8859-1和ASCII编码相似。重要的有如下几个：  ISO8859-1(通常称为Latin-1)  属于单字节编码(一字节八位)，最多能表示的字符范围是0～255 应用于英文系列，如，字母a的编码为0x61=97 ISO8859-1编码表示">
+
+<link rel="canonical" href="http://yoursite.com/2019/09/30/不同编码标准的编码与解码/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>不同编码标准的编码与解码 | Ben'Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Ben'Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">工欲善其事，必先利其器</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/30/不同编码标准的编码与解码/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Ben">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ben'Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          不同编码标准的编码与解码
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-09-30 10:03:41" itemprop="dateCreated datePublished" datetime="2019-09-30T10:03:41+08:00">2019-09-30</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-11-23 11:54:31" itemprop="dateModified" datetime="2020-11-23T11:54:31+08:00">2020-11-23</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="常用的编码标准"><a href="#常用的编码标准" class="headerlink" title="常用的编码标准"></a>常用的编码标准</h3><ul>
+<li>常用的编码标准<ol>
+<li><code>GBK</code></li>
+<li><code>UTF-8</code></li>
+<li><code>ISO8859-1</code></li>
+</ol>
+</li>
+</ul>
+<h3 id="编码基础知识"><a href="#编码基础知识" class="headerlink" title="编码基础知识"></a>编码基础知识</h3><p>为方便表示各种各样的语言，逐渐出现很多标准编码。最早的编码是<code>ISO8859-1</code>和<code>ASCII</code>编码相似。重要的有如下几个：</p>
+<ul>
+<li><p><code>ISO8859-1</code>(通常称为<code>Latin-1</code>)</p>
+<ul>
+<li>属于<strong>单字节编码</strong>(一字节八位)，最多能表示的字符范围是<code>0～255</code></li>
+<li>应用于英文系列，如，字母<code>a</code>的编码为<code>0x61=97</code></li>
+<li><code>ISO8859-1</code>编码表示的字符范围很窄，无法表示中文字符</li>
+<li>由于是单字节编码，和计算机最基础的表示单位一致，因此多数时候仍旧使用<code>ISO8859-1</code>编码来表示。在很多协议上，默认使用该编码</li>
+<li>如，虽然“中文”两个字不存在<code>ISO8859-1</code>编码。以<code>GB2312</code>编码为例，对应的是“<code>d6d0 cec4</code>”两个字符，使用<code>ISO8859-1</code>编码时，则将它拆开为<code>4</code>个字节来表示“<code>d6 d0 ce c4</code>”。事实上，在进行存储的时候，是以字节为单位处理的。而如用<code>UTF</code>编码来对“中文”进行编码，使用<code>ISO8859-1</code>对其编码时，则是将它拆开为<code>6</code>个字节“<code>e4 b8 ad e6 96 87</code>”来表示。因此可以看出，通过<code>ISO8859-1</code>进行编码表示的方法，需要以另一种编码为基础。</li>
+</ul>
+</li>
+<li><p><code>GB2312/GBK</code></p>
+<ul>
+<li>这是汉字的国标码，专门用来表示汉字，是双字节编码。</li>
+<li>英文字母和<code>ISO8859-1</code>一致，即英文字母兼容<code>ISO8859-1</code>编码</li>
+<li><code>GBK</code>编码能够用来同时表示繁体字和简体字，而<code>GB2312</code>只能表示简体字，<code>GBK</code>是兼容<code>GB2312</code>编码的</li>
+</ul>
+</li>
+<li><p><code>unicode</code></p>
+<ul>
+<li>这是最统一的编码，可以用来表示所有语言的字符</li>
+<li>是定长双字节，也有四字节的编码</li>
+<li>包括英文字母在内</li>
+<li>它是不兼容<code>ISO8859-1</code>编码的，也不兼容其他编码</li>
+<li>相对于<code>ISO8859-1</code>编码来说，<code>unicode</code>编码只是在前面增加了一个<code>0</code>字节，如字母<code>a</code>对应的<code>unicode</code>编码为“<code>00 61</code>”</li>
+<li>注：定长编码便于计算机处理，<code>GB2312/GBK</code>不是定长编码。因<code>unicode</code>可以用来表示所有字符，所以在很多软件内部是使用<code>unicode</code>编码来处理的，如<code>java</code></li>
+</ul>
+</li>
+<li><p><code>UTF</code></p>
+<ul>
+<li><code>unicode</code>编码不兼容<code>ISO8859-1</code>编码，而且容易占用更多的空间，因对于英文字母<code>unicode</code>也需要两个字节来表示，所以<code>unicode</code>不便于传输和存储，因此产生了<code>UTF</code>编码</li>
+<li><code>UTF</code>编码兼容<code>ISO8859-1</code>编码，同时也可以用来表示所有语言的字符</li>
+<li><code>UTF</code>编码是不定长编码，每一个字符的长度从<code>1～6</code>个字节不等</li>
+<li><code>UTF</code>编码自带简单的校验功能</li>
+<li>通常英文字母都是用一个字节表示，汉字用三个字节</li>
+<li>注：虽说<code>UTF</code>是为了使用更少的空间而使用的，这只是相对于<code>unicode</code>编码来说的，如果已知是汉字，则使用<code>GB2312/GBK</code>无疑是最节省的。虽然<code>UTF</code>编码对汉字使用三个字节，但即使对于汉字网页，<code>UTF</code>编码也会比<code>unicode</code>编码节省，因网页中包含了很多的英文字符</li>
+</ul>
+</li>
+</ul>
+<h3 id="常用编码的区别"><a href="#常用编码的区别" class="headerlink" title="常用编码的区别"></a>常用编码的区别</h3><p><code>unicode</code>、<code>UTF-8</code>、<code>ISO8859-1</code>的区别，通过对字符的编码来体现。以对“中文”进行编码为例(查询对应的编码表得到下面结果)：</p>
+<ul>
+<li><code>GB2312</code> 编码为 “<code>d6d0 cec4</code>”</li>
+<li><code>unicode</code> 编码为 “<code>4e2d 6587</code>”</li>
+<li><code>UTF</code> 编码为 “<code>e4b8ad e69687</code>”</li>
+<li>这两个汉字没有<code>ISO8859-1</code>编码，但可以用<code>ISO8859-1</code>编码来表示</li>
+</ul>
+<h3 id="编码的使用"><a href="#编码的使用" class="headerlink" title="编码的使用"></a>编码的使用</h3><p>字符串在<code>java</code>内存中总是按<code>unicode</code>编码存储的。</p>
+<p><code>UTF-8</code>可以用来表示/编码所有字符。</p>
+<p>在<code>java</code>中，使用<code>setCharacterEncoding</code>来设置<code>HTTP</code>请求时相应的编码，如果不指定提交内容的编码，则默认使用<code>ISO8859-1</code>编码，这样在处理时需要做进一步的处理。值得注意的是在执行<code>setCharacterEncoding()</code>之前，不能执行任何<code>getParameter()</code>。而且，该指定只对<code>POST</code>方法有效，对<code>GET</code>方法无效。因，<code>POST</code>方法在执行第一个<code>getParameter()</code>的时候，<code>java</code>将会按照编码分析所有的提交内容，而后续的<code>getParameter()</code>不再进行分析，所以<code>setCharacterEncoding()</code>无效。对于<code>GET</code>方法提交表单，提交的内容在<code>URL</code>中，一开始就已经按照编码分析所有的提交内容，<code>setCharacterEncoding()</code>自然就无效。</p>
+<p>注：<code>ISO8859-1</code>是<code>java</code>网络传输使用的标准字符集，<code>GB2312</code>是标准中文字符集，当需要进行提交表单等网络传输操作的时候，需要把<code>ISO8859-1</code>转换为<code>GB2312</code>字符集显示，否则如果按浏览器的<code>GB2312</code>格式来解析<code>ISO8859-1</code>字符集的话，由于两者不兼容，所以会出现乱码。</p>
+<ul>
+<li><p>规律</p>
+<ul>
+<li><code>UTF-8</code>编码可以用<code>GBK</code>和<code>ISO8859-1</code>解码后编回去</li>
+<li><code>GBK</code>编码后只能用<code>ISO8859-1</code>解码后编回去</li>
+</ul>
+</li>
+<li><p>在<code>JSP</code>页面获取表单的值时会出现乱码，有两种解决方法</p>
+<ol>
+<li>在调用<code>getParameter</code>之前通过<code>request.setCharacterEncoding</code>设置字符编码</li>
+<li>调用<code>new String(str.getBytes(&quot;iso8859-1&quot;), &quot;UTF-8&quot;);</code>编码后解码</li>
+</ol>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/09/27/Block/" rel="prev" title="Block">
+      <i class="fa fa-chevron-left"></i> Block
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/10/08/应用优化/" rel="next" title="应用优化">
+      应用优化 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#常用的编码标准"><span class="nav-number">1.</span> <span class="nav-text">常用的编码标准</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#编码基础知识"><span class="nav-number">2.</span> <span class="nav-text">编码基础知识</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#常用编码的区别"><span class="nav-number">3.</span> <span class="nav-text">常用编码的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#编码的使用"><span class="nav-number">4.</span> <span class="nav-text">编码的使用</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Ben</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">51</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">categories</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ben</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

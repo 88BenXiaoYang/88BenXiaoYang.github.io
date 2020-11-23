@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="背景 CPU命令列  通常情况下，程序的代码行基本上是按从上到下的顺序执行的。应用程序源代码通过编译器转换为CPU命令列。汇集CPU命令列和数据，应用程序安装到设备上，操作系统在用户的指示下启动应用程序。操作系统首先便将包含在应用程序中的CPU命令列配置到内存中，CPU从应用程序指定的地址开始，一个一个地执行CPU命令列。   一个CPU执行的CPU命令列为一条无分叉路径，即为线程  多线程的执行">
+<meta name="keywords" content="多线程编程">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GCD">
+<meta property="og:url" content="http://yoursite.com/2019/05/30/GCD/index.html">
+<meta property="og:site_name" content="Ben&#39;Blog">
+<meta property="og:description" content="背景 CPU命令列  通常情况下，程序的代码行基本上是按从上到下的顺序执行的。应用程序源代码通过编译器转换为CPU命令列。汇集CPU命令列和数据，应用程序安装到设备上，操作系统在用户的指示下启动应用程序。操作系统首先便将包含在应用程序中的CPU命令列配置到内存中，CPU从应用程序指定的地址开始，一个一个地执行CPU命令列。   一个CPU执行的CPU命令列为一条无分叉路径，即为线程  多线程的执行">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-11-23T03:54:31.113Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="GCD">
+<meta name="twitter:description" content="背景 CPU命令列  通常情况下，程序的代码行基本上是按从上到下的顺序执行的。应用程序源代码通过编译器转换为CPU命令列。汇集CPU命令列和数据，应用程序安装到设备上，操作系统在用户的指示下启动应用程序。操作系统首先便将包含在应用程序中的CPU命令列配置到内存中，CPU从应用程序指定的地址开始，一个一个地执行CPU命令列。   一个CPU执行的CPU命令列为一条无分叉路径，即为线程  多线程的执行">
+
+<link rel="canonical" href="http://yoursite.com/2019/05/30/GCD/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>GCD | Ben'Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Ben'Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">工欲善其事，必先利其器</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/05/30/GCD/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Ben">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ben'Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          GCD
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-05-30 11:04:50" itemprop="dateCreated datePublished" datetime="2019-05-30T11:04:50+08:00">2019-05-30</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-11-23 11:54:31" itemprop="dateModified" datetime="2020-11-23T11:54:31+08:00">2020-11-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/iOS/" itemprop="url" rel="index"><span itemprop="name">iOS</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><ul>
+<li><p><code>CPU</code>命令列</p>
+<ul>
+<li>通常情况下，程序的代码行基本上是按从上到下的顺序执行的。应用程序源代码通过编译器转换为<code>CPU</code>命令列。汇集<code>CPU</code>命令列和数据，应用程序安装到设备上，操作系统在用户的指示下启动应用程序。操作系统首先便将包含在应用程序中的<code>CPU</code>命令列配置到内存中，<code>CPU</code>从应用程序指定的地址开始，一个一个地执行<code>CPU</code>命令列。</li>
+</ul>
+</li>
+<li><p>一个<code>CPU</code>执行的<code>CPU</code>命令列为一条无分叉路径，即为线程</p>
+</li>
+<li><p>多线程的执行，即多路径<code>CPU</code>命令列的执行，涉及到上下文切换，切换时每条路径的状态，会保存到各自路径专用的内存块中。路径状态，包括如<code>CPU</code>的寄存器等信息</p>
+</li>
+<li><p>由于使用多线程的程序可以在某个线程和其他线程之间反复多次进行上下文切换，因此看上去就好像<code>1</code>个<code>CPU</code>核能够并列地执行多个线程一样。在具有多个<code>CPU</code>核的情况下，就不是“看上去像”了，而是真的提供了多个<code>CPU</code>核并行执行多个线程的技术</p>
+</li>
+<li><p>多线程编程下易发生的问题：</p>
+<ul>
+<li>数据竞争：多个线程更新相同的资源，会导致数据的不一致</li>
+<li>死锁：停止等待事件的线程会导致多个线程相互持续等待</li>
+<li>大量内存消耗：使用太多线程会消耗大量内存</li>
+</ul>
+</li>
+<li><p>尽管多线程编程存在各种问题，但从保证应用程序的响应性能考虑，应该使用多线程编程</p>
+</li>
+</ul>
+<h5 id="多线程编程在iOS中的应用"><a href="#多线程编程在iOS中的应用" class="headerlink" title="多线程编程在iOS中的应用"></a>多线程编程在<code>iOS</code>中的应用</h5><p>应用程序在启动时，通过最先执行的线程，即“主线程”，来描绘用户界面、处理触摸屏幕的事件等。如果在主线程中进行长时间的处理，如数据库访问或<code>AR</code>画像的识别，就会妨碍主线程的执行(产生了阻塞)。在<code>OS X</code>和<code>iOS</code>的应用程序中，会妨碍主线程中被称为<code>RunLoop</code>的主循环的执行，从而导致不能更新用户界面、应用程序的画面长时间停滞等问题(界面交互体现就是产生了卡顿)。为了解决上述卡顿的问题，需要将长时间进行处理的操作，不放在主线程中执行，而放在其他线程中执行。</p>
+<p><strong>使用多线程编程，在执行长时间的处理时仍可保证用户界面的响应性能</strong></p>
+<h5 id="GCD的引入给多线程编程带来的意义"><a href="#GCD的引入给多线程编程带来的意义" class="headerlink" title="GCD的引入给多线程编程带来的意义"></a><code>GCD</code>的引入给多线程编程带来的意义</h5><ul>
+<li>多线程编程的实质<ul>
+<li>使应用程序能并行的执行多路径(<strong>多个</strong>)<code>CPU</code>命令列(一个<code>CPU</code>命令列，即为一个<strong>线程</strong>)，并行的执行多个任务，并使多个线程间能相互通信(将耗时操作添加到非主线程中进行执行，待耗时操作处理完成后，将处理结果传回到主线程中执行对应的操作，这一过程便是线程间相互通信的体现)</li>
+<li>线程间的相互通信，在涉及网络数据获取或耗时操作的过程中，一般会使用异步任务+并行队列进行数据获取或耗时操作处理，当获取到网络数据或耗时操作处理完成后，需要在主线程中刷新界面显示数据，此时就涉及到线程间的通信。通信方向：子线程到主线程</li>
+</ul>
+</li>
+</ul>
+<p>Tips:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">子线程执行耗时操作，主线程刷新UI</span><br><span class="line"></span><br><span class="line">每个应用程序只有一个主线程，即只有一个主队列，所以将任务添加到主队列，就是回到主线程了</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>GCD</code>是<strong>异步执行任务</strong>的技术之一<ul>
+<li><code>GCD</code>将应用程序中记述的线程管理用的代码在系统级中实现(即，在系统级中实现应用程序中线程管理的代码)。<strong>线程管理的代码在系统级实现</strong></li>
+<li>通过<code>GCD</code>，开发者只需定义将要执行的任务并添加到适当的调度队列(<code>Dispatch Queue</code>)中，<code>GCD</code>就能生成必要的线程并计划执行任务(即，<code>GCD</code>能管理线程的生成(引入<code>GCD</code>后，线程的生成，不需要开发者参与管理，开发者只需将任务添加到<code>GCD</code>中，由<code>GCD</code>负责线程的管理，在多线程编程的过程中，开发者只需面向<code>GCD</code>编程开发即可)。任务是在线程上执行的)</li>
+<li><code>GCD</code>中线程管理是作为系统的一部分来实现的，因此可统一管理，也可执行任务，对多线程的编程、线程管理是更有效率的，<code>GCD</code>的引入正是为了实现这一目的。<code>GCD</code>用简洁的记述方法，实现了极为复杂繁琐的多线程编程。通过<code>GCD</code>提供的系统级线程管理提高执行效率</li>
+</ul>
+</li>
+</ul>
+<h5 id="GCD的引入，对iOS多线程编程的影响"><a href="#GCD的引入，对iOS多线程编程的影响" class="headerlink" title="GCD的引入，对iOS多线程编程的影响"></a><code>GCD</code>的引入，对<code>iOS</code>多线程编程的影响</h5><ul>
+<li><p>引入<code>GCD</code>之前</p>
+<ul>
+<li><code>Cocoa</code>框架提供了<code>NSObject</code>类的<code>performSelectorInBackground:withObject</code>实例方法和<code>performSelectorOnMainThread</code>实例方法等简单的多线程编程技术</li>
+<li>除了使用<code>performSelector</code>系方法进行多线程编程，还可使用<code>NSThread</code>类进行多线程编程，但较之<code>performSelector</code>系方法，使用<code>NSThread</code>实现多线程编程较繁琐<ul>
+<li><code>NSThread</code>简介<ul>
+<li>是多线程编程的技术之一，是面向对象操作线程的技术，可直接操作线程对象</li>
+<li>需要手动管理线程的生命周期</li>
+<li>需要使用线程同步的方法(如：临界区对象)，解决数据竞争的问题。实现线程同步的过程中对数据的加锁会有一定的开销。线程同步对数据的加锁方式有：<code>NSLock/NSConditionLock/NSRecursiveLock/@synchronized</code></li>
+<li>实例化线程需要手动启动<code>(-start)</code>才能运行</li>
+<li>使用类方法创建线程：<code>+detachNewThreadWithBlock`</code>+detachNewThreadSelector:toTarget:withObject:`。创建后就可执行，不需要手动启动。类方法的操作对象是针对当前线程而言</li>
+<li>可以设置线程的调度优先级，调度优先级取值范围为<code>0.0～1.0</code>，默认是<code>0.5</code>，值越大优先级越高</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>无论使用<code>NSObject</code>类的<code>performSelector</code>系方法，还是使用<code>NSThread</code>实现多线程编程，所需的源代码量较之使用<code>GCD</code>实现的方式繁琐不少</li>
+</ul>
+</li>
+<li><p>引入<code>GCD</code>后</p>
+<ul>
+<li><code>GCD</code>将多线程编程的具体实现封装于<code>API</code>的实现中，通过操作<code>GCD</code>对外提供的<code>API</code>，使多线程编程易于实现。因此使用<code>GCD</code>大大简化了偏于复杂的多线程编程的源代码，同时要使用<code>GCD</code>实现多线程编程，需熟悉<code>GCD</code>对外提供的接口</li>
+<li><code>GCD</code>搭配<code>block</code>使用，可以进一步简化应用程序源代码</li>
+</ul>
+</li>
+<li><p>综上，<code>GCD</code>的引入，大大简化了<code>iOS</code>多线程编程的源代码，使<code>iOS</code>中的多线程编程便于实现和管理</p>
+</li>
+</ul>
+<h3 id="GCD的API"><a href="#GCD的API" class="headerlink" title="GCD的API"></a><code>GCD</code>的<code>API</code></h3><h5 id="苹果官方对GCD的说明"><a href="#苹果官方对GCD的说明" class="headerlink" title="苹果官方对GCD的说明"></a>苹果官方对<code>GCD</code>的说明</h5><ul>
+<li>开发者要做的只是<strong>定义想执行的任务(通常用block语法来定义)</strong>并追加(用<code>GCD</code>提供的<code>API</code>)到适当的<code>Dispatch Queue</code>中</li>
+<li>上述说明的源代码表示如下</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">dispatch_async(queue, ^&#123;</span><br><span class="line">//想执行的任务(用block来定义)</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">源代码使用Block语法“定义想执行的任务”，通过dispatch_async函数追加任务到赋值给变量queue的&quot;Dispatch Queue&quot;中</span><br></pre></td></tr></table></figure>
+<ul>
+<li>仅如上述源代码所示，就可使指定的<code>Block</code>在另一线程中执行</li>
+</ul>
+<h5 id="Dispatch-Queue"><a href="#Dispatch-Queue" class="headerlink" title="Dispatch Queue"></a><code>Dispatch Queue</code></h5><ul>
+<li>是执行处理任务的等待队列</li>
+<li><code>Dispatch Queue</code>按照追加的顺序(先进先出<code>FIFO</code>)执行处理(任务)</li>
+<li><code>dispatch_queue_t</code>是表示<code>Dispatch Queue</code>的类型</li>
+<li>种类</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>名称</th>
+<th>特点</th>
+<th>同时执行的处理个数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>串行</td>
+<td>Serial Dispatch Queue</td>
+<td>等待现在执行中的处理结束</td>
+<td>同时执行的处理数只能有1个</td>
+</tr>
+<tr>
+<td>并行</td>
+<td>Concurrent Dispatch Queue</td>
+<td>不等待现在执行中的处理结束</td>
+<td>可并行执行多个处理，并行处理数量取决于当前系统的状态</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><p>系统状态</p>
+<ul>
+<li>即<code>iOS</code>和<code>OS X</code>基于<code>Dispatch Queue</code>中的处理数(任务数)、<code>CPU</code>核数以及<code>CPU</code>负荷等当前系统的状态来决定<code>Concurrent Dispatch Queue</code>中并行执行的处理数。“并行执行”，就是使用多个线程同时执行多个处理</li>
+</ul>
+</li>
+<li><p><code>Dispatch Queue</code>种类与线程的关系</p>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>名称</th>
+<th>线程数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>串行</td>
+<td>Serial Dispatch Queue</td>
+<td>使用一个线程</td>
+</tr>
+<tr>
+<td>并行</td>
+<td>Concurrent Dispatch Queue</td>
+<td>使用多个线程</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><p><code>iOS</code>和<code>OS X</code>的核心</p>
+<ul>
+<li><code>XNU</code>内核决定应当使用的线程数，并只生成所需的线程执行处理。当处理结束，应当执行的处理数减少时，<code>XNU</code>内核会结束不再需要的线程</li>
+<li><code>XNU</code>内核仅使用<code>Concurrent Dispatch Queue</code>便可完美地管理并行执行多个处理(任务)的线程</li>
+</ul>
+</li>
+<li><p>获取<code>Dispatch Queue</code>的两种方法</p>
+<ul>
+<li>方法一：通过<code>GCD</code>的<code>API</code>生成<code>Dispatch Queue</code>，通过<code>dispatch_queue_create</code>函数可生成<code>Dispatch Queue</code><ul>
+<li>使用<code>dispatch_queue_create</code>函数，将第二个参数指定为<code>NULL</code>，生成的是<code>Serial Dispatch Queue</code></li>
+<li><code>使用dispatch_queue_create</code>函数，将第二个参数指定为<code>DISPATCH_QUEUE_CONCURRENT</code>，生成的是<code>Concurrent Dispatch Queue</code></li>
+<li>注意<ol>
+<li>使用<code>dispatch_queue_create</code>函数可生成任意多个<code>Dispatch Queue</code></li>
+<li>多个<code>Serial Dispatch Queue</code>可并行执行</li>
+<li>一旦生成<code>Serial Dispatch Queue</code>并追加处理，系统对于一个<code>Serial Dispatch Queue</code>就只生成并使用一个线程。如果过多使用多线程，就会消耗大量内存，引起大量的上下文切换，大幅度降低系统的响应性能。因此因避免过多生成<code>Serial Dispatch Queue</code></li>
+</ol>
+</li>
+<li><code>Serial Dispatch Queue</code>的用途<ul>
+<li>可解决多线程编程问题中的<strong>数据竞争</strong>。如多个线程更新相同资源或在访问数据库/文件时，存在数据竞争的问题，可使用<code>Serial Dispatch Queue</code>来解决数据竞争的问题</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>方法二：获取系统标准提供的<code>Dispatch Queue</code>。这类<code>Dispatch Queue</code>不用特意生成，系统给我们提供的，有<code>Main Dispatch Queue</code>和<code>Global Dispatch Queue</code></p>
+<ul>
+<li><code>Main Dispatch Queue</code><ol>
+<li>追加到<code>Main Dispatch Queue</code>的处理在主线程的<code>RunLoop</code>中执行</li>
+<li><code>Main Dispatch Queue</code>是在主线程中执行的<code>Dispatch Queue</code>。因主线程只有<code>1</code>个，所以<code>Main Dispatch Queue</code>是<code>Serial Dispatch Queue</code></li>
+</ol>
+</li>
+<li><code>Global Dispatch Queue</code><ol>
+<li><code>Global Dispatch Queue</code>是所有应用程序都能够使用的<code>Concurrent Dispatch Queue</code></li>
+<li>没有必要通过<code>dispatch_queue_create</code>函数逐个生成<code>Concurrent Dispatch Queue</code>，只要获取<code>Global Dispatch Queue</code>使用即可</li>
+<li><code>Global Dispatch Queue</code>有<code>4</code>个执行优先级：高优先级、默认优先级、低优先级、后台优先级</li>
+</ol>
+</li>
+<li>对于<code>Main Dispatch Queue</code>和<code>Global Dispatch Queue</code>执行<code>dispatch_retain</code>和<code>dispatch_release</code>函数不会引起任何变化，也不会有任何问题。这也是获取并使用<code>Global Dispatch Queue</code>比生成、使用、释放<code>Concurrent Dispatch Queue</code>更轻松的原因</li>
+</ul>
+</li>
+<li><p>对于<code>Concurrent Dispatch Queue</code>来说，不管生成多少，由于<code>XNU</code>内核只使用有效管理的线程，因此不会发生<code>Serial Dispatch Queue</code>那样，因大量生成<code>Serial Dispatch Queue</code>而消耗大量内存，降低系统响应性能的情况</p>
+</li>
+<li>生成的<code>Dispatch Queue</code>必须由程序员负责释放，因<code>Dispatch Queue</code>并没有像<code>Block</code>那样具有作为<code>OC</code>对象来处理的技术</li>
+<li>在<code>dispatch_async</code>函数中追加<code>Block</code>到<code>Concurrent Dispatch Queue</code>，<code>Block</code>内部会通过<code>dispatch_retain</code>和<code>dispatch_release</code>函数对<code>Dispatch Queue</code>持有和释放</li>
+<li><code>Dispatch Queue</code>也像<code>OC</code>的引用计数式内存管理一样，需要通过<code>dispatch_retain</code>和<code>dispatch_release</code>函数的引用计数来管理内存</li>
+</ul>
+</li>
+</ul>
+<h5 id="dispatch-set-target-queue"><a href="#dispatch-set-target-queue" class="headerlink" title="dispatch_set_target_queue"></a><code>dispatch_set_target_queue</code></h5><ul>
+<li>变更生成的<code>Dispatch Queue</code>的执行优先级要使用<code>dispatch_set_target_queue</code>函数</li>
+<li>指定要变更执行优先级的<code>Dispatch Queue</code>为<code>dispatch_set_target_queue</code>函数的第一个参数，指定与要使用的执行优先级相同优先级的<code>Global Dispatch Queue</code>为第二个参数，即将第一个参数的执行优先级指定为与第二个参数相同的执行优先级，第二个参数为目标</li>
+<li>注：<code>dispatch_set_target_queue</code>第一个参数如果指定系统提供的<code>Main Dispatch Queue</code>和<code>Global Dispatch Queue</code>则不知道会出现什么状况，因此第一个参数均不可指定<code>Main</code>和<code>Global</code>为参数</li>
+<li>不仅可以变更<code>Dispatch Queue</code>的执行优先级，还可以作成<code>Dispatch Queue</code>的执行阶层。如，在多个<code>Serial Dispatch Queue</code>中用<code>dispatch_set_target_queue</code>函数指定目标为某一个<code>Serial Dispatch Queue</code>，那么原先本应并行执行的多个<code>Serial Dispatch Queue</code>，在目标<code>Serial Dispatch Queue</code>上只能同时执行一个处理</li>
+</ul>
+<h5 id="dispatch-after"><a href="#dispatch-after" class="headerlink" title="dispatch_after"></a><code>dispatch_after</code></h5><ul>
+<li>想在指定时间后执行处理的情况，可使用<code>dispatch_after</code>函数来实现</li>
+<li>注<ul>
+<li><code>dispatch_after</code>函数并不是在指定时间后执行处理，而只是在指定时间追加处理到<code>Dispatch Queue</code></li>
+</ul>
+</li>
+<li>参数<ul>
+<li>第一个参数<ul>
+<li>指定时间用的<code>dispatch_time_t</code>类型的值</li>
+<li>该值使用<code>dispatch_time</code>或<code>dispatch_walltime</code>函数生成<ul>
+<li><code>dispatch_time</code><ol>
+<li><code>dispatch_time</code>函数获取第一个参数值指定的时间，到第二个参数指定的毫微秒单位时间后的时间</li>
+<li>数值和<code>NSEC_PER_SEC</code>的乘积得到单位为毫微秒的数值</li>
+<li>使用<code>NSEC_PER_MSEC</code>则可以以毫秒为单位计算</li>
+<li>通常用于计算相对时间</li>
+</ol>
+</li>
+<li><code>dispatch_walltime</code><ol>
+<li>由<code>POSIX</code>中使用的<code>struct timespec</code>类型的时间得到<code>dispatch_time_t</code>类型的值</li>
+<li>用于计算绝对时间</li>
+</ol>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>第二个参数<ul>
+<li>指定要追加处理的<code>Dispatch Queue</code> </li>
+</ul>
+</li>
+<li>第三个参数<ul>
+<li>指定记述要执行处理的<code>Block</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h5 id="Dispatch-Group"><a href="#Dispatch-Group" class="headerlink" title="Dispatch Group"></a><code>Dispatch Group</code></h5><ul>
+<li><p>使用场景：在追加到<code>Dispatch Queue</code>中的多个处理全部结束后想执行结束处理</p>
+<ul>
+<li>针对上述场景，使用<code>Serial Dispatch Queue</code>时，只要将想执行的处理全部追加到该队列中，并在最后追加结束处理即可实现</li>
+<li>但使用<code>Concurrent Dispatch Queue</code>时或同时使用多个<code>Dispatch Queue</code>时，使用<code>Dispatch Group</code>进行处理</li>
+</ul>
+</li>
+<li><p>使用<code>Dispatch Group</code>的原因：无论向什么样的<code>Dispatch Queue</code>中追加处理，使用<code>Dispatch Group</code>都可监视这些处理执行的结束。一旦检测到所有处理执行结束，就可将结束的处理追加到<code>Dispatch Queue</code>中</p>
+</li>
+<li><p>在<code>Dispatch Group</code>中也可以使用<code>dispatch_group_wait</code>函数仅等待全部处理执行结束</p>
+<ul>
+<li>第二个参数值<ol>
+<li><code>DISPATCH_TIME_FOREVER</code>，意味着永久等待。只要属于<code>Dispatch Group</code>的处理尚未执行结束，就会一直等待，中途不能取消</li>
+<li><code>DISPATCH_TIME_NOW</code>，则不用任何等待即可判定属于<code>Dispatch Group</code>的处理是否执行结束</li>
+</ol>
+</li>
+</ul>
+</li>
+</ul>
+<h5 id="dispatch-barrier-async"><a href="#dispatch-barrier-async" class="headerlink" title="dispatch_barrier_async"></a><code>dispatch_barrier_async</code></h5><ul>
+<li>使用场景：在访问数据库或文件时，避免数据竞争，高效率地进行访问</li>
+<li><code>dispatch_barrier_async</code>函数同<code>dispatch_queue_create</code>函数生成的<code>Concurrent Dispatch Queue</code>一起使用</li>
+<li>控制流程：<code>dispatch_barrier_async</code>函数会等待追加到<code>Concurrent Dispatch Queue</code>上的并行执行的处理全部结束之后，再将指定的处理追加到该<code>Concurrent Dispatch Queue</code>中，然后在由<code>dispatch_barrier_async</code>函数追加的处理执行完毕后，<code>Concurrent Dispatch Queue</code>才恢复为一般的动作，追加到该<code>Concurrent Dispatch Queue</code>的处理又开始并行执行</li>
+<li>使用<code>Concurrent Dispatch Queue</code>和<code>dispatch_barrier_async</code>函数可实现高效率的数据库访问和文件访问</li>
+</ul>
+<h5 id="dispatch-sync"><a href="#dispatch-sync" class="headerlink" title="dispatch_sync"></a><code>dispatch_sync</code></h5><ul>
+<li><code>dispatch_async</code>函数的<code>async</code>意味着“非同步”<code>(asynchronous)</code>，就是将指定的<code>Block</code>“非同步”地追加到指定的<code>Dispatch Queue</code>中。<code>dispatch_async</code>函数不做任何等待</li>
+<li><code>dispatch_sync</code>函数的<code>sync</code>意味着“同步”<code>(synchronous)</code>，就是将指定的<code>Block</code>“同步”追加到指定的<code>Dispatch Queue</code>中。在追加的<code>Block</code>执行结束之前，<code>dispatch_sync</code>函数会一直等待。“等待”意味着当前线程停止</li>
+<li>使用<code>dispatch_sync</code>容易引起死锁问题，因此在使用同步等待处理执行的API时需谨慎</li>
+</ul>
+<h5 id="dispatch-apply"><a href="#dispatch-apply" class="headerlink" title="dispatch_apply"></a><code>dispatch_apply</code></h5><ul>
+<li><code>dispatch_apply</code>函数是<code>dispatch_sync</code>函数和<code>Dispatch Group</code>的关联<code>API</code></li>
+<li><code>dispatch_apply</code>函数功能：按指定的次数将指定的<code>Block</code>追加到指定的<code>Dispatch Queue</code>中，并等待全部处理执行结束</li>
+<li><code>dispatch_apply</code>函数与<code>dispatch_sync</code>函数相同，会等待处理执行结束</li>
+</ul>
+<h5 id="dispatch-suspend-dispatch-resume"><a href="#dispatch-suspend-dispatch-resume" class="headerlink" title="dispatch_suspend/dispatch_resume"></a><code>dispatch_suspend/dispatch_resume</code></h5><ul>
+<li><code>dispatch_suspend</code>函数挂起指定的<code>Dispatch Queue</code></li>
+<li><code>dispatch_resume</code>函数恢复指定的<code>Dispatch Queue</code></li>
+<li><code>dispatch_suspend/dispatch_resume</code>函数对已经执行的处理没有影响。挂起后，追加到<code>Dispatch Queue</code>中但尚未执行的处理在此之后停止处理，而恢复则使得这些处理能够继续执行</li>
+</ul>
+<h5 id="Dispatch-Semaphore"><a href="#Dispatch-Semaphore" class="headerlink" title="Dispatch Semaphore"></a><code>Dispatch Semaphore</code></h5><ul>
+<li><code>Dispatch Semaphore</code>是持有计数的信号，该计数是多线程编程中的计数类型信号。从更细粒度上控制并行执行处理更新数据时，会产生数据不一致的情况，进行排他控制的处理</li>
+<li>在<code>Dispatch Semaphore</code>中，使用计数来实现，计数为<code>0</code>时等待，计数为<code>1</code>或大于<code>1</code>时，减去<code>1</code>而不等待的功能</li>
+<li><p>使用</p>
+<ul>
+<li>使用函数<code>dispatch_semaphore_create()</code>生成<code>Dispatch Semaphore</code></li>
+<li>参数表示计数的初始值</li>
+<li><code>dispatch_semaphore_wait</code>函数返回<code>0</code>时，可安全地执行需要进行排他控制的处理。该处理结束时通过<code>dispatch_semaphore_signal</code>函数将<code>Dispatch Semaphore</code>的计数值加<code>1</code></li>
+</ul>
+</li>
+<li><p>在没有<code>Serial Dispatch Queue</code>和<code>dispatch_barrier_async</code>函数那么大粒度且一部分处理需要进行排他控制的情况下，<code>Dispatch Semaphore</code>可发挥作用。<code>Dispatch Semaphore</code>使用的粒度具体到并行执行中单一的线程上</p>
+</li>
+</ul>
+<h5 id="dispatch-once"><a href="#dispatch-once" class="headerlink" title="dispatch_once"></a><code>dispatch_once</code></h5><ul>
+<li>dispatch_once函数是保证在应用程序执行中只执行一次指定处理的API</li>
+<li>应用在单例模式中，单例对象的创建</li>
+</ul>
+<h5 id="Dispatch-I-O"><a href="#Dispatch-I-O" class="headerlink" title="Dispatch I/O"></a><code>Dispatch I/O</code></h5><ul>
+<li>在读取较大文件时，将文件分成合适的大小并使用<code>Global Dispatch Queue</code>并列读取，会使读取速度快不少。可以通过使用<code>Dispatch I/O</code>，提高文件读取速度</li>
+<li>现今的输入/输出硬件已经可以做到一次使用多个线程更快地并列读取了。实现这一功能的是<code>Dispatch I/O</code>和<code>Dispatch Data</code></li>
+</ul>
+<h3 id="GCD实现"><a href="#GCD实现" class="headerlink" title="GCD实现"></a><code>GCD</code>实现</h3><h5 id="Dispatch-Queue-1"><a href="#Dispatch-Queue-1" class="headerlink" title="Dispatch Queue"></a><code>Dispatch Queue</code></h5><ul>
+<li>实现<code>GCD</code>所用到的工具<ul>
+<li>用于管理追加的<code>Block</code>的<code>C</code>语言层实现的<code>FIFO</code>队列</li>
+<li><code>Atomic</code>函数中实现的用于排他控制的轻量级信号</li>
+<li>用于管理线程的<code>C</code>语言层实现的一些容器</li>
+</ul>
+</li>
+<li>线程管理中使用<code>GCD</code>的实质原因：应用程序中编写的线程管理用的代码要在系统级实现<ul>
+<li>系统级，即<code>iOS</code>和<code>OS X</code>的核心<code>XNU</code>内核级上实现</li>
+<li>在系统级上，保证了实现管理线程的<code>GCD</code>的性能</li>
+</ul>
+</li>
+<li>使用<code>GCD</code>要比使用<code>pthreads</code>和<code>NSThread</code>这些一般的多线程编程<code>API</code>更好</li>
+<li>用于实现<code>Dispatch Queue</code>而使用的软件组件</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>组件名称</th>
+<th>提供技术</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>libdispatch</td>
+<td>Dispatch Queue</td>
+</tr>
+<tr>
+<td>Libc(pthreads)</td>
+<td>pthread_workqueue</td>
+</tr>
+<tr>
+<td>XNU内核</td>
+<td>workqueue</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>使用的<code>GCD</code>的<code>API</code>全部为包含在<code>libdispatch</code>库中的<code>C</code>语言函数<ul>
+<li><code>Dispatch Queue</code>通过结构体和链表，被实现为<code>FIFO</code>队列</li>
+<li><code>FIFO</code>队列管理是通过<code>dispatch_async</code>等函数所追加的<code>Block</code></li>
+<li><code>Block</code>并不是直接加入<code>FIFO</code>队列，而是先加入<code>Dispatch Continuation</code>这一<code>dispatch_continuation_t</code>类型结构体中，然后再加入<code>FIFO</code>队列。该<code>Dispatch Continuation</code>用于记忆<code>Block</code>所属的<code>Dispatch Group</code>和其他一些信息，即执行的上下文</li>
+</ul>
+</li>
+</ul>
+<h5 id="Dispatch-Source"><a href="#Dispatch-Source" class="headerlink" title="Dispatch Source"></a><code>Dispatch Source</code></h5><ul>
+<li>Dispatch Source是BSD系内核惯有功能kqueue的包装。kqueue是在XNU内核中发生各种事件时，在应用程序编程方执行处理的技术。其CPU负荷非常小，尽量不占用资源。kqueue可以说是应用程序处理XNU内核中发生的各种事件的方法中最优秀的一种</li>
+<li>Dispatch Source可处理以下事件</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DISPATCH_SOURCE_TYPE_DATA_ADD</td>
+<td>变量增加</td>
+</tr>
+<tr>
+<td>DISPATCH_SOURCE_TYPE_DATA_OR</td>
+<td>变量 OR</td>
+</tr>
+<tr>
+<td>DISPATCH_SOURCE_TYPE_MACH_SEND</td>
+<td>MACH端口发送</td>
+</tr>
+<tr>
+<td>DISPATCH_SOURCE_TYPE_MACH_RECV</td>
+<td>MACH端口接收</td>
+</tr>
+<tr>
+<td>DISPATCH_SOURCE_TYPE_PROC</td>
+<td>检测到与进程相关的事件</td>
+</tr>
+<tr>
+<td>DISPATCH_SOURCE_TYPE_READ</td>
+<td>可读取文件映像</td>
+</tr>
+<tr>
+<td>DISPATCH_SOURCE_TYPE_SIGNAL</td>
+<td>接收信号</td>
+</tr>
+<tr>
+<td>DISPATCH_SOURCE_TYPE_TIMER</td>
+<td>定时器</td>
+</tr>
+<tr>
+<td>DISPATCH_SOURCE_TYPE_VNODE</td>
+<td>文件系统有变更</td>
+</tr>
+<tr>
+<td>DISPATCH_SOURCE_TYPE_WRITE</td>
+<td>可写入文件映像</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><p>事件发生时，在指定的<code>Dispatch Queue</code>中可执行事件的处理</p>
+</li>
+<li><p>实际上<code>Dispatch Queue</code>没有“取消”这一概念。一旦将处理追加到<code>Dispatch Queue</code>中，就没有方法可将该处理去除，也没有方法可在执行中取消该处理</p>
+</li>
+<li><code>Dispatch Source</code>与<code>Dispatch Queue</code>不同，是可以取消的。而且取消时必须执行的处理可指定为回调用的<code>Block</code>形式。因此使用<code>Dispatch Source</code>实现<code>XNU</code>内核中发生的事件处理要比直接使用<code>kqueue</code>实现更为简单</li>
+</ul>
+<h3 id="GCD中各种队列代码的示例"><a href="#GCD中各种队列代码的示例" class="headerlink" title="GCD中各种队列代码的示例"></a><code>GCD</code>中各种队列代码的示例</h3><ul>
+<li>异步函数+并发队列</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">//并发队列</span><br><span class="line">dispatch_queue_t queue = dispatch_queue_create(&quot;queueName&quot;, DISPATCH_QUEUE_CONCURRENT);</span><br><span class="line">//异步函数</span><br><span class="line">dispatch_async(queue, ^&#123;</span><br><span class="line">//要执行任务的代码</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>同步函数+并发队列</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">//并发队列 - 通过全局调度队列获取并发队列</span><br><span class="line">dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);</span><br><span class="line">//同步函数</span><br><span class="line">dispatch_sync(queue, ^&#123;</span><br><span class="line">//要执行任务的代码</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>异步函数+串行队列</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">//串行队列</span><br><span class="line">dispatch_queue_t queue = dispatch_queue_create(&quot;queueName&quot;, DISPATCH_QUEUE_SERIAL);</span><br><span class="line">//异步函数</span><br><span class="line">dispatch_async(queue, ^&#123;</span><br><span class="line">//要执行任务的代码</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>同步函数+串行队列</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">//串行队列</span><br><span class="line">dispatch_queue_t queue = dispatch_queue_create(&quot;queueName&quot;, DISPATCH_QUEUE_SERIAL);</span><br><span class="line">//同步函数</span><br><span class="line">dispatch_sync(queue, ^&#123;</span><br><span class="line">//要执行任务的代码</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>异步函数+主队列</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">//主队列</span><br><span class="line">dispatch_queue_t queue = dispatch_get_main_queue();</span><br><span class="line">//异步函数</span><br><span class="line">dispatch_async(queue, ^&#123;</span><br><span class="line">//要执行任务的代码</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>同步函数+主队列 - <strong>你等我，我等你，最终结果是不执行了</strong></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">//主队列</span><br><span class="line">dispatch_queue_t queue = dispatch_get_main_queue();</span><br><span class="line">//同步函数</span><br><span class="line">dispatch_sync(queue, ^&#123;</span><br><span class="line">//要执行任务的代码</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>注意：使用<code>sync</code>函数往当前串行队列中添加任务，会卡住当前的串行队列</p>
+</li>
+<li><p>总结</p>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>全局并发队列</th>
+<th>手动创建串行队列</th>
+<th>主队列</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>同步(sync)</td>
+<td>没有开启新线程，串行执行任务</td>
+<td>没有开启新线程，串行执行任务</td>
+<td>没有开启新线程，串行执行任务</td>
+</tr>
+<tr>
+<td>异步(async)</td>
+<td>有开启新线程，并发执行任务</td>
+<td>有开启新线程，串行执行任务</td>
+<td>没有开启新线程，串行执行任务</td>
+</tr>
+</tbody>
+</table>
+<h3 id="GCD的实际应用"><a href="#GCD的实际应用" class="headerlink" title="GCD的实际应用"></a><code>GCD</code>的实际应用</h3><h5 id="温习"><a href="#温习" class="headerlink" title="温习"></a>温习</h5><ul>
+<li>同步/异步 (侧重描述能不能开启新的线程)<ul>
+<li>同步不开线程，对应函数<code>dispatch_sync</code> (在当前线程中执行任务，不具备开启新线程的能力)</li>
+<li>异步，除了主队列，都开线程，开多少条由队列的类型来决定，对应函数<code>dispatch_async</code> (在新的线程中执行任务，具备开启新线程的能力)</li>
+</ul>
+</li>
+<li>并发/串行 (侧重描述任务的执行方式)<ul>
+<li>并发，多个任务并发(同时)执行</li>
+<li>串行，一个任务执行完毕后，再执行下一个任务</li>
+</ul>
+</li>
+<li>全局队列/主队列 <ul>
+<li>全局队列，同步不开线程，异步开N条线程</li>
+<li>主队列，同步会卡死，异步不开线程(因它有主线程)</li>
+</ul>
+</li>
+<li><code>GCD</code>是苹果公司为多核的并行运算提出的解决方案<ul>
+<li>这一方案会自动利用更多的<code>CPU</code>内核</li>
+<li>会自动管理线程的生命周期(创建线程、调度任务、销毁线程)</li>
+</ul>
+</li>
+</ul>
+<h5 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h5><ul>
+<li>异步下载图片</li>
+<li><p>线程安全-设置依赖关系</p>
+<ul>
+<li>如，异步下载<code>20</code>张图片写入一个数组中，为了保证效率所以数组为非线程安全的，如何解决多线程同时访问的问题。<ul>
+<li>解决方法：通过<code>GCD</code>的阻塞(<code>dispatch_barrier_async</code>)和异步</li>
+<li>注：如使用了<code>dispatch_barrier_async</code>，须用创建的并发队列，而不能用全局队列</li>
+</ul>
+</li>
+<li>如，想在dispatch_queue中所有的任务执行完成后再执行某种操作<ul>
+<li>解决方法<ol>
+<li>串行队列中，可以把该操作放到最后一个任务执行完成后继续</li>
+<li>并行队列中，使用<code>dispatch_group</code>进行操作(Global Dispatch Queue是并行队列，可以通过dispatch_get_global_queue(0,0)获得到)</li>
+</ol>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>单例(使用<code>dispatch_once</code>)</p>
+</li>
+<li>延迟执行(使用<code>dispatch_after</code>)</li>
+<li><p>其他</p>
+<ul>
+<li><code>dispatch_suspend</code>函数只能暂停新追加未执行的<code>block</code>，已经处于执行中的<code>block</code>是无法暂停的，实质是将对应的<code>dispatch queue</code>挂起，从而达到暂停的效果</li>
+</ul>
+</li>
+<li><p>任务之间不太互相依赖，而需要更高的并发能力，<code>GCD</code>更有优势</p>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/多线程编程/" rel="tag"># 多线程编程</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/05/27/Swift/" rel="prev" title="Swift">
+      <i class="fa fa-chevron-left"></i> Swift
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/06/05/内存管理/" rel="next" title="内存管理">
+      内存管理 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#背景"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#多线程编程在iOS中的应用"><span class="nav-number">1.0.1.</span> <span class="nav-text">多线程编程在iOS中的应用</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#GCD的引入给多线程编程带来的意义"><span class="nav-number">1.0.2.</span> <span class="nav-text">GCD的引入给多线程编程带来的意义</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#GCD的引入，对iOS多线程编程的影响"><span class="nav-number">1.0.3.</span> <span class="nav-text">GCD的引入，对iOS多线程编程的影响</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GCD的API"><span class="nav-number">2.</span> <span class="nav-text">GCD的API</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#苹果官方对GCD的说明"><span class="nav-number">2.0.1.</span> <span class="nav-text">苹果官方对GCD的说明</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Dispatch-Queue"><span class="nav-number">2.0.2.</span> <span class="nav-text">Dispatch Queue</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#dispatch-set-target-queue"><span class="nav-number">2.0.3.</span> <span class="nav-text">dispatch_set_target_queue</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#dispatch-after"><span class="nav-number">2.0.4.</span> <span class="nav-text">dispatch_after</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Dispatch-Group"><span class="nav-number">2.0.5.</span> <span class="nav-text">Dispatch Group</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#dispatch-barrier-async"><span class="nav-number">2.0.6.</span> <span class="nav-text">dispatch_barrier_async</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#dispatch-sync"><span class="nav-number">2.0.7.</span> <span class="nav-text">dispatch_sync</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#dispatch-apply"><span class="nav-number">2.0.8.</span> <span class="nav-text">dispatch_apply</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#dispatch-suspend-dispatch-resume"><span class="nav-number">2.0.9.</span> <span class="nav-text">dispatch_suspend/dispatch_resume</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Dispatch-Semaphore"><span class="nav-number">2.0.10.</span> <span class="nav-text">Dispatch Semaphore</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#dispatch-once"><span class="nav-number">2.0.11.</span> <span class="nav-text">dispatch_once</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Dispatch-I-O"><span class="nav-number">2.0.12.</span> <span class="nav-text">Dispatch I/O</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GCD实现"><span class="nav-number">3.</span> <span class="nav-text">GCD实现</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Dispatch-Queue-1"><span class="nav-number">3.0.1.</span> <span class="nav-text">Dispatch Queue</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Dispatch-Source"><span class="nav-number">3.0.2.</span> <span class="nav-text">Dispatch Source</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GCD中各种队列代码的示例"><span class="nav-number">4.</span> <span class="nav-text">GCD中各种队列代码的示例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GCD的实际应用"><span class="nav-number">5.</span> <span class="nav-text">GCD的实际应用</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#温习"><span class="nav-number">5.0.1.</span> <span class="nav-text">温习</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#使用场景"><span class="nav-number">5.0.2.</span> <span class="nav-text">使用场景</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Ben</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">51</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">categories</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ben</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

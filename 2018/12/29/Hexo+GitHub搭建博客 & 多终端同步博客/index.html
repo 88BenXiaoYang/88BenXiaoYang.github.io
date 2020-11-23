@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Hexo+GitHub搭建博客 &amp;amp; 多终端同步博客 for Mac Hexo+GitHub搭建博客环境准备 Git       下载 Node.js   下载 GitHub账号 注册 Markdown编辑器 MacDown  Tips: 1234在终端下查看Git、Node.js的安装情况node -vgit --version如已安装对应程序，会输出程序版本信息 安装HexoHexo介绍">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hexo+GitHub搭建博客 &amp; 多终端同步博客">
+<meta property="og:url" content="http://yoursite.com/2018/12/29/Hexo+GitHub搭建博客 & 多终端同步博客/index.html">
+<meta property="og:site_name" content="Ben&#39;Blog">
+<meta property="og:description" content="Hexo+GitHub搭建博客 &amp;amp; 多终端同步博客 for Mac Hexo+GitHub搭建博客环境准备 Git       下载 Node.js   下载 GitHub账号 注册 Markdown编辑器 MacDown  Tips: 1234在终端下查看Git、Node.js的安装情况node -vgit --version如已安装对应程序，会输出程序版本信息 安装HexoHexo介绍">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-11-23T03:54:31.125Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Hexo+GitHub搭建博客 &amp; 多终端同步博客">
+<meta name="twitter:description" content="Hexo+GitHub搭建博客 &amp;amp; 多终端同步博客 for Mac Hexo+GitHub搭建博客环境准备 Git       下载 Node.js   下载 GitHub账号 注册 Markdown编辑器 MacDown  Tips: 1234在终端下查看Git、Node.js的安装情况node -vgit --version如已安装对应程序，会输出程序版本信息 安装HexoHexo介绍">
+
+<link rel="canonical" href="http://yoursite.com/2018/12/29/Hexo+GitHub搭建博客 & 多终端同步博客/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>Hexo+GitHub搭建博客 & 多终端同步博客 | Ben'Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Ben'Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">工欲善其事，必先利其器</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/12/29/Hexo+GitHub搭建博客 & 多终端同步博客/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Ben">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ben'Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Hexo+GitHub搭建博客 & 多终端同步博客
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-12-29 00:00:00" itemprop="dateCreated datePublished" datetime="2018-12-29T00:00:00+08:00">2018-12-29</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-11-23 11:54:31" itemprop="dateModified" datetime="2020-11-23T11:54:31+08:00">2020-11-23</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>Hexo+GitHub搭建博客 &amp; 多终端同步博客 for Mac</p>
+<h2 id="Hexo-GitHub搭建博客"><a href="#Hexo-GitHub搭建博客" class="headerlink" title="Hexo+GitHub搭建博客"></a>Hexo+GitHub搭建博客</h2><h3 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h3><ul>
+<li>Git       <a href="https://git-scm.com" target="_blank" rel="noopener">下载</a></li>
+<li>Node.js   <a href="https://nodejs.org/en/" target="_blank" rel="noopener">下载</a></li>
+<li>GitHub账号 <a href="https://github.com" target="_blank" rel="noopener">注册</a></li>
+<li>Markdown编辑器 <a href="https://macdown.uranusjr.com" target="_blank" rel="noopener">MacDown</a></li>
+</ul>
+<p>Tips:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">在终端下查看Git、Node.js的安装情况</span><br><span class="line">node -v</span><br><span class="line">git --version</span><br><span class="line">如已安装对应程序，会输出程序版本信息</span><br></pre></td></tr></table></figure>
+<h3 id="安装Hexo"><a href="#安装Hexo" class="headerlink" title="安装Hexo"></a>安装Hexo</h3><p>Hexo介绍及常用操作阅读<a href="https://hexo.io/zh-cn/docs/" target="_blank" rel="noopener">Hexo文档</a></p>
+<p>环境准备好后。终端输入如下命令安装Hexo脚手架（安装完成后可通过<code>hexo -v</code>查看Hexo的版本信息）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo npm install -g hexo-cli</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>初始化</p>
+<ul>
+<li>终端cd到指定的目录，执行如下命令（hexoblog是自定义文件夹名称，是初始化时将要建立的文件夹）：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo init hexoblog</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<ul>
+<li><p>cd 到hexoblog文件夹下，执行如下命令安装npm：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<ul>
+<li><p>检验初始化是否成功，执行如下命令，开启本地Hexo服务器（如成功终端输出有<a href="http://localhost:4000的信息，浏览器打开http://localhost:4000的网址，能看到Hexo的页面）：" target="_blank" rel="noopener">http://localhost:4000的信息，浏览器打开http://localhost:4000的网址，能看到Hexo的页面）：</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo s</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>  Tips:</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">如终端输入 hexo s 没有成功，</span><br><span class="line">可输入命令 hexo s -p 5000 改下端口试试看。</span><br></pre></td></tr></table></figure>
+<h3 id="关联GitHub"><a href="#关联GitHub" class="headerlink" title="关联GitHub"></a>关联GitHub</h3><h6 id="创建仓库"><a href="#创建仓库" class="headerlink" title="创建仓库"></a>创建仓库</h6><ul>
+<li>登录 <a href="https://github.com" target="_blank" rel="noopener">GitHub</a> 账号，创建名称格式为<code>xxx.github.io</code>的仓库，<code>xxx</code>为GitHub账号用户名。创建步骤可参考<a href="https://help.github.com/articles/create-a-repo/" target="_blank" rel="noopener">Create a repo</a></li>
+</ul>
+<h6 id="开启-GitHub-Pages"><a href="#开启-GitHub-Pages" class="headerlink" title="开启 GitHub Pages"></a>开启 GitHub Pages</h6><ul>
+<li><p>在刚创建的仓库下，点击<code>setting</code>，进入<code>setting</code>界面，拖动到<code>GitHub Pages</code>，在<code>Source</code>处选择<code>master</code>分支并保存，如已是<code>master</code>分支不做此操作。</p>
+<p>Tips:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">可在 Custom domain 设置自己的域名，</span><br><span class="line">访问博客时直接输入此处设置的域名即可。</span><br><span class="line">不设置也不影响博客的访问，不过是浏览器输入地址时麻烦些，</span><br><span class="line">输入创建仓库时的仓库名 xxx.github.io。</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p> <a href="https://wanwang.aliyun.com/?spm=5176.8142029.735711.62.3d2c6d3ex1u7aA" target="_blank" rel="noopener">域名注册</a></p>
+<h3 id="修改全局配置文件"><a href="#修改全局配置文件" class="headerlink" title="修改全局配置文件"></a>修改全局配置文件</h3><p>终端cd到初始化时创建的hexoblog文件夹，找到 _config.yml 可通过<code>vim _config.yml</code>编辑 _config.yml 的deploy部分，编辑完后是下面的结果（clone地址的方式不同，结果会不一样）：</p>
+<ul>
+<li>Clone with SSH</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">deploy:</span><br><span class="line">  type: git</span><br><span class="line">  repository: git@github.com:xxx/xxx.github.io.git</span><br><span class="line">  branch: master</span><br></pre></td></tr></table></figure>
+<ul>
+<li>Clone with HTTPS</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">deploy:</span><br><span class="line">  type: git</span><br><span class="line">  repository: https://github.com/xxx/xxx.github.io.git</span><br><span class="line">  branch: master</span><br></pre></td></tr></table></figure>
+<p>Tips:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">xxx 是 GitHub 账号的用户名</span><br><span class="line">修改配置文件 _config.yml 时，</span><br><span class="line">注意所有的冒号 : 后面都要加一个空格</span><br></pre></td></tr></table></figure>
+<h3 id="上传博客到GitHub"><a href="#上传博客到GitHub" class="headerlink" title="上传博客到GitHub"></a>上传博客到GitHub</h3><p>修改完配置文件后，执行如下命令生成静态页面：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo g</span><br></pre></td></tr></table></figure>
+<p>如出错，尝试执行如下命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo --save</span><br></pre></td></tr></table></figure>
+<p>如执行<code>hexo g</code>命令无报错，执行如下命令开始上传：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo d</span><br></pre></td></tr></table></figure>
+<p>如出错，执行如下命令来安装<code>hexo-deployer-git</code>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm insatll hexo-deployer-git --save</span><br></pre></td></tr></table></figure>
+<p>安装完成之后，再次执行<code>hexo g</code>和<code>hexo d</code>命令上传资源到GitHub。上传完成后可在浏览器输入<code>xxx.github.io</code>浏览已搭建好的博客。</p>
+<h2 id="多终端同步博客"><a href="#多终端同步博客" class="headerlink" title="多终端同步博客"></a>多终端同步博客</h2><p>博客搭建完成，想在不同终端进行博客的发布更新，需进行如下操作。</p>
+<p>思路：将博文内容相关文件放在GitHub项目的master中，将Hexo写博客用的相关配置文件放在GitHub项目的hexo分支上，多终端的同步只需要对hexo分支进行操作。</p>
+<p>上面搭建博客操作<code>hexo d</code>命令后，会把博文内容相关的文件上传到GitHub上的xxx.github.io项目的master分支上。</p>
+<p>接下来：</p>
+<ul>
+<li>cd 到hexoblog文件夹下，<code>git init</code>初始化本地仓库</li>
+<li>依次添加必要的文件</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">git add _config.yml</span><br><span class="line">git add package.json</span><br><span class="line">git add scaffolds</span><br><span class="line">git add source</span><br><span class="line">git add themes</span><br><span class="line">git add .gitignore</span><br></pre></td></tr></table></figure>
+<p>不用<code>git add .</code>进行添加，是因为用<code>git add .</code>会把<code>npm install</code>产生的 <code>node_modules</code> 给一起添加了，<code>node_modules</code> 不必添加，在另一终端操作博客时，执行<code>npm install</code>会产生<code>node_modules</code>。</p>
+<ul>
+<li>提交操作记录 <code>git commit -m &quot;添加必要文件&quot;</code></li>
+<li>新建分支 <code>git branch hexo</code></li>
+<li>切换到hexo分支上 <code>git checkout hexo</code></li>
+<li>将本地与GitHub上的项目关联起来<br><code>git remote add origin git@github.com:xxx/xxx.github.io.git</code></li>
+<li>将本地的hexo分支push到GitHub项目的hexo分支上<br><code>git push origin hexo</code></li>
+</ul>
+<p>经过上述操作后GitHub项目上会增加hexo分支，hexo分支下是之前add的文件 <code>_config.yml、package.json、scaffolds 、ource、themes、.gitignore</code>。这个hexo分支就是用于多终端同步操作博客的关键部分。</p>
+<h3 id="模拟另一终端操作博客"><a href="#模拟另一终端操作博客" class="headerlink" title="模拟另一终端操作博客"></a>模拟另一终端操作博客</h3><p>新建一个临时文件夹tmpblog</p>
+<ul>
+<li><code>cd tmpblog</code></li>
+<li><code>git init</code></li>
+<li>将GitHub项目上的hexo分支clone到本地<br><code>git clone -b hexo github上博客的项目地址</code></li>
+<li>cd 到刚clone的文件夹</li>
+<li><code>npm install</code></li>
+<li>新建博客文章<code>hexo new post &quot;博客文章名&quot;</code></li>
+<li><code>git add source</code> git add hexo分支中有改动的文件</li>
+<li><code>git commit -m &quot;add new blog file&quot;</code></li>
+<li>更新修改到GitHub上的hexo分支<code>git push origin hexo</code></li>
+<li><code>hexo d -g</code>构建上传文章到GitHub的master分支上</li>
+</ul>
+<p>通过上述操作后，在浏览器浏览xxx.github.io即可看到新创建的博客文章。</p>
+<p>Tips：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">在另一台终端进行如上操作前，先确认终端是否已安装了git、Hexo、Node.js程序</span><br><span class="line">可通过git --version、hexo -v、node -v进行查看</span><br><span class="line">如输出对应的版本信息，说明已有发布、更新博客的环境，继续上述操作</span><br><span class="line">如环境没准备好，看上文 ‘环境准备’，操作到Hexo脚手架安装完成即可</span><br><span class="line"></span><br><span class="line">新电脑环境下，需安装：</span><br><span class="line">Git</span><br><span class="line">Node.js</span><br><span class="line">Hexo脚手架</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">上述 git add 时，只需git add hexo分支中有改动的文件</span><br></pre></td></tr></table></figure>
+<h6 id="可能会遇到的问题"><a href="#可能会遇到的问题" class="headerlink" title="可能会遇到的问题"></a>可能会遇到的问题</h6><p>执行<code>hexo d -g</code>后，浏览器不能正常显示博客内容，终端上会提示<code>WARN No layout: index.html</code>，解决方案可参考<a href="http://www.cnblogs.com/LandWind/articles/8952362.html" target="_blank" rel="noopener">博客</a></p>
+<ul>
+<li><code>git clone https://github.com/iissnan/hexo-theme-next themes/next</code></li>
+<li><code>git add themes</code></li>
+<li><code>git commit -m &quot;clone themes&quot;</code></li>
+<li><code>git pull origin hexo</code></li>
+<li><code>git push origin hexo</code></li>
+<li><code>hexo clean</code></li>
+<li><code>hexo d -g</code></li>
+</ul>
+<h2 id="常用操作"><a href="#常用操作" class="headerlink" title="常用操作"></a>常用操作</h2><p>新建文章：<code>hexo n &quot;文章名称&quot;</code></p>
+<p>清理项目：<code>hexo clean</code></p>
+<p>构建项目：<code>hexo d -g</code></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2019/01/01/Hexo-Git-博客常用功能/" rel="next" title="Hexo+GitHub博客常用功能">
+      Hexo+GitHub博客常用功能 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Hexo-GitHub搭建博客"><span class="nav-number">1.</span> <span class="nav-text">Hexo+GitHub搭建博客</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#环境准备"><span class="nav-number">1.1.</span> <span class="nav-text">环境准备</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装Hexo"><span class="nav-number">1.2.</span> <span class="nav-text">安装Hexo</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#关联GitHub"><span class="nav-number">1.3.</span> <span class="nav-text">关联GitHub</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#创建仓库"><span class="nav-number">1.3.0.0.1.</span> <span class="nav-text">创建仓库</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#开启-GitHub-Pages"><span class="nav-number">1.3.0.0.2.</span> <span class="nav-text">开启 GitHub Pages</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#修改全局配置文件"><span class="nav-number">1.4.</span> <span class="nav-text">修改全局配置文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#上传博客到GitHub"><span class="nav-number">1.5.</span> <span class="nav-text">上传博客到GitHub</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多终端同步博客"><span class="nav-number">2.</span> <span class="nav-text">多终端同步博客</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#模拟另一终端操作博客"><span class="nav-number">2.1.</span> <span class="nav-text">模拟另一终端操作博客</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#可能会遇到的问题"><span class="nav-number">2.1.0.0.1.</span> <span class="nav-text">可能会遇到的问题</span></a></li></ol></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常用操作"><span class="nav-number">3.</span> <span class="nav-text">常用操作</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Ben</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">51</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">categories</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ben</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="12知识需要沉淀，不要想试图一下子掌握所有学习知识的过程是反复迭代、不断沉淀的过程 数据结构和算法的概念 广义  12数据结构就是指一组数据的存储结构。算法就是操作数据的一组方法。  狭义  1指某些著名的数据结构和算法，比如队列、栈、堆、二分查找、动态规划等具体的使用场景。 数据结构和算法的关系1234数据结构和算法是相辅相成的。数据结构是为算法服务的，算法要作用在特定的数据结构之上。数据结构是">
+<meta name="keywords" content="数据结构与算法">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据结构与算法">
+<meta property="og:url" content="http://yoursite.com/2019/01/23/数据结构与算法/index.html">
+<meta property="og:site_name" content="Ben&#39;Blog">
+<meta property="og:description" content="12知识需要沉淀，不要想试图一下子掌握所有学习知识的过程是反复迭代、不断沉淀的过程 数据结构和算法的概念 广义  12数据结构就是指一组数据的存储结构。算法就是操作数据的一组方法。  狭义  1指某些著名的数据结构和算法，比如队列、栈、堆、二分查找、动态规划等具体的使用场景。 数据结构和算法的关系1234数据结构和算法是相辅相成的。数据结构是为算法服务的，算法要作用在特定的数据结构之上。数据结构是">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2019/01/23/数据结构与算法/复杂度量级.jpg">
+<meta property="og:image" content="http://yoursite.com/2019/01/23/数据结构与算法/常见的数据结构和算法的复杂度趋势.jpg">
+<meta property="og:updated_time" content="2020-11-23T03:54:31.355Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="数据结构与算法">
+<meta name="twitter:description" content="12知识需要沉淀，不要想试图一下子掌握所有学习知识的过程是反复迭代、不断沉淀的过程 数据结构和算法的概念 广义  12数据结构就是指一组数据的存储结构。算法就是操作数据的一组方法。  狭义  1指某些著名的数据结构和算法，比如队列、栈、堆、二分查找、动态规划等具体的使用场景。 数据结构和算法的关系1234数据结构和算法是相辅相成的。数据结构是为算法服务的，算法要作用在特定的数据结构之上。数据结构是">
+<meta name="twitter:image" content="http://yoursite.com/2019/01/23/数据结构与算法/复杂度量级.jpg">
+
+<link rel="canonical" href="http://yoursite.com/2019/01/23/数据结构与算法/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>数据结构与算法 | Ben'Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Ben'Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">工欲善其事，必先利其器</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/23/数据结构与算法/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Ben">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ben'Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          数据结构与算法
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-01-23 10:02:48" itemprop="dateCreated datePublished" datetime="2019-01-23T10:02:48+08:00">2019-01-23</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-11-23 11:54:31" itemprop="dateModified" datetime="2020-11-23T11:54:31+08:00">2020-11-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/数据结构与算法/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">知识需要沉淀，不要想试图一下子掌握所有</span><br><span class="line">学习知识的过程是反复迭代、不断沉淀的过程</span><br></pre></td></tr></table></figure>
+<h3 id="数据结构和算法的概念"><a href="#数据结构和算法的概念" class="headerlink" title="数据结构和算法的概念"></a>数据结构和算法的概念</h3><ul>
+<li>广义</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">数据结构就是指一组数据的存储结构。</span><br><span class="line">算法就是操作数据的一组方法。</span><br></pre></td></tr></table></figure>
+<ul>
+<li>狭义</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">指某些著名的数据结构和算法，比如队列、栈、堆、二分查找、动态规划等具体的使用场景。</span><br></pre></td></tr></table></figure>
+<h3 id="数据结构和算法的关系"><a href="#数据结构和算法的关系" class="headerlink" title="数据结构和算法的关系"></a>数据结构和算法的关系</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">数据结构和算法是相辅相成的。</span><br><span class="line">数据结构是为算法服务的，算法要作用在特定的数据结构之上。</span><br><span class="line">数据结构是静态的，它只是组织数据的一种方式。如果不在它的基础上操作、构建算法，孤立存在的数据结构就是没用的。</span><br><span class="line">因此，无法孤立数据结构来讲算法，也无法孤立算法来讲数据结构。</span><br></pre></td></tr></table></figure>
+<p>如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">因为数组具有随机访问的特点，</span><br><span class="line">常用的二分查找算法需要用数组来存储数据。</span><br><span class="line">但如果我们选择链表这种数据结构，二分查找算法就无法工作了，</span><br><span class="line">因为链表并不支持随机访问。</span><br></pre></td></tr></table></figure>
+<h3 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h3><ul>
+<li>常用的数据结构和算法</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">数据结构：</span><br><span class="line">数组、链表、栈、队列、散列表</span><br><span class="line">二叉树、堆、跳表、图、Trie树</span><br><span class="line"></span><br><span class="line">算法：</span><br><span class="line">递归、排序、二分查找、搜索、哈希算法</span><br><span class="line">贪心算法、分治算法、回溯算法、动态规划、字符串匹配算法</span><br></pre></td></tr></table></figure>
+<p><a href="https://88benxiaoyang.github.io/2019/01/23/数据结构与算法图表（一）/" target="_blank" rel="noopener">数据结构和算法知识点图</a></p>
+<ul>
+<li>学习理解数据结构和算法，可从下面几个点进行</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">a. 来历</span><br><span class="line">b. 自身特点</span><br><span class="line">c. 适合解决的问题</span><br><span class="line">d. 实际的应用场景</span><br></pre></td></tr></table></figure>
+<h3 id="重要概念"><a href="#重要概念" class="headerlink" title="重要概念"></a>重要概念</h3><ul>
+<li>复杂度分析</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">复杂度分析，是数据结构与算法中最重要的概念，是数据结构和算法学习的精髓。</span><br></pre></td></tr></table></figure>
+<p>数据结构和算法解决的是如何更省、更快地存储和处理数据的问题，因此需要一个考量效率和资源消耗的方法，这就是复杂度分析方法。</p>
+<p>判断算法的优劣：从时间、空间复杂度进行分析。</p>
+<h3 id="复杂度分析"><a href="#复杂度分析" class="headerlink" title="复杂度分析"></a>复杂度分析</h3><ul>
+<li>如何分析、统计算法的执行效率和资源消耗</li>
+</ul>
+<p>数据结构和算法本身解决的是“快”和“省”的问题，即如何让代码运行得更快，如何让代码更省存储空间。所以<strong>执行效率</strong>是算法一个非常重要的考量指标。</p>
+<p>通过<code>时间、空间复杂度分析</code>衡量你编写的算法代码的执行效率。只要讲到数据结构与算法，就一定离不开时间、空间复杂度分析。</p>
+<p><strong>算法的优劣（即算法执行效率的好坏），体现到实现算法的代码执行完成所用的时间长短和所占用的内存大小上。</strong></p>
+<p>算法的执行效率，粗略地讲，就是算法代码执行的时间。</p>
+<p><strong>所有代码的执行时间<code>T(n)</code>与每行代码的执行次数<code>n</code>成正比。</strong></p>
+<p>时间复杂度，即衡量算法代码执行时间的长短。</p>
+<ul>
+<li>大<code>O</code>时间复杂度表示法</li>
+</ul>
+<p>公式： <code>T(n) = O(f(n))</code><br>解释： </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">T(n):表示代码执行的时间；</span><br><span class="line">n:表示数据规模的大小；</span><br><span class="line">f(n):表示每行代码执行的次数总和；</span><br><span class="line">O:表示代码的执行时间T(n)与f(n)表达式成正比。</span><br></pre></td></tr></table></figure>
+<p>大<code>O</code>时间复杂度实际上并不具体表示代码真正的执行时间，而是表示<strong>代码执行时间随数据规模增长的变化趋势</strong>，所以也叫作<strong>渐进时间复杂度</strong>（asymptotic time complexity），简称<strong>时间复杂度。</strong></p>
+<p>因为时间复杂度表示的是一个变化趋势，所以当<code>n</code>很大时，公式中的<strong>低阶、常量、系数</strong>三部分并左右增长趋势，所以都可以忽略，只需要记录一个最大量级就可以了。</p>
+<p>渐进时间复杂度，即大<code>O</code>时间复杂度，简称时间复杂度。</p>
+<p><strong>在采用大<code>O</code>标记复杂度的时候，可以忽略系数，即<code>O(Cf(n)) = O(f(n))</code>。</strong></p>
+<h5 id="时间复杂度分析"><a href="#时间复杂度分析" class="headerlink" title="时间复杂度分析"></a>时间复杂度分析</h5><p>如何分析一段代码的时间复杂度（三个常用的方法）</p>
+<ul>
+<li><ol>
+<li>只关注循环执行次数最多的一段代码</li>
+</ol>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">大 O 这种复杂度表示方法只是表示一种变化趋势。通常会忽略掉公式中的</span><br><span class="line">常量、低阶、系数，只需要记录一个最大阶的量级就可以了。所以在分析一</span><br><span class="line">个算法、一段代码的时间复杂度的时候，也只关注循环执行次数最多的那一</span><br><span class="line">段代码就可以了。这段核心代码执行次数的 n 的量级，就是整段要分析代</span><br><span class="line">码的时间复杂度。</span><br></pre></td></tr></table></figure>
+<ul>
+<li><ol start="2">
+<li>加法法则：总复杂度等于量级最大的那段代码的复杂度</li>
+</ol>
+</li>
+</ul>
+<p><strong>就时间复杂度的概念来说，时间复杂度表示的是一个算法执行效率与数据规模增长的变化趋势，所以不管常量的执行时间多大，都可以忽略掉，因为常量本身对增长趋势并没有影响。</strong>所以当常量很大时，虽然对代码的执行时间会有很大影响，但是从时间复杂度的概念来说，常量的执行时间可以忽略掉。</p>
+<p><strong>时间复杂度，描述趋势的一个概念。</strong></p>
+<ul>
+<li><ol start="3">
+<li>乘法法则：嵌套代码的复杂度等于嵌套内外代码复杂度的乘积</li>
+</ol>
+</li>
+</ul>
+<h5 id="常见的复杂度量级"><a href="#常见的复杂度量级" class="headerlink" title="常见的复杂度量级"></a>常见的复杂度量级</h5><p><img src="/2019/01/23/数据结构与算法/复杂度量级.jpg" alt="复杂度量级"></p>
+<p>常见的复杂度量级粗略地可以分为两类：<code>多项式量级</code>和<code>非多项式量级</code>。当数据规模<code>n</code>越来越大时，非多项式量级算法的执行时间会急剧增加，求解问题的执行时间会无限增长。所以<strong>非多项式时间复杂度</strong>的算法其实是非常低效的算法。</p>
+<ul>
+<li><ol>
+<li><code>O(1)</code></li>
+</ol>
+</li>
+</ul>
+<p>首先必须明确一个概念，<code>O(1)</code>只是常量级时间复杂度的一种表示方法，并不是指只执行了一行代码。只要代码的执行时间不随<code>n</code>的增大而增长，这样代码的时间复杂度都记作<code>O(1)</code>。</p>
+<p>一般情况下，只要算法中不存在循环语句、递归语句，即使有成千上万行的代码，其时间复杂度也是<code>O(1)</code>。</p>
+<ul>
+<li><ol start="2">
+<li><code>O(logn)</code>、<code>O(nlogn)</code></li>
+</ol>
+</li>
+</ul>
+<p><code>O(nlogn)</code>是一种非常常见的算法时间复杂度。如，归并排序、快速排序的时间复杂度都是<code>O(nlogn)</code>。</p>
+<ul>
+<li><ol start="3">
+<li><code>O(m+n)</code>、<code>O(m*n)</code></li>
+</ol>
+</li>
+</ul>
+<p>对于<code>m</code>、<code>n</code>表示两个数据规模的这种情况，由于无法事先评估<code>m</code>和<code>n</code>谁的量级大，所以在表示复杂度的时候，就不能简单地利用加法法则，省略掉其中的一个。所以时间复杂度为<code>O(m+n)</code>的算法对应的公式为：<code>T1(m) + T2(n) = O(f(m) + g(n))</code>。乘法法则继续有效：<code>T1(m)*T2(n) = O(f(m)*f(n))</code>。</p>
+<h5 id="空间复杂度分析"><a href="#空间复杂度分析" class="headerlink" title="空间复杂度分析"></a>空间复杂度分析</h5><p><strong>空间复杂度全程是渐进空间复杂度（asymptotic space complexity），表示算法的存储空间与数据规模之间的增长关系。</strong></p>
+<p>常见的数据结构和算法的复杂度趋势</p>
+<p><img src="/2019/01/23/数据结构与算法/常见的数据结构和算法的复杂度趋势.jpg" alt="常见的数据结构和算法的复杂度趋势"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">空间复杂度：表示内存的消耗；</span><br><span class="line">时间复杂度：表示执行的快慢。</span><br></pre></td></tr></table></figure>
+<h5 id="最好、最坏、平均、均摊时间复杂度"><a href="#最好、最坏、平均、均摊时间复杂度" class="headerlink" title="最好、最坏、平均、均摊时间复杂度"></a>最好、最坏、平均、均摊时间复杂度</h5><p>为了表示代码在不同情况下的不同时间复杂度，需要引入三个概念：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">最好情况时间复杂度；</span><br><span class="line">最坏情况时间复杂度；</span><br><span class="line">平均情况时间复杂度。</span><br></pre></td></tr></table></figure>
+<p>通常，最好情况时间复杂度和最坏情况时间复杂度对应的都是极端情况下的代码复杂度，发生的概率其实并不大。</p>
+<p>平均情况时间复杂度（简称：平均时间复杂度）的全称叫“加权平均时间复杂度”或“期望时间复杂度”。</p>
+<p>运用最好、最坏、平均时间复杂度，是只有在同一块代码在不同的情况下，时间复杂度有量级的差别，才会使用最好、最坏、平均这三种复杂度表示法来区分。</p>
+<p>摊还分析法分析出来的算法复杂度称为均摊时间复杂度。</p>
+<p>摊还分析法分析出来的均摊时间复杂度的使用场景：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">对一个数据结构进行一组连续操作中，大部分情况下时间复杂度都很低，只有个别情况下时间复杂度比较高，而且这些操作之间存在前后连贯的时序关系，这个时候，就可以将这一组操作放在一块分析，看是否能将较高时间复杂度那次操作的耗时，平摊到其他那些时间复杂度比较低的操作上。而且，在能够应用均摊时间复杂度分析的场合，一般均摊时间复杂度就等于最好情况时间复杂度。</span><br></pre></td></tr></table></figure>
+<p>引入最好、最坏、平均、均摊时间复杂度这几个复杂度概念，是因为，同一段代码，在不同输入的情况下，复杂度量级有可能是不一样的。引入这几个概念之后，可以更加全面地表示一段代码的执行效率。</p>
+<p>Tip:<a href="https://share.weiyun.com/5D2VFqS" target="_blank" rel="noopener">复杂度学习图谱参考</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/数据结构与算法/" rel="tag"># 数据结构与算法</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/01/10/数据持久化/" rel="prev" title="数据持久化">
+      <i class="fa fa-chevron-left"></i> 数据持久化
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/01/23/数据结构与算法图表（一）/" rel="next" title="数据结构与算法图表（一）">
+      数据结构与算法图表（一） <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#数据结构和算法的概念"><span class="nav-number">1.</span> <span class="nav-text">数据结构和算法的概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据结构和算法的关系"><span class="nav-number">2.</span> <span class="nav-text">数据结构和算法的关系</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#知识点"><span class="nav-number">3.</span> <span class="nav-text">知识点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#重要概念"><span class="nav-number">4.</span> <span class="nav-text">重要概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#复杂度分析"><span class="nav-number">5.</span> <span class="nav-text">复杂度分析</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#时间复杂度分析"><span class="nav-number">5.0.1.</span> <span class="nav-text">时间复杂度分析</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#常见的复杂度量级"><span class="nav-number">5.0.2.</span> <span class="nav-text">常见的复杂度量级</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#空间复杂度分析"><span class="nav-number">5.0.3.</span> <span class="nav-text">空间复杂度分析</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#最好、最坏、平均、均摊时间复杂度"><span class="nav-number">5.0.4.</span> <span class="nav-text">最好、最坏、平均、均摊时间复杂度</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Ben</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">51</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">categories</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ben</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

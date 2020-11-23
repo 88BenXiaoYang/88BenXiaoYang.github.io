@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="概念谈到数据存储，首先要明确区分两个概念，数据结构和存储方式。  数据结构，就是数据存在的形式。除了基本的NSDictionary、NSArray和NSSet这些对象，还有更复杂的如：关系模型、对象图和属性列表多种结构。  存储方式，则简单的分为两种：内存与闪存。内存存储是临时的，运行时有效的，但效率高，而闪存则是一种持久化存储，但产生I/O消耗，效率相对低。把内存数据转移到闪存中进行持久化的操作">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据存储">
+<meta property="og:url" content="http://yoursite.com/2019/09/25/数据存储/index.html">
+<meta property="og:site_name" content="Ben&#39;Blog">
+<meta property="og:description" content="概念谈到数据存储，首先要明确区分两个概念，数据结构和存储方式。  数据结构，就是数据存在的形式。除了基本的NSDictionary、NSArray和NSSet这些对象，还有更复杂的如：关系模型、对象图和属性列表多种结构。  存储方式，则简单的分为两种：内存与闪存。内存存储是临时的，运行时有效的，但效率高，而闪存则是一种持久化存储，但产生I/O消耗，效率相对低。把内存数据转移到闪存中进行持久化的操作">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2019/09/25/数据存储/数据存储本质过程.png">
+<meta property="og:image" content="http://yoursite.com/2019/09/25/数据存储/NSUserDefaults字典取值.png">
+<meta property="og:image" content="http://yoursite.com/2019/09/25/数据存储/Kache架构图.png">
+<meta property="og:updated_time" content="2020-11-23T03:54:31.354Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="数据存储">
+<meta name="twitter:description" content="概念谈到数据存储，首先要明确区分两个概念，数据结构和存储方式。  数据结构，就是数据存在的形式。除了基本的NSDictionary、NSArray和NSSet这些对象，还有更复杂的如：关系模型、对象图和属性列表多种结构。  存储方式，则简单的分为两种：内存与闪存。内存存储是临时的，运行时有效的，但效率高，而闪存则是一种持久化存储，但产生I/O消耗，效率相对低。把内存数据转移到闪存中进行持久化的操作">
+<meta name="twitter:image" content="http://yoursite.com/2019/09/25/数据存储/数据存储本质过程.png">
+
+<link rel="canonical" href="http://yoursite.com/2019/09/25/数据存储/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>数据存储 | Ben'Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Ben'Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">工欲善其事，必先利其器</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/25/数据存储/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Ben">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ben'Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          数据存储
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-09-25 17:26:17" itemprop="dateCreated datePublished" datetime="2019-09-25T17:26:17+08:00">2019-09-25</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-11-23 11:54:31" itemprop="dateModified" datetime="2020-11-23T11:54:31+08:00">2020-11-23</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h3><p>谈到数据存储，首先要明确区分两个概念，<strong>数据结构</strong>和<strong>存储方式</strong>。</p>
+<ul>
+<li><p>数据结构，就是数据存在的形式。除了基本的<code>NSDictionary</code>、<code>NSArray</code>和<code>NSSet</code>这些对象，还有更复杂的如：关系模型、对象图和属性列表多种结构。</p>
+</li>
+<li><p>存储方式，则简单的分为两种：内存与闪存。内存存储是临时的，运行时有效的，但效率高，而闪存则是一种持久化存储，但产生<code>I/O</code>消耗，效率相对低。把内存数据转移到闪存中进行持久化的操作称为归档。</p>
+</li>
+</ul>
+<p>数据结构和存储方式，二者结合起来才是完整的数据存储方案。如常说的<code>SQLite</code>、<code>CoreData</code>、<code>NSUserDefaults</code>等都是数据存储方案。这些存储方案侧重不同，支持的形式和方式也各不相同，在不同的使用场景下表现也是各有优劣。</p>
+<p>Tips:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">缓存按照保存位置可以分为两类：内存缓存、硬盘缓存</span><br><span class="line">硬盘缓存，即常说的把数据保存在本地，如：FMDB、CoreData、归档、NSUserDefaults、NSFileManager</span><br></pre></td></tr></table></figure>
+<h3 id="本质"><a href="#本质" class="headerlink" title="本质"></a>本质</h3><p>万变不离其宗，无论什么数据存储方案都可以用下图来解释</p>
+<p><img src="/2019/09/25/数据存储/数据存储本质过程.png" alt="数据存储本质过程"></p>
+<h3 id="常用数据存储方案的介绍"><a href="#常用数据存储方案的介绍" class="headerlink" title="常用数据存储方案的介绍"></a>常用数据存储方案的介绍</h3><h4 id="NSUserDefaults"><a href="#NSUserDefaults" class="headerlink" title="NSUserDefaults"></a><code>NSUserDefaults</code></h4><ul>
+<li><code>NSUserDefaults</code>是一个单例，在整个程序中只有一个实例对象，可用于数据的永久保存，这是它可以让数据自由传递的一个前提。因此常用它保存简单数据。</li>
+<li><code>NSUserDefaults</code>支持的数据类型有：<code>NSNumber</code>（<code>NSInteger、float、double</code>），<code>NSString</code>，<code>NSDate</code>，<code>NSData</code>，<code>NSArray</code>，<code>NSDictionary</code>，<code>BOOL</code></li>
+<li>使用<code>NSUserDefaults</code>进行数据存储操作时，对相同的<code>Key</code>赋值约等于一次覆盖，所以要保证每一个<code>Key</code>的唯一性</li>
+<li><code>NSUserDefaults</code>存储的对象全是不可变的，取出的对象也是不可变的</li>
+<li>使用<code>NSUserDefaults</code>存储自定义对象<ul>
+<li>将自定义类型转换为<code>NSData</code>类型<ul>
+<li><code>NSUserDefaults</code>本身不支持自定义对象的存储，不过它支持<code>NSData</code>的类型</li>
+<li>场景：当数据重复且多的时候，不想使用<code>SQLite</code>，不想使用<code>NSFileManage</code>的时候，可以通过将数据转换为<code>NSData</code>类型，使用<code>NSUserDefaults</code>存储</li>
+<li>但大量重复数据的操作，最好还是使用<code>SQLite</code>存储</li>
+<li><code>NSFileManage</code>的使用是，先使用归档，再将文件写入本地</li>
+<li>将自定义类型对象转换为<code>NSData</code>类型时，自定义类型需要遵循并实现<code>NSCoding</code>协议中的<code>encodeWithCoder</code>和<code>initWithCoder</code>方法，通过这种方式就可以将自定义类型转换为<code>NSData</code>类型了。将自定义类型的对象转换为<code>NSData</code>类型时，会用到<code>NSKeyedArchiver</code>类进行操作；将<code>NSData</code>转换为自定义类型的对象时，会用到<code>NSKeyedUnarchiver</code>类进行操作。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><code>NSUserDefaults</code>，用于存储配置信息</p>
+<ul>
+<li><code>NSUserDefaults</code>被设计用来存储设备和应用的配置信息</li>
+<li>它通过一个工厂方法返回默认的、也是最常用到的实例对象</li>
+<li>这个对象中储存了系统中用户的配置信息</li>
+<li>开发者可以通过这个实例对象对这些已有的信息进行修改，也可以按照自己的需求创建新的配置项</li>
+<li><p><code>NSUserDefaults</code>数据组织形式</p>
+<ul>
+<li><code>NSUserDefaults</code>把配置信息以字典的形式组织起来</li>
+<li>支持字典的项包括：字符串或者是数组，除此之外还支持数字等基本格式</li>
+<li><code>NSUserDefaults</code>是基础类型的小数据的字典</li>
+<li><p>可以通过指定返回类型的方法获取到指定类型的返回值。如下图</p>
+<p><img src="/2019/09/25/数据存储/NSUserDefaults字典取值.png" alt="NSUserDefaults字典取值"></p>
+</li>
+</ul>
+</li>
+<li><p><code>NSUserDefaults</code>的所有数据都放在内存里，因此操作速度很快</p>
+</li>
+<li><code>NSUserDefaults</code>提供了一个归档方法：<code>+ (void)synchronize</code>。开发者自定义的配置项，会以<code>plist</code>格式的文件归档在相应应用目录<code>/Library/Preferences/[App_Bundle_Identifier].plist</code>的下面。</li>
+</ul>
+</li>
+</ul>
+<h4 id="SQLite"><a href="#SQLite" class="headerlink" title="SQLite"></a><code>SQLite</code></h4><ul>
+<li><code>SQLite</code>，用于存储查询需求较多的数据<ul>
+<li><code>iOS</code>的<code>SDK</code>里预置了<code>SQLite</code>的库，开发者可以自建<code>SQLite</code>数据库</li>
+<li><code>SQLite</code>每次写入数据都会产生<code>IO</code>消耗，把数据归档到相应的文件</li>
+<li>一般来说应用中格式化的文本类数据可以存放在数据库中，尤其是类似聊天记录、<code>Timeline</code>等这些具有条件查询和排序需求的数据</li>
+<li>每一个数据库的句柄都会在内存中被分配一段缓存，用于提高查询效率</li>
+<li>由于查询缓存，当产生大量句柄或数据量较大时，会出现缓存过大，造成内存浪费</li>
+<li>对复杂的<code>SQLite</code>操作进行封装，可参考<a href="https://github.com/gaosboy/SQLight" target="_blank" rel="noopener">SQLight</a></li>
+</ul>
+</li>
+</ul>
+<h4 id="CoreData"><a href="#CoreData" class="headerlink" title="CoreData"></a><code>CoreData</code></h4><ul>
+<li><code>CoreData</code>，用于规划应用中的对象<ul>
+<li>官方给出的定义是，一个支持持久化的，对象图和生命周期的自动化管理方案</li>
+<li>严格意义上说<code>CoreData</code>是一个管理方案，它的持久化可以通过<code>SQLite</code>、<code>XML</code>或二进制文件储存</li>
+<li>如官方定义所说，<code>CoreData</code>的作用远远不止储存数据这么简单，它可以把整个应用中的对象建模并进行自动化的管理</li>
+<li>从归档文件还原模型时<code>CoreData</code>并不是一次性把整个模型中的所有数据都载入内存，而是根据运行时状态，把被调用到的对象实例载入内存。框架会自动控制这个过程，从而达到控制内存消耗，避免浪费</li>
+<li><code>CoreData</code>的使用场景在于：整个应用使用<code>CoreData</code>规划，把应用内的数据通过<code>CoreData</code>建模，完全基于<code>CoreData</code>架构应用</li>
+</ul>
+</li>
+</ul>
+<h4 id="定制化方案"><a href="#定制化方案" class="headerlink" title="定制化方案"></a>定制化方案</h4><ul>
+<li><p>使用基本对象类型定制的个性化缓存方案</p>
+<ul>
+<li>案例分析 - <code>Kache</code></li>
+<li>这个定制方案适用于互联网应用中对远程数据的缓存，几个限制条件缺一不可</li>
+<li>从需求出发分析缓存数据有以下要求：按<code>Key</code>查找，快速读取，写入不影响正常操作，不浪费内存，支持归档。这些都是基本需求，那么再进一步或许还需要固定缓存项数量，支持队列缓存，缓存过期等</li>
+<li><p><code>Kache</code>架构分析</p>
+<ul>
+<li><code>Kache</code>扮演的是一个典型缓存角色。应用加载远程数据生成应用数据对象的同时，通过<code>Kache</code>把数据缓存起来，再次请求则直接通过<code>Kache</code>获取数据</li>
+<li>缓存对象可以是<code>NSDictionary</code>、<code>NSArray</code>、<code>NSSet</code>或<code>NSData</code>这些可直接归档的类型，每个缓存对象对应一个<code>Key</code>。缓存对象包括数据和过期时间，内存中存放在一个单例字典中，闪存中每个对象存为一个文件。<code>Key</code>空间按照各种顺序存放缓存对象的<code>Key</code>集合，<code>Pool</code>为固定大小的数组，当数量达到上限，最早过期的一个<code>Key</code>将被删除，对应的缓存对象也被清除。<code>Queue</code>也是固定大小的数组，以先进先出的规则管理<code>Key</code>的增删。每一次有新的缓存对象存入，自动检测<code>Key</code>空间中过期的集合并清除</li>
+<li>框架提供<code>save</code>和<code>load</code>方法支持持久化和重新载入</li>
+<li>框架由于使用了过期和归档相结合的逻辑，可以保证大部分命中的缓存对象都在内存中，从而获取了较高的效率</li>
+<li><a href="https://github.com/gaosboy/kache" target="_blank" rel="noopener">Kache框架源码</a></li>
+<li><p><code>Kache</code>结构图</p>
+<p><img src="/2019/09/25/数据存储/Kache架构图.png" alt="Kache架构图"></p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="知识点补充"><a href="#知识点补充" class="headerlink" title="知识点补充"></a>知识点补充</h3><h5 id="值类型和引用类型的区别"><a href="#值类型和引用类型的区别" class="headerlink" title="值类型和引用类型的区别"></a>值类型和引用类型的区别</h5><ul>
+<li>给一个变量赋值后在内存里的表示<ul>
+<li>如果是<strong>值类型</strong>则直接在<code>stack</code>(堆栈)中分配一块空间。<code>stack</code>的内存区域是由操作系统去管理的</li>
+<li>如果是<strong>引用类型</strong>的话会保存成两部分，在<code>heap</code>(<strong>托管堆</strong>)分配一块内存保存<strong>变量的实际值</strong>，再在<code>stack</code>中分配一块内存保存<code>heap</code>中分配的那块内存的地址</li>
+<li>基于上述区别，引用类型赋值为<code>null</code>，表示还没在<code>heap</code>中分配内存，只是在<code>stack</code>中分配一块内存，但里面的内容为空，没有保存哪块<code>heap</code>的地址。基于此引用类型可以给赋值为<code>null</code>，而值类型不能赋值为<code>null</code></li>
+</ul>
+</li>
+<li><code>stack</code>中的内存块有多大<ul>
+<li>所有引用类型在<code>stack</code>中内存块的大小都一样。具体大小要看操作系统，<code>32</code>位的系统是<code>4</code>个字节，<code>64</code>位系统是<code>8</code>个字节</li>
+</ul>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/07/30/消息推送/" rel="prev" title="消息推送">
+      <i class="fa fa-chevron-left"></i> 消息推送
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/09/26/iOS生命周期/" rel="next" title="iOS生命周期">
+      iOS生命周期 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#概念"><span class="nav-number">1.</span> <span class="nav-text">概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#本质"><span class="nav-number">2.</span> <span class="nav-text">本质</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#常用数据存储方案的介绍"><span class="nav-number">3.</span> <span class="nav-text">常用数据存储方案的介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#NSUserDefaults"><span class="nav-number">3.1.</span> <span class="nav-text">NSUserDefaults</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SQLite"><span class="nav-number">3.2.</span> <span class="nav-text">SQLite</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#CoreData"><span class="nav-number">3.3.</span> <span class="nav-text">CoreData</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#定制化方案"><span class="nav-number">3.4.</span> <span class="nav-text">定制化方案</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#知识点补充"><span class="nav-number">4.</span> <span class="nav-text">知识点补充</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#值类型和引用类型的区别"><span class="nav-number">4.0.1.</span> <span class="nav-text">值类型和引用类型的区别</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Ben</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">51</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">categories</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ben</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

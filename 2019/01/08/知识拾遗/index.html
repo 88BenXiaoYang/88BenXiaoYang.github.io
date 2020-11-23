@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="HTTP状态码类别：     类型 原因短语     1XX Informational（信息性状态码） 接收的请求正在处理   2XX Success（成功状态码） 请求正常处理完毕   3XX Redirection （重定向状态码） 需要进行附加操作以完成请求   4XX Client Error （客户端错误状态码） 服务器无法处理请求   5XX Server Error （服务器错误">
+<meta name="keywords" content="零散知识点">
+<meta property="og:type" content="article">
+<meta property="og:title" content="知识拾遗">
+<meta property="og:url" content="http://yoursite.com/2019/01/08/知识拾遗/index.html">
+<meta property="og:site_name" content="Ben&#39;Blog">
+<meta property="og:description" content="HTTP状态码类别：     类型 原因短语     1XX Informational（信息性状态码） 接收的请求正在处理   2XX Success（成功状态码） 请求正常处理完毕   3XX Redirection （重定向状态码） 需要进行附加操作以完成请求   4XX Client Error （客户端错误状态码） 服务器无法处理请求   5XX Server Error （服务器错误">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-11-23T03:54:31.364Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="知识拾遗">
+<meta name="twitter:description" content="HTTP状态码类别：     类型 原因短语     1XX Informational（信息性状态码） 接收的请求正在处理   2XX Success（成功状态码） 请求正常处理完毕   3XX Redirection （重定向状态码） 需要进行附加操作以完成请求   4XX Client Error （客户端错误状态码） 服务器无法处理请求   5XX Server Error （服务器错误">
+
+<link rel="canonical" href="http://yoursite.com/2019/01/08/知识拾遗/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>知识拾遗 | Ben'Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Ben'Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">工欲善其事，必先利其器</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/08/知识拾遗/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Ben">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ben'Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          知识拾遗
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-01-08 11:24:30" itemprop="dateCreated datePublished" datetime="2019-01-08T11:24:30+08:00">2019-01-08</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-11-23 11:54:31" itemprop="dateModified" datetime="2020-11-23T11:54:31+08:00">2020-11-23</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <ul>
+<li><code>HTTP</code>状态码类别：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>原因短语</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1XX Informational（信息性状态码）</td>
+<td>接收的请求正在处理</td>
+</tr>
+<tr>
+<td>2XX Success（成功状态码）</td>
+<td>请求正常处理完毕</td>
+</tr>
+<tr>
+<td>3XX Redirection （重定向状态码）</td>
+<td>需要进行附加操作以完成请求</td>
+</tr>
+<tr>
+<td>4XX Client Error （客户端错误状态码）</td>
+<td>服务器无法处理请求</td>
+</tr>
+<tr>
+<td>5XX Server Error （服务器错误状态码）</td>
+<td>服务器处理请求出错</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><p>不适合使用<code>HTTP</code>协议的场景</p>
+<ol>
+<li>实时数据推送<ul>
+<li>除了<code>iOS</code>开发提供有标准的<code>Apple</code>消息推送中心，其他移动产品可能还是要采用<code>Socket</code>长连接才能保证实时通讯。比较常见的很多即时通讯软件采用的是<code>XMPP</code>协议</li>
+</ul>
+</li>
+<li>流媒体<ul>
+<li>用于音视频播放、语音会议等，一般采用<code>RTMP</code>协议</li>
+</ul>
+</li>
+</ol>
+</li>
+<li><p>根据使用场景选择使用<code>get</code>或<code>post</code>请求方法</p>
+</li>
+</ul>
+<p>因各浏览器<code>HTTP Get</code>请求<code>URL</code>最大长度并不相同。<br>几类常用浏览器最大长度及超过最大长度后提交情况如下：</p>
+<table>
+<thead>
+<tr>
+<th>浏览器类型</th>
+<th>Get请求URL最大长度</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>IE6.0</td>
+<td>url最大长度2083个字符，超过最大长度后无法提交。</td>
+</tr>
+<tr>
+<td>IE7.0</td>
+<td>url最大长度2083个字符，超过最大长度后仍然能提交，但是只能传过去2083个字符。</td>
+</tr>
+<tr>
+<td>firefox 3.0.3</td>
+<td>url最大长度7764个字符，超过最大长度后无法提交。</td>
+</tr>
+<tr>
+<td>Opera 9.52</td>
+<td>url最大长度7648个字符，超过最大长度后无法提交。</td>
+</tr>
+<tr>
+<td>Google Chrome 2.0.168</td>
+<td>url最大长度7713个字符，超过最大长度后无法提交</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<ul>
+<li><code>emoji</code>表情</li>
+</ul>
+<p><code>emoji</code>表情是通用的，不只是移动端的系统(<code>iOS</code>、<code>Android</code>)支持，<code>PC</code>上也支持。<code>emoji</code>是个通用的字符集。虽然看到显示的是表情，但实际还是字符串。</p>
+<p>开发中涉及到<code>emoji</code>表情时，遇到的常见问题是在和服务端调用接口时出现。因在调用接口时，上传的参数中有<code>emoji</code>表情时，<code>emoji</code>表情传递过去的也是字符串，只不过是特殊的字符串。一般情况下，服务端在写数据库的时候，是<code>UTF8</code>的编码方式。如服务端在操作数据库的时候用的是<code>UTF8</code>的编码方式，这样在上传的参数中如有<code>emoji</code>表情的特殊字符时，就会出现对于同一参数字符串上传和请求解析得到的结果不一样的问题。</p>
+<p>解决上述问题，服务端在操作数据库的时候，将<code>UTF8</code>编码方式改成<code>utf8mb4</code>就可以了，因为<code>utf8mb4</code>编码方式是原样存储、读取的。修改可参考下面步骤进行操作：</p>
+<ol>
+<li>修改<code>my.cnf [mysqld] character-set-server=utf8mb4 [mysql] www.2cto.com default-character-set=utf8mb4</code>修改后重启<code>Mysql</code></li>
+<li>以<code>root</code>身份登录<code>Mysql</code>，修改环境变量，将<code>character_set_client,character_set_connection,character_set_database,character_set_results,character_set_server</code>都修改成<code>utf8mb4</code></li>
+<li>将已经建好的表也转换成<code>utf8mb4</code>命令：<code>alter table TABLE_NAME convert to character set utf8mb4 collate utf8mb4_bin;</code>(将<code>TABLE_NAME</code>替换成你的表名)</li>
+</ol>
+<hr>
+<ul>
+<li>可通过以下方式，减少网络请求发起的次数<ul>
+<li>采用缓存方式<ul>
+<li>清理缓存的策略如下<ol>
+<li>根据超时时间限制进行清理（根据日志统计应用被使用的平均时长，设置合适的超时时间）</li>
+<li>根据缓存数据大小进行清理（网络图片缓存，数据量大，适合针对缓存大小来清理缓存）</li>
+</ol>
+</li>
+<li>策略的选择要根据具体<code>APP</code>的操作日志来决定</li>
+<li>时效性短的接口数据，不做缓存，实时请求</li>
+</ul>
+</li>
+<li>采用适当策略<ol>
+<li>如页面刷新（下拉刷新时，在请求着陆之前，后面重复操作导致的<code>API</code>请求就可以不必发送了）</li>
+<li>条件筛选，那就取消前面已经发送的请求（虽然很有可能这个请求已经被执行了，那么取消所带来的性能提升就基本没有了。但如果这个请求还在队列中待执行的话，那么对应的这次链接就可以省掉了）</li>
+<li>用户操作会触发操作日志上报<code>server</code>（这种场景下，采用在本地记录用户的操作记录，当记录满一定数量（如<code>30</code>条）的时候发起一次请求将操作记录上传到服务器。然后每次<code>APP</code>启动的时候，上传一次上次遗留下来没上传的操作记录。这样能够有效降低用户设备的耗电量，同时提升网络层的性能）</li>
+</ol>
+</li>
+</ul>
+</li>
+</ul>
+<hr>
+<ul>
+<li>针对<code>DNS</code>域名解析的优化<ul>
+<li>移动设备的使用场景比较复杂，网络信号源会经常变换，信号源每变换一次，对应的<code>DNS</code>解析链路就会变换一次，那么原链路上的<code>DNS</code>缓存就不起作用了（因对于移动设备用户来说，信号源变换特别频繁，所以移动设备链路的<code>DNS</code>缓存可以默认为基本上没有）</li>
+<li><code>API</code>请求在<code>DNS</code>解析阶段耗时多的原因（大体上三个）<ol>
+<li>网络信号源变换频繁</li>
+<li>移动设备上网的需求也特别频繁（用手机系统自带的本地<code>DNS</code>缓存，因这个原因，可能会被别的<code>DNS</code>缓存给挤出去被清理掉）</li>
+<li>国内互联网环境由于<code>GFW</code>(防火长城)的存在（使得<code>DNS</code>服务速度会比正常情况慢不少）</li>
+</ol>
+</li>
+<li>综上，针对<code>DNS</code>域名解析的优化方案是，索性直接走<code>IP</code>请求，就可绕过<code>DNS</code>服务的耗时</li>
+</ul>
+</li>
+</ul>
+<hr>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/零散知识点/" rel="tag"># 零散知识点</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/01/07/Git/" rel="prev" title="Git">
+      <i class="fa fa-chevron-left"></i> Git
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/01/09/iOS/" rel="next" title="iOS">
+      iOS <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Ben</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">51</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">categories</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ben</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
