@@ -73,6 +73,8 @@ PostgreSQL[开源]、MySQL[开源] ）
 
 ##### 基本操作
 
+**注意：在和数据库交互之前，数据库必须是打开的，如果资源或权限不足而无法打开或创建数据库，都会导致数据库打开失败。**
+
 * 常用指令
 
 ```
@@ -142,6 +144,52 @@ from->where->group by->having->select->order by
 ```
 
 默认值的设定，可以通过在创建表的create table语句中设置default约束来实现。
+
+* 执行更新
+  * 一切不是SELECT命令的命令都视为更新，包括CREATE、UPDATE、INSERT、ALTER、COMMIT、BEGIN、DETACH、DELETE、DROP、END、EXPLAIN、VACUUM、REPLACE等
+  * 简单来说，只要不是以SELECT开头的命令都是UPDATE命令
+  * 执行更新返回一个BOOL值，YES表示执行成功，否则表示存在错误。可以调用-lastErrorMessage和-lastErrorCode方法来得到更多信息
+
+* 执行查询(**FMDB的使用**)
+  * SELECT命令就是查询，执行查询的方法是以-excuteQuery开头的
+  * 执行查询时，如果成功返回FMResultSet对象，错误返回nil
+  * 可以使用-lastErrorCode和-lastErrorMessage方法来得到更多信息
+  * 为了遍历查询结果，可以使用while循环
+  * 如何查询下一个记录，FMDB中使用next方法，如
+  
+  ```
+  FMResultSet *s = [db executeQuery:@"SELECT * FROM table"];
+  while ([s next]) {
+  //对每条记录进行检索操作
+  }
+  ```
+  
+  * 在访问查询记录的返回值之前，查询记录必须调用-[FMResultSet next]，即使只想要一条记录，如
+
+  ```
+  FMResultSet *s = [db executeQuery:@"SELECT COUNT(*) FROM table"];
+  if ([s next]) {
+  int totalCount = [s intForColumnIndex:0];
+  }
+  ```
+  
+  * 无需调用[FMResultSet close]来关闭结果集，当新的结果集产生或者数据库关闭时，结果集会自动关闭
+  * 通常情况下，可以按照标准的SQL语句，用`?`表示执行语句的参数。提供给-executeUpdate:方法的参数必须是对象，如不是对象会产生崩溃，如
+
+  ```
+  执行下面一行代码时，会产生崩溃
+  [db executeUpdate:@"INSERT INTO table VALUES (?)", 42];
+  
+  解决方法有：
+  把数字打包成NSNumber对象，如下
+  [db executeUpdate:@"INSERT INTO table VALUES (?)", [NSNumber numberWithInt:42]];
+  或者使用-executeUpdateWithFormat:这是NSString风格的参数，如下
+  [db executeUpdateWithFormat:@"INSERT INTO table VALUES (%d)", 42];
+  ```
+  
+  * 使用完数据库，应该用-close来关闭数据库链接释放SQLite使用的资源
+  * 为数据库设置缓存，可以提高查询效率
+  * Firefox中有SQLite Manager的插件，可以查看数据库文件
 
 ##### 事务
 
