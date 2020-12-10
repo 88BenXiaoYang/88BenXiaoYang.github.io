@@ -501,7 +501,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-12-10 11:54:33" itemprop="dateModified" datetime="2020-12-10T11:54:33+08:00">2020-12-10</time>
+                <time title="Modified: 2020-12-10 17:30:33" itemprop="dateModified" datetime="2020-12-10T17:30:33+08:00">2020-12-10</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -552,7 +552,8 @@
 <li>补充</li>
 </ul>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1、所有的列都必须指定数据类型。</span><br><span class="line">2、约束，是除了数据类型之外，对列中存储的数据进行限制或者追加条件的功能。</span><br></pre></td></tr></table></figure>
-<h5 id="基本操作"><a href="#基本操作" class="headerlink" title="基本操作"></a>基本操作</h5><ul>
+<h5 id="基本操作"><a href="#基本操作" class="headerlink" title="基本操作"></a>基本操作</h5><p><strong>注意：在和数据库交互之前，数据库必须是打开的，如果资源或权限不足而无法打开或创建数据库，都会导致数据库打开失败。</strong></p>
+<ul>
 <li>常用指令</li>
 </ul>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">创建数据库：create database 数据库名称</span><br><span class="line">删除数据库：drop database 数据库名称</span><br><span class="line">查看已创建的数据库：</span><br><span class="line">select * from pg_database;（postgreSQL下）</span><br><span class="line">show databases;//查看有哪些数据库（MySQL）</span><br><span class="line"></span><br><span class="line">查看数据库中已建的表：</span><br><span class="line">select tablename from pg_tables where schemaname=&apos;public’;</span><br><span class="line">use databaseName;//指定使用哪个数据库（MySQL）</span><br><span class="line">show tables;//查看指定数据库下都有哪些表（MySQL）</span><br></pre></td></tr></table></figure>
@@ -580,6 +581,41 @@
 </ul>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">from-&gt;where-&gt;group by-&gt;having-&gt;select-&gt;order by</span><br></pre></td></tr></table></figure>
 <p>默认值的设定，可以通过在创建表的create table语句中设置default约束来实现。</p>
+<ul>
+<li><p>执行更新</p>
+<ul>
+<li>一切不是SELECT命令的命令都视为更新，包括CREATE、UPDATE、INSERT、ALTER、COMMIT、BEGIN、DETACH、DELETE、DROP、END、EXPLAIN、VACUUM、REPLACE等</li>
+<li>简单来说，只要不是以SELECT开头的命令都是UPDATE命令</li>
+<li>执行更新返回一个BOOL值，YES表示执行成功，否则表示存在错误。可以调用-lastErrorMessage和-lastErrorCode方法来得到更多信息</li>
+</ul>
+</li>
+<li><p>执行查询(<strong>FMDB的使用</strong>)</p>
+<ul>
+<li>SELECT命令就是查询，执行查询的方法是以-excuteQuery开头的</li>
+<li>执行查询时，如果成功返回FMResultSet对象，错误返回nil</li>
+<li>可以使用-lastErrorCode和-lastErrorMessage方法来得到更多信息</li>
+<li>为了遍历查询结果，可以使用while循环</li>
+<li>如何查询下一个记录，FMDB中使用next方法，如</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">FMResultSet *s = [db executeQuery:@&quot;SELECT * FROM table&quot;];</span><br><span class="line">while ([s next]) &#123;</span><br><span class="line">//对每条记录进行检索操作</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<ul>
+<li><p>在访问查询记录的返回值之前，查询记录必须调用-[FMResultSet next]，即使只想要一条记录，如</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">FMResultSet *s = [db executeQuery:@&quot;SELECT COUNT(*) FROM table&quot;];</span><br><span class="line">if ([s next]) &#123;</span><br><span class="line">int totalCount = [s intForColumnIndex:0];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<ul>
+<li>无需调用[FMResultSet close]来关闭结果集，当新的结果集产生或者数据库关闭时，结果集会自动关闭</li>
+<li><p>通常情况下，可以按照标准的SQL语句，用<code>?</code>表示执行语句的参数。提供给-executeUpdate:方法的参数必须是对象，如不是对象会产生崩溃，如</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">执行下面一行代码时，会产生崩溃</span><br><span class="line">[db executeUpdate:@&quot;INSERT INTO table VALUES (?)&quot;, 42];</span><br><span class="line"></span><br><span class="line">解决方法有：</span><br><span class="line">把数字打包成NSNumber对象，如下</span><br><span class="line">[db executeUpdate:@&quot;INSERT INTO table VALUES (?)&quot;, [NSNumber numberWithInt:42]];</span><br><span class="line">或者使用-executeUpdateWithFormat:这是NSString风格的参数，如下</span><br><span class="line">[db executeUpdateWithFormat:@&quot;INSERT INTO table VALUES (%d)&quot;, 42];</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<ul>
+<li>使用完数据库，应该用-close来关闭数据库链接释放SQLite使用的资源</li>
+<li>为数据库设置缓存，可以提高查询效率</li>
+<li>Firefox中有SQLite Manager的插件，可以查看数据库文件</li>
+</ul>
 <h5 id="事务"><a href="#事务" class="headerlink" title="事务"></a>事务</h5><p><code>事务，是数据库中用来管理数据更新的重要概念。</code></p>
 <p>数据库事务(Database Transaction)，是指作为单个逻辑工作单元执行的一系列操作，要么完整的执行，要么完全不执行。事务处理可以确保除非事务性单元内的所有操作都成功完成，否则不会永久更新面向数据的资源。通过将一组相关操作组合为一个要么全部成功，要么全部失败的单元，可以简化错误恢复并使应用程序更加可靠。一个逻辑工作单元要成为事务，必须满足ACID(原子性、一致性、隔离型和持久性)属性。</p>
 <p><strong>事务是需要在同一个处理单元中执行的一系列更新处理的集合。</strong>事务代表了对表中数据进行更新的单位。通过使用事务，可以对数据库中的数据更新处理的提交和取消进行管理。<strong>数据库的更新操作以事务为单位进行。</strong></p>
